@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stride — Modern issue tracking for product teams</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;450;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F6F7F9; --panel:#FFFFFF; --panel-2:#FBFCFD; --ink:#191A23; --ink-2:#42434E;
+  --muted:#71727F; --faint:#9A9BA6; --line:#E9EAEE; --line-2:#EFF0F3;
+  --brand:#0EA5E9; --brand-d:#0284C7; --brand-soft:#E0F2FE; --brand-soft-2:#F0F9FF;
+  --violet:#6366F1; --violet-soft:#EEF0FF;
+  --grad: linear-gradient(135deg,#0EA5E9,#6366F1);
+  --green:#16A34A; --green-soft:#DCFCE7; --amber:#D97706; --amber-soft:#FEF3C7;
+  --red:#DC2626; --red-soft:#FEE2E2; --gray-soft:#EEF0F3;
+  --shadow:0 1px 2px rgba(16,24,40,.04),0 4px 16px rgba(16,24,40,.06);
+  --shadow-lg:0 8px 28px rgba(16,24,40,.14);
+  --r:12px; --r-sm:9px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+.disp{font-family:'Space Grotesk',sans-serif}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+img{display:block}
+::-webkit-scrollbar{width:9px;height:9px}
+::-webkit-scrollbar-thumb{background:#D6D8DE;border-radius:9px}
+::-webkit-scrollbar-track{background:transparent}
+
+/* ---------- Shell ---------- */
+.app{display:flex;min-height:100vh}
+.sidebar{width:248px;flex:none;background:var(--panel);border-right:1px solid var(--line);display:flex;flex-direction:column;padding:16px 14px;gap:4px}
+.brand{display:flex;align-items:center;gap:11px;padding:6px 8px 14px}
+.brand .logo{width:34px;height:34px;border-radius:10px;background:var(--grad);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:18px;flex:none;box-shadow:0 4px 12px rgba(14,165,233,.35)}
+.brand .name{font-size:19px;font-weight:700;letter-spacing:-.02em}
+.brand .name span{color:var(--brand)}
+.nav-label{font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--faint);padding:14px 10px 6px}
+.nav-item{display:flex;align-items:center;gap:11px;padding:8px 10px;border-radius:var(--r-sm);color:var(--ink-2);font-weight:500;font-size:13.5px;transition:.14s;width:100%;text-align:left}
+.nav-item:hover{background:var(--panel-2);color:var(--ink)}
+.nav-item.active{background:var(--brand-soft-2);color:var(--brand-d);font-weight:600}
+.nav-item.active .ico{color:var(--brand)}
+.nav-item .ico{width:18px;height:18px;flex:none;color:var(--muted)}
+.nav-item .badge{margin-left:auto;background:var(--gray-soft);color:var(--muted);font-size:11px;font-weight:600;padding:1px 7px;border-radius:20px}
+.nav-item.active .badge{background:var(--brand-soft);color:var(--brand-d)}
+.side-foot{margin-top:auto;border-top:1px solid var(--line);padding-top:12px}
+.side-user{display:flex;align-items:center;gap:10px;padding:7px 8px;border-radius:var(--r-sm);transition:.14s}
+.side-user:hover{background:var(--panel-2)}
+.side-user .av{width:32px;height:32px;border-radius:50%;flex:none;object-fit:cover;background:var(--violet-soft);color:var(--violet);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:12px}
+.side-user .nm{font-size:13px;font-weight:600;line-height:1.2}
+.side-user .em{font-size:11.5px;color:var(--muted)}
+
+.main{flex:1;min-width:0;display:flex;flex-direction:column}
+.topbar{height:60px;flex:none;background:rgba(255,255,255,.86);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:14px;padding:0 22px;position:sticky;top:0;z-index:40}
+.burger{display:none;width:38px;height:38px;border-radius:9px;border:1px solid var(--line);background:var(--panel);align-items:center;justify-content:center;cursor:pointer;flex:none}
+.burger span{display:block;width:17px;height:2px;background:var(--ink);border-radius:2px;position:relative}
+.burger span::before,.burger span::after{content:"";position:absolute;left:0;width:17px;height:2px;background:var(--ink);border-radius:2px}
+.burger span::before{top:-5px}.burger span::after{top:5px}
+.page-title{font-size:18px;font-weight:600;letter-spacing:-.01em}
+.page-sub{font-size:12.5px;color:var(--muted);font-weight:450}
+.topbar .search{margin-left:18px;flex:1;max-width:360px;position:relative}
+.topbar .search input{width:100%;height:38px;border:1px solid var(--line);background:var(--panel-2);border-radius:9px;padding:0 12px 0 34px;font-size:13px;color:var(--ink);outline:none;transition:.15s}
+.topbar .search input:focus{border-color:var(--brand);background:#fff;box-shadow:0 0 0 3px var(--brand-soft-2)}
+.topbar .search .si{position:absolute;left:11px;top:50%;transform:translateY(-50%);width:15px;height:15px;color:var(--faint)}
+.spacer{flex:1}
+.chip-demo{display:inline-flex;align-items:center;gap:6px;background:var(--amber-soft);color:var(--amber);font-size:11.5px;font-weight:600;padding:5px 11px;border-radius:20px;border:1px solid #FCE4B0}
+.chip-demo .dot{width:6px;height:6px;border-radius:50%;background:var(--amber)}
+.tb-btn{width:38px;height:38px;border-radius:9px;border:1px solid var(--line);background:var(--panel);display:flex;align-items:center;justify-content:center;color:var(--muted);transition:.14s;flex:none;position:relative}
+.tb-btn:hover{color:var(--ink);border-color:#D9DBE1}
+.tb-btn svg{width:18px;height:18px}
+.tb-btn .dot{position:absolute;top:8px;right:9px;width:7px;height:7px;border-radius:50%;background:var(--red);border:1.5px solid #fff}
+.tb-av{width:38px;height:38px;border-radius:50%;flex:none;object-fit:cover;cursor:pointer;border:2px solid var(--line)}
+.btn-primary{height:38px;padding:0 15px;border-radius:9px;background:var(--brand);color:#fff;font-weight:600;font-size:13px;display:inline-flex;align-items:center;gap:7px;transition:.14s;box-shadow:0 2px 8px rgba(14,165,233,.3)}
+.btn-primary:hover{background:var(--brand-d)}
+.btn-primary svg{width:16px;height:16px}
+
+.content{flex:1;min-width:0;padding:24px 26px 40px;overflow:auto}
+.view{display:none;animation:fade .25s ease}
+.view.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* ---------- KPI ---------- */
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:22px}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:17px 18px;box-shadow:var(--shadow);transition:.16s}
+.kpi:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+.kpi .lab{font-size:12.5px;color:var(--muted);font-weight:500;display:flex;align-items:center;gap:8px}
+.kpi .lab .ki{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center}
+.kpi .ki svg{width:15px;height:15px}
+.kpi .num{font-family:'Space Grotesk';font-size:30px;font-weight:600;letter-spacing:-.02em;margin-top:11px;line-height:1}
+.kpi .delta{font-size:12px;font-weight:600;margin-top:8px;display:inline-flex;align-items:center;gap:4px}
+.kpi .delta.up{color:var(--green)} .kpi .delta.down{color:var(--red)}
+.kpi .delta svg{width:13px;height:13px}
+.kpi .delta .nrm{color:var(--muted);font-weight:450}
+
+/* ---------- Board / Kanban ---------- */
+.board-bar{display:flex;align-items:center;gap:12px;margin-bottom:18px;flex-wrap:wrap}
+.seg{display:inline-flex;background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:3px}
+.seg button{padding:6px 13px;border-radius:7px;font-size:12.5px;font-weight:500;color:var(--muted);transition:.14s}
+.seg button.on{background:var(--ink);color:#fff;font-weight:600}
+.filt{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 12px;border:1px solid var(--line);border-radius:9px;background:var(--panel);font-size:12.5px;font-weight:500;color:var(--ink-2);transition:.14s}
+.filt:hover{border-color:#D9DBE1}
+.filt svg{width:14px;height:14px;color:var(--muted)}
+.avstack{display:flex;align-items:center}
+.avstack img,.avstack .ph{width:28px;height:28px;border-radius:50%;border:2px solid #fff;margin-left:-8px;object-fit:cover}
+.avstack img:first-child,.avstack .ph:first-child{margin-left:0}
+
+.board{display:flex;gap:15px;overflow-x:auto;padding-bottom:10px;align-items:flex-start}
+.col{width:286px;flex:none;background:var(--panel-2);border:1px solid var(--line);border-radius:var(--r);display:flex;flex-direction:column;max-height:calc(100vh - 230px)}
+.col-head{display:flex;align-items:center;gap:9px;padding:13px 14px 10px;flex:none}
+.col-head .sdot{width:9px;height:9px;border-radius:3px;flex:none}
+.col-head .ct{font-weight:600;font-size:13.5px}
+.col-head .cn{background:var(--panel);border:1px solid var(--line);color:var(--muted);font-size:11px;font-weight:600;padding:1px 8px;border-radius:20px}
+.col-head .add{margin-left:auto;width:24px;height:24px;border-radius:7px;color:var(--muted);display:flex;align-items:center;justify-content:center;transition:.14s}
+.col-head .add:hover{background:var(--panel);color:var(--ink)}
+.col-head .add svg{width:14px;height:14px}
+.col-body{padding:4px 11px 11px;display:flex;flex-direction:column;gap:9px;overflow-y:auto}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 13px;box-shadow:0 1px 2px rgba(16,24,40,.05);cursor:pointer;transition:.15s}
+.card:hover{transform:translateY(-2px);box-shadow:var(--shadow);border-color:#DDE0E6}
+.card .ctop{display:flex;align-items:center;gap:7px;margin-bottom:8px}
+.card .key{font-size:11.5px;font-weight:600;color:var(--faint);font-family:'Space Grotesk'}
+.card .pdot{width:8px;height:8px;border-radius:50%;flex:none}
+.card .ttl{font-size:13.5px;font-weight:500;line-height:1.38;color:var(--ink);margin-bottom:11px}
+.card .cbot{display:flex;align-items:center;gap:8px}
+.tag{font-size:10.5px;font-weight:600;padding:2px 8px;border-radius:6px;letter-spacing:.01em}
+.pts{margin-left:auto;font-size:11px;font-weight:600;color:var(--muted);background:var(--gray-soft);border-radius:6px;padding:2px 7px;display:inline-flex;align-items:center;gap:4px}
+.card .cav{width:24px;height:24px;border-radius:50%;object-fit:cover;flex:none}
+.ph{display:flex;align-items:center;justify-content:center;background:var(--violet-soft);color:var(--violet);font-weight:600;font-size:10px;flex:none}
+
+/* ---------- Tables ---------- */
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden}
+.panel-head{display:flex;align-items:center;gap:11px;padding:15px 18px;border-bottom:1px solid var(--line)}
+.panel-head h3{font-size:14.5px;font-weight:600}
+.panel-head .sub{font-size:12px;color:var(--muted)}
+.scrollx{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead th{text-align:left;font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--faint);padding:11px 18px;background:var(--panel-2);border-bottom:1px solid var(--line);white-space:nowrap}
+tbody td{padding:12px 18px;border-bottom:1px solid var(--line-2);white-space:nowrap}
+tbody tr{transition:.12s;cursor:pointer}
+tbody tr:hover{background:var(--brand-soft-2)}
+tbody tr:last-child td{border-bottom:none}
+.tkey{font-family:'Space Grotesk';font-weight:600;font-size:12px;color:var(--muted)}
+.ttl-cell{font-weight:500;color:var(--ink);white-space:normal;max-width:320px}
+.st-pill{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:600;padding:3px 9px;border-radius:7px}
+.st-pill .d{width:7px;height:7px;border-radius:50%}
+.pri{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:500}
+.pri svg{width:14px;height:14px}
+.cell-av{display:flex;align-items:center;gap:8px}
+.cell-av img,.cell-av .ph{width:26px;height:26px;border-radius:50%;object-fit:cover}
+
+/* ---------- Sprint ---------- */
+.grid-2{display:grid;grid-template-columns:1.4fr 1fr;gap:18px;margin-bottom:18px}
+.grid-2b{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.sprint-hd{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:20px 22px;box-shadow:var(--shadow);margin-bottom:18px}
+.sprint-hd .row1{display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap}
+.sprint-hd h2{font-family:'Space Grotesk';font-size:21px;font-weight:600;letter-spacing:-.01em}
+.sprint-hd .meta{font-size:12.5px;color:var(--muted);margin-top:3px}
+.daysleft{margin-left:auto;text-align:right}
+.daysleft .n{font-family:'Space Grotesk';font-size:26px;font-weight:600;color:var(--brand-d)}
+.daysleft .l{font-size:11.5px;color:var(--muted)}
+.pbar{height:9px;border-radius:20px;background:var(--gray-soft);overflow:hidden;margin-top:16px}
+.pbar i{display:block;height:100%;border-radius:20px;background:var(--grad)}
+.pbar-l{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-top:8px;font-weight:500}
+.sprint-stats{display:flex;gap:26px;margin-top:18px;flex-wrap:wrap}
+.ss{display:flex;flex-direction:column}
+.ss .n{font-family:'Space Grotesk';font-size:19px;font-weight:600}
+.ss .l{font-size:11.5px;color:var(--muted)}
+
+.chart-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:18px 20px;box-shadow:var(--shadow)}
+.chart-card h3{font-size:14.5px;font-weight:600;margin-bottom:2px}
+.chart-card .sub{font-size:12px;color:var(--muted);margin-bottom:14px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:14px;font-size:12px;color:var(--ink-2)}
+.legend span{display:inline-flex;align-items:center;gap:6px;font-weight:500}
+.legend i{width:10px;height:10px;border-radius:3px}
+.donut-wrap{display:flex;align-items:center;gap:22px;flex-wrap:wrap}
+.donut-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.donut-center .n{font-family:'Space Grotesk';font-size:26px;font-weight:600;line-height:1}
+.donut-center .l{font-size:11px;color:var(--muted)}
+
+.wl-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line-2)}
+.wl-row:last-child{border:none}
+.wl-row img,.wl-row .ph{width:32px;height:32px;border-radius:50%;object-fit:cover;flex:none}
+.wl-row .nm{font-size:13px;font-weight:600;min-width:118px}
+.wl-row .nm small{display:block;font-weight:450;color:var(--muted);font-size:11px}
+.wl-bar{flex:1;height:8px;border-radius:20px;background:var(--gray-soft);overflow:hidden;min-width:60px}
+.wl-bar i{display:block;height:100%;border-radius:20px}
+.wl-row .v{font-size:12px;font-weight:600;min-width:42px;text-align:right}
+
+/* ---------- Drawer ---------- */
+.drawer-ov{position:fixed;inset:0;background:rgba(16,24,40,.42);z-index:70;opacity:0;pointer-events:none;transition:.22s}
+.drawer-ov.open{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;height:100vh;width:520px;max-width:94vw;background:var(--panel);z-index:75;box-shadow:-12px 0 40px rgba(16,24,40,.18);transform:translateX(100%);transition:transform .28s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column}
+.drawer.open{transform:none}
+.dr-head{display:flex;align-items:center;gap:12px;padding:16px 22px;border-bottom:1px solid var(--line);flex:none}
+.dr-head .key{font-family:'Space Grotesk';font-weight:600;color:var(--muted);font-size:13px}
+.dr-head .x{margin-left:auto;width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--muted);transition:.14s}
+.dr-head .x:hover{background:var(--gray-soft);color:var(--ink)}
+.dr-head .x svg{width:18px;height:18px}
+.dr-head .gh{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--muted);transition:.14s}
+.dr-head .gh:hover{background:var(--gray-soft);color:var(--ink)}
+.dr-body{flex:1;overflow-y:auto;padding:22px}
+.dr-body h2{font-size:19px;font-weight:600;letter-spacing:-.01em;line-height:1.3;margin-bottom:16px}
+.dr-desc{font-size:13.5px;color:var(--ink-2);line-height:1.65;margin-bottom:22px}
+.dr-meta{display:grid;grid-template-columns:auto 1fr;gap:12px 18px;font-size:13px;align-items:center;margin-bottom:24px;padding-bottom:22px;border-bottom:1px solid var(--line)}
+.dr-meta .k{color:var(--muted);font-weight:500}
+.dr-meta .v{display:flex;align-items:center;gap:8px;font-weight:500}
+.dr-meta .v img,.dr-meta .v .ph{width:22px;height:22px;border-radius:50%;object-fit:cover}
+.sec-t{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--faint);margin-bottom:13px;display:flex;align-items:center;gap:8px}
+.sec-t .cnt{background:var(--gray-soft);color:var(--muted);border-radius:20px;padding:1px 8px;font-size:11px}
+.subtask{display:flex;align-items:center;gap:11px;padding:9px 0;border-bottom:1px solid var(--line-2)}
+.subtask:last-child{border:none}
+.cb{width:18px;height:18px;border-radius:6px;border:1.8px solid #CBCDD4;flex:none;display:flex;align-items:center;justify-content:center;transition:.14s;cursor:pointer}
+.cb svg{width:12px;height:12px;color:#fff;opacity:0}
+.cb.done{background:var(--green);border-color:var(--green)}
+.cb.done svg{opacity:1}
+.subtask .stx{font-size:13px}
+.subtask.is-done .stx{color:var(--faint);text-decoration:line-through}
+.lbls{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:24px}
+.activity{position:relative;padding-left:26px}
+.activity::before{content:"";position:absolute;left:8px;top:6px;bottom:6px;width:2px;background:var(--line)}
+.act{position:relative;padding:0 0 17px}
+.act:last-child{padding-bottom:0}
+.act .adot{position:absolute;left:-22px;top:2px;width:18px;height:18px;border-radius:50%;background:var(--panel);border:2px solid var(--line);display:flex;align-items:center;justify-content:center}
+.act .adot.b{border-color:var(--brand);background:var(--brand-soft)}
+.act .adot svg{width:9px;height:9px;color:var(--brand)}
+.act .atx{font-size:13px;line-height:1.5}
+.act .atx b{font-weight:600}
+.act .atm{font-size:11.5px;color:var(--faint);margin-top:2px}
+
+/* ---------- Sidebar mobile ---------- */
+.sb-ov{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:55;opacity:0;pointer-events:none;transition:.2s}
+.sb-ov.open{opacity:1;pointer-events:auto}
+
+@media(max-width:1080px){
+  .kpi-row{grid-template-columns:repeat(2,1fr)}
+  .grid-2,.grid-2b{grid-template-columns:1fr}
+}
+@media(max-width:900px){
+  .burger{display:flex}
+  .sidebar{position:fixed;left:0;top:0;z-index:60;transform:translateX(-100%);transition:transform .25s;height:100vh}
+  .sidebar.open{transform:none}
+  .topbar .search{display:none}
+  .content{padding:18px 16px 36px}
+  .page-sub{display:none}
+}
+@media(max-width:560px){
+  .kpi-row{grid-template-columns:1fr 1fr;gap:12px}
+  .kpi .num{font-size:25px}
+  .tb-btn{display:none}
+  .btn-primary span{display:none}
+  .btn-primary{padding:0 11px}
+  .sprint-hd h2{font-size:18px}
+}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
+</style>
+</head>
+<body>
+<h2 class="sr-only">Stride — a project management and issue-tracking dashboard demo with a kanban board, issues table, sprint burndown, and team dashboard.</h2>
+<div class="app">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sb">
+    <div class="brand">
+      <div class="logo disp">S</div>
+      <div class="name disp">Stride<span>.</span></div>
+    </div>
+    <button class="nav-item active" data-view="board" onclick="go('board')">
+      <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="18" rx="1.5"/><rect x="14" y="3" width="7" height="11" rx="1.5"/></svg>
+      Board <span class="badge">42</span>
+    </button>
+    <button class="nav-item" data-view="issues" onclick="go('issues')">
+      <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>
+      Issues <span class="badge">68</span>
+    </button>
+    <button class="nav-item" data-view="sprints" onclick="go('sprints')">
+      <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2 3 14h8l-1 8 10-12h-8z"/></svg>
+      Sprints
+    </button>
+    <button class="nav-item" data-view="dash" onclick="go('dash')">
+      <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 14l3-4 3 2 4-6"/></svg>
+      Dashboard
+    </button>
+
+    <div class="nav-label">Projects</div>
+    <button class="nav-item" onclick="go('board')">
+      <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="#0EA5E9" stroke-width="2.4"><circle cx="12" cy="12" r="5"/></svg>
+      Mobile App <span class="badge">v3.2</span>
+    </button>
+    <button class="nav-item" onclick="go('board')">
+      <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="#6366F1" stroke-width="2.4"><circle cx="12" cy="12" r="5"/></svg>
+      Web Platform
+    </button>
+    <button class="nav-item" onclick="go('board')">
+      <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="2.4"><circle cx="12" cy="12" r="5"/></svg>
+      API & Infra
+    </button>
+
+    <div class="side-foot">
+      <div class="side-user">
+        <img class="av" src="https://i.pravatar.cc/150?img=12" alt="" onerror="this.outerHTML='<div class=\'av ph\'>AB</div>'">
+        <div>
+          <div class="nm">Alex Bauer</div>
+          <div class="em">Product Lead</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <header class="topbar">
+      <button class="burger" onclick="toggleSide()" aria-label="Menu"><span></span></button>
+      <div>
+        <div class="page-title" id="pageTitle">Board</div>
+        <div class="page-sub" id="pageSub">Mobile App · Sprint 24</div>
+      </div>
+      <div class="search">
+        <svg class="si" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input type="text" placeholder="Search issues, projects…" aria-label="Search">
+      </div>
+      <div class="spacer"></div>
+      <span class="chip-demo"><span class="dot"></span>Demo</span>
+      <button class="tb-btn" aria-label="Notifications"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg><span class="dot"></span></button>
+      <button class="btn-primary" onclick="openCreate()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg><span>New issue</span></button>
+      <img class="tb-av" src="https://i.pravatar.cc/150?img=12" alt="Alex Bauer" onerror="this.remove()">
+    </header>
+
+    <div class="content">
+
+      <!-- ===== BOARD ===== -->
+      <section class="view active" id="view-board">
+        <div class="board-bar">
+          <div class="seg">
+            <button class="on">Board</button>
+            <button onclick="go('issues')">List</button>
+          </div>
+          <button class="filt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 4h18l-7 8v6l-4 2v-8z"/></svg>Filter</button>
+          <button class="filt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M7 12h10M11 18h2"/></svg>Group: Status</button>
+          <div class="spacer"></div>
+          <div class="avstack" id="boardTeam"></div>
+        </div>
+        <div class="board" id="board"></div>
+      </section>
+
+      <!-- ===== ISSUES ===== -->
+      <section class="view" id="view-issues">
+        <div class="board-bar">
+          <button class="filt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v4"/></svg>All statuses</button>
+          <button class="filt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 4h18l-7 8v6l-4 2v-8z"/></svg>Priority</button>
+          <button class="filt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="3.5"/><path d="M5 20a7 7 0 0 1 14 0"/></svg>Assignee</button>
+          <div class="spacer"></div>
+          <span class="page-sub" id="issuesCount" style="display:inline"></span>
+        </div>
+        <div class="panel">
+          <div class="scrollx">
+            <table style="min-width:680px">
+              <thead><tr><th>Key</th><th>Title</th><th>Status</th><th>Priority</th><th>Assignee</th><th>Points</th><th>Sprint</th></tr></thead>
+              <tbody id="issuesBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== SPRINTS ===== -->
+      <section class="view" id="view-sprints">
+        <div class="sprint-hd">
+          <div class="row1">
+            <div>
+              <h2 class="disp">Sprint 24 · Mobile App</h2>
+              <div class="meta">Jun 9 – Jun 23, 2026 · Goal: ship onboarding revamp & OAuth fixes</div>
+            </div>
+            <div class="daysleft">
+              <div class="n disp">6</div>
+              <div class="l">days left</div>
+            </div>
+          </div>
+          <div class="pbar"><i style="width:64%"></i></div>
+          <div class="pbar-l"><span>64% complete · 41 of 64 points</span><span>23 points remaining</span></div>
+          <div class="sprint-stats">
+            <div class="ss"><div class="n disp">18</div><div class="l">Issues done</div></div>
+            <div class="ss"><div class="n disp">5</div><div class="l">In progress</div></div>
+            <div class="ss"><div class="n disp">3</div><div class="l">In review</div></div>
+            <div class="ss"><div class="n disp" style="color:var(--green)">+12%</div><div class="l">vs last velocity</div></div>
+          </div>
+        </div>
+
+        <div class="chart-card" style="margin-bottom:18px">
+          <h3>Sprint burndown</h3>
+          <div class="sub">Remaining story points vs. the ideal trajectory</div>
+          <div id="burndown"></div>
+          <div class="legend">
+            <span><i style="background:var(--brand)"></i>Actual remaining</span>
+            <span><i style="background:#C9CCD3"></i>Ideal burndown</span>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head"><h3>Sprint 24 issues</h3><span class="sub" id="sprintCount"></span></div>
+          <div class="scrollx">
+            <table style="min-width:620px">
+              <thead><tr><th>Key</th><th>Title</th><th>Status</th><th>Assignee</th><th>Points</th></tr></thead>
+              <tbody id="sprintBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== DASHBOARD ===== -->
+      <section class="view" id="view-dash">
+        <div class="kpi-row" id="kpis"></div>
+        <div class="grid-2">
+          <div class="chart-card">
+            <h3>Velocity by sprint</h3>
+            <div class="sub">Completed story points across the last 6 sprints</div>
+            <div id="velocity"></div>
+          </div>
+          <div class="chart-card">
+            <h3>Issues by status</h3>
+            <div class="sub">Distribution across the active workflow</div>
+            <div class="donut-wrap">
+              <div style="position:relative;width:170px;height:170px;flex:none">
+                <div id="donut"></div>
+                <div class="donut-center"><div class="n disp" id="donutTotal">0</div><div class="l">issues</div></div>
+              </div>
+              <div class="legend" id="donutLegend" style="flex-direction:column;align-items:flex-start;gap:9px;margin:0"></div>
+            </div>
+          </div>
+        </div>
+        <div class="grid-2b">
+          <div class="chart-card">
+            <h3>Team workload</h3>
+            <div class="sub">Active story points per team member</div>
+            <div id="workload" style="margin-top:6px"></div>
+          </div>
+          <div class="chart-card">
+            <h3>Cycle time trend</h3>
+            <div class="sub">Average days from start to done (lower is better)</div>
+            <div id="cycle"></div>
+            <div class="legend"><span><i style="background:var(--violet)"></i>Avg cycle time (days)</span></div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</div>
+
+<!-- DRAWER -->
+<div class="drawer-ov" id="drov" onclick="closeDrawer()"></div>
+<aside class="drawer" id="drawer">
+  <div class="dr-head">
+    <span class="key" id="drKey">STR-000</span>
+    <button class="gh" aria-label="Subscribe"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/></svg></button>
+    <button class="gh" aria-label="More"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg></button>
+    <button class="x" onclick="closeDrawer()" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+  </div>
+  <div class="dr-body" id="drBody"></div>
+</aside>
+
+<!-- SIDEBAR OVERLAY -->
+<div class="sb-ov" id="sbov" onclick="toggleSide()"></div>
+
+<script>
+/* ---------------- Seed data ---------------- */
+const TEAM = [
+  {id:'al', name:'Alex Bauer',   role:'Product Lead',   img:13, init:'AB'},
+  {id:'mj', name:'Maya Jensen',  role:'Frontend',       img:5,  init:'MJ'},
+  {id:'rk', name:'Ravi Kapoor',  role:'Backend',        img:33, init:'RK'},
+  {id:'so', name:'Sofia Olsen',  role:'Design',         img:9,  init:'SO'},
+  {id:'tn', name:'Tom Nguyen',   role:'iOS',            img:11, init:'TN'},
+  {id:'eg', name:'Elena Gross',  role:'QA',             img:25, init:'EG'},
+  {id:'lc', name:'Luca Conti',   role:'Backend',        img:60, init:'LC'},
+];
+const T = Object.fromEntries(TEAM.map(t=>[t.id,t]));
+
+const STATUS = {
+  backlog:{name:'Backlog',     color:'#9A9BA6', sdot:'#C2C4CC'},
+  todo:   {name:'Todo',        color:'#71727F', sdot:'#9A9BA6'},
+  prog:   {name:'In Progress', color:'#D97706', sdot:'#F59E0B'},
+  review: {name:'In Review',   color:'#6366F1', sdot:'#818CF8'},
+  done:   {name:'Done',        color:'#16A34A', sdot:'#22C55E'},
+};
+const PRI = {
+  urgent:{name:'Urgent', color:'#DC2626'},
+  high:  {name:'High',   color:'#F97316'},
+  med:   {name:'Medium', color:'#0EA5E9'},
+  low:   {name:'Low',    color:'#9A9BA6'},
+};
+const TAGS = {
+  bug:     {t:'Bug',      bg:'#FEE2E2', fg:'#B91C1C'},
+  feature: {t:'Feature',  bg:'#E0F2FE', fg:'#0369A1'},
+  design:  {t:'Design',   bg:'#EEF0FF', fg:'#4338CA'},
+  infra:   {t:'Infra',    bg:'#DCFCE7', fg:'#15803D'},
+  chore:   {t:'Chore',    bg:'#F3F4F6', fg:'#4B5563'},
+  perf:    {t:'Perf',     bg:'#FEF3C7', fg:'#B45309'},
+};
+
+let nextId = 100;
+function mk(title, status, pri, tag, pts, assignee, sprint, desc, subs, labels){
+  nextId++;
+  return {key:'STR-'+nextId, title, status, pri, tag, pts, assignee, sprint:sprint||'S24',
+    desc: desc || 'Investigate and resolve the reported behavior. Confirm acceptance criteria with the design spec, add regression coverage, and verify across supported devices before moving to review.',
+    subs: subs || [['Reproduce on staging',true],['Implement fix',false],['Add unit tests',false]],
+    labels: labels || ['mobile','sprint-24']};
+}
+
+const ISSUES = [
+  mk('Fix OAuth token refresh loop on session expiry','prog','urgent','bug',5,'rk','S24',
+     'Users with sessions older than 60 minutes are caught in a refresh loop because the refresh token is rotated but the client keeps the stale one. We need to persist the rotated token atomically and back off on 401 responses.',
+     [['Reproduce with expired session',true],['Patch token storage layer',true],['Add exponential backoff',false],['Verify on Android & iOS',false]],
+     ['auth','mobile','critical']),
+  mk('Dark mode for the settings screen','prog','med','design',3,'so','S24',
+     'Bring the settings screen in line with the new dark theme tokens. Audit contrast ratios for all toggle states and ensure the system-preference switch persists.',
+     [['Map color tokens',true],['Update toggle components',false],['Contrast audit (WCAG AA)',false]],
+     ['design','dark-mode']),
+  mk('Onboarding: redesign the welcome carousel','prog','high','feature',8,'mj','S24',
+     'Replace the three static onboarding slides with an interactive carousel that highlights the new collaboration features and adds a skip affordance.',
+     [['Build carousel component',true],['Wire analytics events',true],['Localize copy (DE, FR)',false],['A/B variant flag',false]],
+     ['onboarding','growth']),
+  mk('Push notifications dropped on Android 14','review','urgent','bug',5,'tn','S24',
+     'A subset of Android 14 devices stop receiving push after the app is backgrounded for >12h. Likely tied to the new exact-alarm permissions.',
+     [['Audit FCM token lifecycle',true],['Handle permission revocation',true],['QA on Pixel & Samsung',true],['Ship behind flag',false]],
+     ['android','notifications']),
+  mk('Profile avatar upload fails over cellular','todo','high','bug',3,'rk','S24'),
+  mk('Add haptic feedback to swipe actions','todo','low','feature',2,'tn','S24',
+     'Light haptic taps when a user completes a swipe-to-archive gesture, respecting the reduce-motion setting.'),
+  mk('Cache invalidation after profile edit','review','med','infra',3,'lc','S24'),
+  mk('Empty state illustrations for inbox','done','low','design',2,'so','S24'),
+  mk('Migrate analytics SDK to v4','prog','med','chore',5,'lc','S24',
+     'Upgrade the analytics SDK to v4 to unblock the new event schema. Verify no PII leaks in the new auto-capture defaults.'),
+  mk('Reduce cold-start time below 1.5s','todo','high','perf',8,'mj','S24',
+     'Cold start currently averages 2.3s on mid-tier Android. Defer non-critical initializers and lazy-load the feed module.'),
+  mk('Crash on rapid tab switching','prog','urgent','bug',3,'tn','S24'),
+  mk('Inline error messages on the sign-up form','todo','med','feature',3,'mj','S24'),
+  mk('Search debounce sends duplicate requests','review','med','bug',2,'rk','S24'),
+  mk('Accessibility: focus order on checkout','todo','high','design',5,'so','S24'),
+  mk('Document the new webhook payloads','backlog','low','chore',2,'lc','S25'),
+  mk('Skeleton loaders for the activity feed','done','med','feature',3,'mj','S24'),
+  mk('Rate-limit the comments endpoint','done','high','infra',5,'lc','S24'),
+  mk('Fix layout shift on the pricing page','done','med','bug',2,'so','S24'),
+  mk('Add biometric unlock option','backlog','med','feature',8,'tn','S25'),
+  mk('Offline draft sync for messages','backlog','high','feature',13,'rk','S25'),
+  mk('Telemetry dashboard for crash-free rate','backlog','low','infra',5,'lc','S25'),
+  mk('Localize date formats for EU locales','todo','low','chore',2,'mj','S24'),
+  mk('Pull-to-refresh stutters on long lists','prog','med','perf',3,'tn','S24'),
+  mk('Two-factor auth via authenticator app','backlog','high','feature',8,'rk','S25'),
+  mk('Redesign the empty cart screen','done','low','design',2,'so','S24'),
+  mk('Token expiry banner copy review','done','low','chore',1,'al','S24'),
+];
+
+/* activity timeline (shared sample) */
+const ACTIVITY = [
+  {who:'Maya Jensen', txt:'moved this to <b>In Progress</b>', when:'2 hours ago', b:true},
+  {who:'Ravi Kapoor', txt:'commented: “Repro confirmed on staging build 482.”', when:'5 hours ago'},
+  {who:'Alex Bauer', txt:'set priority to <b>Urgent</b>', when:'Yesterday'},
+  {who:'Sofia Olsen', txt:'attached <b>spec-v2.fig</b>', when:'2 days ago'},
+  {who:'System', txt:'linked to <b>Sprint 24</b>', when:'3 days ago'},
+];
+
+/* ---------------- Helpers ---------------- */
+function av(tid, cls){
+  const t = T[tid];
+  return `<img class="${cls}" src="https://i.pravatar.cc/150?img=${t.img}" alt="${t.name}" title="${t.name}" onerror="this.outerHTML='<div class=\\'${cls} ph\\'>${t.init}</div>'">`;
+}
+function priIcon(p){
+  const c = PRI[p].color;
+  if(p==='urgent') return `<svg viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2.4"><path d="M12 2 2 21h20z"/><path d="M12 9v5M12 17h.01" stroke="#fff" stroke-width="2"/></svg>`;
+  if(p==='low')    return `<svg viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2.4"><path d="M5 13h3v6H5zM10.5 9h3v10h-3z" opacity=".35"/><path d="M16 5h3v14h-3z"/></svg>`;
+  return `<svg viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2.4"><path d="M5 13h3v6H5z"/><path d="M10.5 9h3v10h-3z"/><path d="M16 5h3v14h-3z" opacity="${p==='high'?1:.35}"/></svg>`;
+}
+
+/* ---------------- Board ---------------- */
+function renderBoard(){
+  const board = document.getElementById('board');
+  board.innerHTML = '';
+  Object.entries(STATUS).forEach(([sk, s])=>{
+    const items = ISSUES.filter(i=>i.status===sk);
+    const col = document.createElement('div');
+    col.className = 'col';
+    col.innerHTML = `<div class="col-head"><span class="sdot" style="background:${s.sdot}"></span>
+        <span class="ct">${s.name}</span><span class="cn">${items.length}</span>
+        <button class="add" aria-label="Add"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg></button></div>
+      <div class="col-body">${items.map(cardHTML).join('') || '<div style="font-size:12px;color:var(--faint);padding:14px 4px">No issues</div>'}</div>`;
+    board.appendChild(col);
+  });
+  // team avatars
+  const tm = document.getElementById('boardTeam');
+  tm.innerHTML = TEAM.slice(0,5).map(t=>av(t.id,'')).join('') +
+    `<div class="ph" style="width:28px;height:28px;border-radius:50%;border:2px solid #fff;margin-left:-8px;background:var(--gray-soft);color:var(--muted)">+2</div>`;
+}
+function cardHTML(i){
+  const tag = TAGS[i.tag];
+  return `<div class="card" onclick="openIssue('${i.key}')">
+    <div class="ctop"><span class="pdot" style="background:${PRI[i.pri].color}" title="${PRI[i.pri].name}"></span>
+      <span class="key">${i.key}</span></div>
+    <div class="ttl">${i.title}</div>
+    <div class="cbot">
+      <span class="tag" style="background:${tag.bg};color:${tag.fg}">${tag.t}</span>
+      <span class="pts"><svg width="11" height="11" viewBox="0 0 24 24" fill="${PRI[i.pri].color}"><circle cx="12" cy="12" r="9"/></svg>${i.pts}</span>
+      ${av(i.assignee,'cav')}
+    </div>
+  </div>`;
+}
+
+/* ---------------- Issues table ---------------- */
+function stPill(sk){
+  const s = STATUS[sk];
+  return `<span class="st-pill" style="background:${s.color}1A;color:${s.color}"><span class="d" style="background:${s.sdot}"></span>${s.name}</span>`;
+}
+function renderIssues(){
+  const body = document.getElementById('issuesBody');
+  body.innerHTML = ISSUES.map(i=>`
+    <tr onclick="openIssue('${i.key}')">
+      <td class="tkey">${i.key}</td>
+      <td class="ttl-cell">${i.title}</td>
+      <td>${stPill(i.status)}</td>
+      <td><span class="pri">${priIcon(i.pri)}${PRI[i.pri].name}</span></td>
+      <td><span class="cell-av">${av(i.assignee,'')}${T[i.assignee].name.split(' ')[0]}</span></td>
+      <td><span class="pts">${i.pts}</span></td>
+      <td style="color:var(--muted);font-weight:500">${i.sprint==='S24'?'Sprint 24':'Sprint 25'}</td>
+    </tr>`).join('');
+  document.getElementById('issuesCount').textContent = ISSUES.length + ' issues · 7 assignees';
+}
+
+/* ---------------- Sprint ---------------- */
+function renderSprint(){
+  const items = ISSUES.filter(i=>i.sprint==='S24');
+  document.getElementById('sprintBody').innerHTML = items.slice(0,12).map(i=>`
+    <tr onclick="openIssue('${i.key}')">
+      <td class="tkey">${i.key}</td>
+      <td class="ttl-cell">${i.title}</td>
+      <td>${stPill(i.status)}</td>
+      <td><span class="cell-av">${av(i.assignee,'')}${T[i.assignee].name.split(' ')[0]}</span></td>
+      <td><span class="pts">${i.pts}</span></td>
+    </tr>`).join('');
+  document.getElementById('sprintCount').textContent = items.length + ' issues · 64 points';
+  renderBurndown();
+}
+function renderBurndown(){
+  const W=720, H=240, pl=44, pr=16, pt=18, pb=30;
+  const total=64, days=10;
+  const ideal = Array.from({length:days+1},(_,d)=> total - total*d/days);
+  const actual = [64,64,59,52,50,43,41,null,null,null,null]; // today at day 6 -> 23 left
+  const actualReal = [64,62,58,53,49,44,41,33,23,null,null];
+  const xs = d => pl + d*(W-pl-pr)/days;
+  const ys = v => pt + (1 - v/total)*(H-pt-pb);
+  let grid='';
+  for(let v=0; v<=total; v+=16){ const y=ys(v); grid+=`<line x1="${pl}" y1="${y}" x2="${W-pr}" y2="${y}" stroke="#EEF0F3"/><text x="${pl-9}" y="${y+4}" text-anchor="end" font-size="11" fill="#9A9BA6">${v}</text>`; }
+  let xl=''; for(let d=0; d<=days; d+=2){ xl+=`<text x="${xs(d)}" y="${H-9}" text-anchor="middle" font-size="11" fill="#9A9BA6">D${d}</text>`; }
+  const idealPts = ideal.map((v,d)=>`${xs(d)},${ys(v)}`).join(' ');
+  const actPts = actualReal.map((v,d)=> v==null?null:`${xs(d)},${ys(v)}`).filter(Boolean);
+  const lastIdx = actualReal.findIndex(v=>v==null);
+  const dots = actualReal.map((v,d)=> v==null?'':`<circle cx="${xs(d)}" cy="${ys(v)}" r="3.5" fill="#fff" stroke="#0EA5E9" stroke-width="2.2"/>`).join('');
+  // area under actual
+  const areaPts = actPts.join(' ');
+  const areaPoly = `${pl},${ys(0)} ${areaPts} ${xs(lastIdx-1)},${ys(0)}`;
+  document.getElementById('burndown').innerHTML = `
+  <svg viewBox="0 0 ${W} ${H}" width="100%" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Sprint burndown chart">
+    <defs><linearGradient id="bgrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0EA5E9" stop-opacity=".18"/><stop offset="1" stop-color="#0EA5E9" stop-opacity="0"/></linearGradient></defs>
+    ${grid}${xl}
+    <polyline points="${idealPts}" fill="none" stroke="#C9CCD3" stroke-width="2" stroke-dasharray="5 5"/>
+    <polygon points="${areaPoly}" fill="url(#bgrad)"/>
+    <polyline points="${areaPts}" fill="none" stroke="#0EA5E9" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"/>
+    ${dots}
+    <line x1="${xs(lastIdx-1)}" y1="${pt}" x2="${xs(lastIdx-1)}" y2="${H-pb}" stroke="#191A23" stroke-width="1" stroke-dasharray="3 3" opacity=".35"/>
+    <text x="${xs(lastIdx-1)}" y="${pt+2}" text-anchor="middle" font-size="10.5" fill="#191A23" font-weight="600">Today</text>
+  </svg>`;
+}
+
+/* ---------------- Dashboard ---------------- */
+function renderDash(){
+  // KPIs
+  const done = ISSUES.filter(i=>i.status==='done').length;
+  const open = ISSUES.length - done;
+  const kpis = [
+    {l:'Open issues', n:open, d:'+4', dir:'up', dl:'this week', c:'#0EA5E9', bg:'#E0F2FE', ic:'<circle cx="12" cy="12" r="9"/><path d="M12 8v4"/>'},
+    {l:'Completed (sprint)', n:18, d:'+12%', dir:'up', dl:'vs last sprint', c:'#16A34A', bg:'#DCFCE7', ic:'<path d="M20 6 9 17l-5-5"/>'},
+    {l:'Velocity (avg)', n:'52', d:'+6', dir:'up', dl:'pts / sprint', c:'#6366F1', bg:'#EEF0FF', ic:'<path d="M13 2 3 14h8l-1 8 10-12h-8z"/>'},
+    {l:'Cycle time', n:'3.4d', d:'-0.6d', dir:'up', dl:'faster', c:'#D97706', bg:'#FEF3C7', ic:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'},
+  ];
+  document.getElementById('kpis').innerHTML = kpis.map(k=>`
+    <div class="kpi">
+      <div class="lab"><span class="ki" style="background:${k.bg}"><svg viewBox="0 0 24 24" fill="none" stroke="${k.c}" stroke-width="2">${k.ic}</svg></span>${k.l}</div>
+      <div class="num">${k.n}</div>
+      <div class="delta ${k.dir}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M7 17 17 7M9 7h8v8"/></svg>${k.d} <span class="nrm">${k.dl}</span></div>
+    </div>`).join('');
+
+  renderVelocity();
+  renderDonut();
+  renderWorkload();
+  renderCycle();
+}
+function renderVelocity(){
+  const data = [{s:'S19',v:38},{s:'S20',v:45},{s:'S21',v:42},{s:'S22',v:51},{s:'S23',v:47},{s:'S24',v:52,cur:true}];
+  const W=460,H=220,pl=34,padB=30,padT=14; const max=60;
+  const bw=(W-pl)/(data.length)*0.56; const gap=(W-pl)/data.length;
+  let grid=''; for(let v=0; v<=max; v+=15){ const y=padT+(1-v/max)*(H-padT-padB); grid+=`<line x1="${pl}" y1="${y}" x2="${W}" y2="${y}" stroke="#EEF0F3"/><text x="${pl-7}" y="${y+4}" text-anchor="end" font-size="11" fill="#9A9BA6">${v}</text>`; }
+  const bars=data.map((d,i)=>{
+    const x=pl+i*gap+(gap-bw)/2;
+    const h=(d.v/max)*(H-padT-padB); const y=padT+(H-padT-padB)-h;
+    const fill=d.cur?'#0EA5E9':'#BAE6FD';
+    return `<rect x="${x}" y="${y}" width="${bw}" height="${h}" rx="6" fill="${fill}"/>
+      <text x="${x+bw/2}" y="${y-7}" text-anchor="middle" font-size="11.5" font-weight="600" fill="${d.cur?'#0284C7':'#71727F'}">${d.v}</text>
+      <text x="${x+bw/2}" y="${H-9}" text-anchor="middle" font-size="11" fill="#9A9BA6">${d.s}</text>`;
+  }).join('');
+  document.getElementById('velocity').innerHTML = `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Velocity by sprint bar chart">${grid}${bars}</svg>`;
+}
+function renderDonut(){
+  const counts = {};
+  Object.keys(STATUS).forEach(k=> counts[k]=ISSUES.filter(i=>i.status===k).length);
+  const total = ISSUES.length;
+  document.getElementById('donutTotal').textContent = total;
+  const cx=85,cy=85,r=62,sw=22, C=2*Math.PI*r;
+  let off=0, segs='';
+  Object.entries(STATUS).forEach(([k,s])=>{
+    const frac=counts[k]/total; const len=frac*C;
+    segs+=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${s.sdot}" stroke-width="${sw}" stroke-dasharray="${len} ${C-len}" stroke-dashoffset="${-off}" transform="rotate(-90 ${cx} ${cy})" stroke-linecap="butt"/>`;
+    off+=len;
+  });
+  document.getElementById('donut').innerHTML = `<svg viewBox="0 0 170 170" width="170" height="170">${segs}</svg>`;
+  document.getElementById('donutLegend').innerHTML = Object.entries(STATUS).map(([k,s])=>
+    `<span><i style="background:${s.sdot}"></i>${s.name} <b style="margin-left:4px;color:var(--ink)">${counts[k]}</b></span>`).join('');
+}
+function renderWorkload(){
+  const load = TEAM.map(t=>{
+    const pts = ISSUES.filter(i=>i.assignee===t.id && i.status!=='done').reduce((a,i)=>a+i.pts,0);
+    return {t, pts};
+  }).filter(x=>x.pts>0).sort((a,b)=>b.pts-a.pts);
+  const max = Math.max(...load.map(l=>l.pts));
+  document.getElementById('workload').innerHTML = load.map(l=>{
+    const pct = Math.round(l.pts/max*100);
+    const over = l.pts>=13;
+    return `<div class="wl-row">${av(l.t.id,'')}
+      <div class="nm">${l.t.name.split(' ')[0]}<small>${l.t.role}</small></div>
+      <div class="wl-bar"><i style="width:${pct}%;background:${over?'#F97316':'var(--grad)'}"></i></div>
+      <div class="v" style="color:${over?'#C2410C':'var(--ink)'}">${l.pts} pts</div></div>`;
+  }).join('');
+}
+function renderCycle(){
+  const data=[5.1,4.6,4.8,4.0,3.7,3.4];
+  const labels=['Jan','Feb','Mar','Apr','May','Jun'];
+  const W=460,H=200,pl=30,pr=14,pt=16,pb=28; const max=6,min=2;
+  const xs=i=>pl+i*(W-pl-pr)/(data.length-1);
+  const ys=v=>pt+(1-(v-min)/(max-min))*(H-pt-pb);
+  let grid=''; for(let v=2; v<=6; v+=1){ const y=ys(v); grid+=`<line x1="${pl}" y1="${y}" x2="${W-pr}" y2="${y}" stroke="#EEF0F3"/><text x="${pl-6}" y="${y+4}" text-anchor="end" font-size="10.5" fill="#9A9BA6">${v}</text>`; }
+  let xl=''; labels.forEach((l,i)=> xl+=`<text x="${xs(i)}" y="${H-8}" text-anchor="middle" font-size="10.5" fill="#9A9BA6">${l}</text>`);
+  const pts=data.map((v,i)=>`${xs(i)},${ys(v)}`).join(' ');
+  const area=`${pl},${ys(min)} ${pts} ${W-pr},${ys(min)}`;
+  const dots=data.map((v,i)=>`<circle cx="${xs(i)}" cy="${ys(v)}" r="3.4" fill="#fff" stroke="#6366F1" stroke-width="2.2"/>`).join('');
+  document.getElementById('cycle').innerHTML=`<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Cycle time trend line chart">
+    <defs><linearGradient id="cgrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6366F1" stop-opacity=".16"/><stop offset="1" stop-color="#6366F1" stop-opacity="0"/></linearGradient></defs>
+    ${grid}${xl}<polygon points="${area}" fill="url(#cgrad)"/>
+    <polyline points="${pts}" fill="none" stroke="#6366F1" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"/>${dots}</svg>`;
+}
+
+/* ---------------- Drawer ---------------- */
+function openIssue(key){
+  const i = ISSUES.find(x=>x.key===key);
+  if(!i) return;
+  const tag = TAGS[i.tag];
+  const doneSubs = i.subs.filter(s=>s[1]).length;
+  document.getElementById('drKey').textContent = i.key;
+  document.getElementById('drBody').innerHTML = `
+    <h2>${i.title}</h2>
+    <div class="dr-meta">
+      <span class="k">Status</span><span class="v">${stPill(i.status)}</span>
+      <span class="k">Priority</span><span class="v"><span class="pri">${priIcon(i.pri)}${PRI[i.pri].name}</span></span>
+      <span class="k">Assignee</span><span class="v">${av(i.assignee,'')}${T[i.assignee].name}</span>
+      <span class="k">Story points</span><span class="v">${i.pts}</span>
+      <span class="k">Sprint</span><span class="v">${i.sprint==='S24'?'Sprint 24':'Sprint 25'}</span>
+      <span class="k">Type</span><span class="v"><span class="tag" style="background:${tag.bg};color:${tag.fg}">${tag.t}</span></span>
+    </div>
+    <div class="sec-t">Description</div>
+    <div class="dr-desc">${i.desc}</div>
+
+    <div class="sec-t">Sub-tasks <span class="cnt">${doneSubs}/${i.subs.length}</span></div>
+    <div id="drSubs" style="margin-bottom:24px">
+      ${i.subs.map((s,idx)=>`<div class="subtask ${s[1]?'is-done':''}" onclick="toggleSub(event,'${i.key}',${idx})">
+        <span class="cb ${s[1]?'done':''}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4"><path d="M20 6 9 17l-5-5"/></svg></span>
+        <span class="stx">${s[0]}</span></div>`).join('')}
+    </div>
+
+    <div class="sec-t">Labels</div>
+    <div class="lbls">${i.labels.map(l=>`<span class="tag" style="background:var(--gray-soft);color:var(--ink-2)">#${l}</span>`).join('')}</div>
+
+    <div class="sec-t">Activity</div>
+    <div class="activity">
+      ${ACTIVITY.map((a,idx)=>`<div class="act">
+        <span class="adot ${idx===0?'b':''}">${idx===0?'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12h14"/></svg>':''}</span>
+        <div class="atx"><b>${a.who}</b> ${a.txt}</div>
+        <div class="atm">${a.when}</div></div>`).join('')}
+    </div>`;
+  document.getElementById('drawer').classList.add('open');
+  document.getElementById('drov').classList.add('open');
+}
+function toggleSub(e, key, idx){
+  if(e) e.stopPropagation();
+  const i = ISSUES.find(x=>x.key===key);
+  i.subs[idx][1] = !i.subs[idx][1];
+  openIssue(key);
+}
+function closeDrawer(){
+  document.getElementById('drawer').classList.remove('open');
+  document.getElementById('drov').classList.remove('open');
+}
+function openCreate(){
+  // demo: open the top in-progress issue as a stand-in for a creation flow
+  openIssue('STR-101');
+}
+
+/* ---------------- Navigation ---------------- */
+const TITLES = {
+  board:  ['Board','Mobile App · Sprint 24'],
+  issues: ['Issues','All projects · 68 issues'],
+  sprints:['Sprints','Mobile App · Sprint 24 active'],
+  dash:   ['Dashboard','Team performance · Last 6 sprints'],
+};
+function go(view){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-'+view).classList.add('active');
+  document.querySelectorAll('.nav-item[data-view]').forEach(n=>n.classList.toggle('active', n.dataset.view===view));
+  const [t,s] = TITLES[view] || ['',''];
+  document.getElementById('pageTitle').textContent = t;
+  document.getElementById('pageSub').textContent = s;
+  // close sidebar on mobile
+  document.getElementById('sb').classList.remove('open');
+  document.getElementById('sbov').classList.remove('open');
+  document.querySelector('.content').scrollTop = 0;
+}
+function toggleSide(){
+  const s=document.getElementById('sb'), o=document.getElementById('sbov');
+  const op=s.classList.toggle('open');
+  o.classList.toggle('open', op);
+}
+
+/* ---------------- Init ---------------- */
+function render(){
+  renderBoard();
+  renderIssues();
+  renderSprint();
+  renderDash();
+}
+render();
+</script>
+</body>
+</html>

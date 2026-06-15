@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nest — Real Estate Marketplace & Agent CRM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0F2A43; --ink-2:#163955; --gold:#C08A2E; --gold-soft:#E7C887;
+  --cream:#FBF8F2; --ivory:#FFFFFF; --paper:#F4EEE3;
+  --line:#E7DFCF; --line-2:#EFE8DA;
+  --text:#23303B; --muted:#7C8893; --muted-2:#9AA4AD;
+  --green:#2E7D54; --green-bg:#E4F1E9; --amber:#B5751B; --amber-bg:#FBEFD8;
+  --blue:#2D6CB5; --blue-bg:#E5EFFA; --red:#B5413B; --red-bg:#FBE7E5;
+  --shadow:0 1px 2px rgba(15,42,67,.05), 0 8px 24px rgba(15,42,67,.07);
+  --shadow-lg:0 10px 40px rgba(15,42,67,.16);
+  --radius:16px; --radius-sm:11px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--cream);color:var(--text);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+.serif{font-family:'Playfair Display',Georgia,serif}
+img{display:block;max-width:100%}
+button{font-family:inherit}
+::-webkit-scrollbar{width:9px;height:9px}
+::-webkit-scrollbar-thumb{background:#d9cfba;border-radius:8px}
+
+/* ===== Shell ===== */
+.app{display:flex;min-height:100vh}
+.sidebar{width:248px;flex:none;background:var(--ink);color:#E7EDF2;display:flex;flex-direction:column;padding:22px 16px;position:sticky;top:0;height:100vh}
+.brand{display:flex;align-items:center;gap:11px;padding:4px 8px 22px}
+.brand .mark{width:40px;height:40px;border-radius:11px;background:linear-gradient(150deg,var(--gold),#9c6e21);display:flex;align-items:center;justify-content:center;flex:none;box-shadow:0 6px 16px rgba(192,138,46,.4)}
+.brand .mark svg{width:22px;height:22px}
+.brand .name{font-size:22px;font-weight:700;letter-spacing:.3px;color:#fff}
+.brand .tag{font-size:10.5px;color:var(--gold-soft);letter-spacing:2.4px;text-transform:uppercase;margin-top:1px}
+.nav{display:flex;flex-direction:column;gap:3px;margin-top:6px}
+.nav .lbl{font-size:10.5px;letter-spacing:1.6px;text-transform:uppercase;color:#65809a;padding:14px 10px 6px;font-weight:600}
+.nav a{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:11px;color:#C3D0DC;text-decoration:none;font-size:14px;font-weight:500;cursor:pointer;transition:.15s}
+.nav a svg{width:19px;height:19px;flex:none;opacity:.85}
+.nav a:hover{background:rgba(255,255,255,.07);color:#fff}
+.nav a.active{background:linear-gradient(100deg,rgba(192,138,46,.28),rgba(192,138,46,.12));color:#fff}
+.nav a.active svg{opacity:1;color:var(--gold-soft)}
+.side-foot{margin-top:auto;padding:14px 10px 4px;border-top:1px solid rgba(255,255,255,.09);display:flex;align-items:center;gap:11px}
+.side-foot img,.side-foot .ph{width:38px;height:38px;border-radius:50%;flex:none;object-fit:cover;border:2px solid rgba(192,138,46,.5)}
+.side-foot .ph{background:var(--gold);display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:14px}
+.side-foot .nm{font-size:13px;font-weight:600;color:#fff}
+.side-foot .rl{font-size:11.5px;color:#7e97ad}
+
+.main{flex:1;min-width:0;display:flex;flex-direction:column}
+.topbar{position:sticky;top:0;z-index:40;background:rgba(251,248,242,.86);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:14px;padding:14px 26px}
+.burger{display:none;width:38px;height:38px;border-radius:9px;border:1px solid var(--line);background:var(--ivory);align-items:center;justify-content:center;cursor:pointer;flex:none}
+.burger span{display:block;width:17px;height:2px;background:var(--ink);box-shadow:0 -5px 0 var(--ink),0 5px 0 var(--ink)}
+.pagetitle{font-size:21px;font-weight:700;color:var(--ink)}
+.pagetitle small{display:block;font-size:12px;font-weight:500;color:var(--muted);font-family:'Inter';letter-spacing:0}
+.topbar .search{margin-left:8px;flex:1;max-width:380px;position:relative}
+.topbar .search input{width:100%;padding:10px 14px 10px 38px;border:1px solid var(--line);border-radius:11px;background:var(--ivory);font-size:13.5px;color:var(--text)}
+.topbar .search input:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(192,138,46,.13)}
+.topbar .search svg{position:absolute;left:12px;top:11px;width:17px;height:17px;color:var(--muted)}
+.spacer{flex:1}
+.chip{font-size:11.5px;font-weight:700;letter-spacing:.6px;color:var(--gold);background:#fff;border:1px solid var(--gold-soft);padding:6px 12px;border-radius:30px;display:flex;align-items:center;gap:6px}
+.chip i{width:7px;height:7px;border-radius:50%;background:var(--gold);display:block}
+.ticon{width:39px;height:39px;border-radius:10px;border:1px solid var(--line);background:var(--ivory);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--ink)}
+.ticon:hover{border-color:var(--gold)}
+.ticon svg{width:18px;height:18px}
+.topbar .av{width:39px;height:39px;border-radius:50%;object-fit:cover;border:2px solid var(--gold-soft)}
+
+.content{padding:26px;max-width:1340px;width:100%;margin:0 auto}
+.view{display:none;animation:fade .3s ease}
+.view.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* ===== Bits ===== */
+.badge{font-size:11px;font-weight:700;padding:4px 10px;border-radius:30px;letter-spacing:.3px;display:inline-flex;align-items:center;gap:5px}
+.b-sale{background:var(--blue-bg);color:var(--blue)}
+.b-new{background:var(--green-bg);color:var(--green)}
+.b-pend{background:var(--amber-bg);color:var(--amber)}
+.b-sold{background:#EEE7DA;color:#7a6a4d}
+.sec-head{display:flex;align-items:center;justify-content:space-between;margin:0 0 16px}
+.sec-head h2{font-size:24px;font-weight:700;color:var(--ink)}
+.sec-head p{font-size:13px;color:var(--muted);margin-top:2px}
+.btn{padding:10px 18px;border-radius:11px;border:1px solid var(--line);background:var(--ivory);font-weight:600;font-size:13.5px;cursor:pointer;color:var(--ink);transition:.15s;display:inline-flex;align-items:center;gap:8px}
+.btn:hover{border-color:var(--gold);box-shadow:var(--shadow)}
+.btn svg{width:16px;height:16px}
+.btn-gold{background:linear-gradient(150deg,var(--gold),#a8761f);color:#fff;border:none}
+.btn-gold:hover{box-shadow:0 8px 20px rgba(192,138,46,.35)}
+
+/* ===== Listings ===== */
+.filterbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;background:var(--ivory);border:1px solid var(--line);border-radius:14px;padding:13px 16px;margin-bottom:22px;box-shadow:var(--shadow)}
+.filterbar .loc{display:flex;align-items:center;gap:8px;flex:1;min-width:180px}
+.filterbar .loc svg{width:18px;height:18px;color:var(--gold)}
+.filterbar .loc input{border:none;font-size:14px;font-weight:500;width:100%;color:var(--ink);background:none}
+.filterbar .loc input:focus{outline:none}
+.filterbar select{border:1px solid var(--line);background:var(--cream);border-radius:10px;padding:9px 12px;font-size:13px;font-weight:500;color:var(--text);cursor:pointer;font-family:inherit}
+.filterbar select:focus{outline:none;border-color:var(--gold)}
+.divid{width:1px;height:26px;background:var(--line)}
+.results-meta{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;font-size:13px;color:var(--muted)}
+.results-meta b{color:var(--ink);font-weight:700}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:22px}
+.pcard{background:var(--ivory);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;cursor:pointer;transition:.22s;box-shadow:var(--shadow)}
+.pcard:hover{transform:translateY(-6px);box-shadow:var(--shadow-lg);border-color:var(--gold-soft)}
+.pcard .ph{position:relative;height:208px;overflow:hidden;background:var(--paper)}
+.pcard .ph img{width:100%;height:100%;object-fit:cover;transition:.4s}
+.pcard:hover .ph img{transform:scale(1.06)}
+.pcard .ph .top{position:absolute;top:12px;left:12px;right:12px;display:flex;justify-content:space-between;align-items:flex-start}
+.pcard .ph .fav{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.92);display:flex;align-items:center;justify-content:center;color:var(--ink)}
+.pcard .ph .fav svg{width:17px;height:17px}
+.pcard .body{padding:16px 17px 18px}
+.pcard .price{font-size:23px;font-weight:700;color:var(--ink);font-family:'Playfair Display';letter-spacing:.2px}
+.pcard .specs{display:flex;gap:14px;margin:10px 0;font-size:12.5px;color:var(--muted);font-weight:500}
+.pcard .specs span{display:flex;align-items:center;gap:5px}
+.pcard .specs svg{width:15px;height:15px;color:var(--gold)}
+.pcard .addr{font-size:13px;color:var(--text);font-weight:500;display:flex;align-items:center;gap:6px}
+.pcard .addr svg{width:14px;height:14px;color:var(--muted-2);flex:none}
+.pcard .agent{margin-top:13px;padding-top:13px;border-top:1px solid var(--line-2);display:flex;align-items:center;gap:9px}
+.pcard .agent img,.pcard .agent .ph2{width:28px;height:28px;border-radius:50%;object-fit:cover}
+.pcard .agent .ph2{background:var(--ink);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
+.pcard .agent .an{font-size:12px;color:var(--muted);font-weight:500}
+.pcard .agent .an b{color:var(--text)}
+
+/* ===== Property detail ===== */
+.detail-back{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:600;color:var(--gold);cursor:pointer;margin-bottom:16px;border:none;background:none}
+.detail-back svg{width:16px;height:16px}
+.detail-wrap{display:grid;grid-template-columns:1.65fr 1fr;gap:26px;align-items:start}
+.gallery .hero{border-radius:var(--radius);overflow:hidden;height:380px;background:var(--paper);box-shadow:var(--shadow)}
+.gallery .hero img{width:100%;height:100%;object-fit:cover}
+.thumbs{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:12px}
+.thumbs img{height:84px;width:100%;object-fit:cover;border-radius:10px;cursor:pointer;border:2px solid transparent;transition:.15s}
+.thumbs img:hover,.thumbs img.sel{border-color:var(--gold)}
+.dcard{background:var(--ivory);border:1px solid var(--line);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow);margin-bottom:20px}
+.d-price{font-size:34px;font-weight:700;color:var(--ink);font-family:'Playfair Display'}
+.d-addr{font-size:14px;color:var(--muted);margin-top:4px;display:flex;align-items:center;gap:6px}
+.d-addr svg{width:16px;height:16px;color:var(--gold)}
+.specrow{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:18px}
+.specrow .sp{background:var(--cream);border-radius:11px;padding:12px;text-align:center}
+.specrow .sp .v{font-size:19px;font-weight:700;color:var(--ink);font-family:'Playfair Display'}
+.specrow .sp .l{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-top:2px;font-weight:600}
+.desc{font-size:13.5px;line-height:1.75;color:#475560;margin-top:18px}
+.feat-list{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.feat-list span{font-size:12px;font-weight:600;color:var(--ink);background:var(--paper);border-radius:8px;padding:6px 11px;display:flex;align-items:center;gap:6px}
+.feat-list svg{width:14px;height:14px;color:var(--gold)}
+.agent-card{display:flex;align-items:center;gap:14px;margin-bottom:16px}
+.agent-card img,.agent-card .ph3{width:58px;height:58px;border-radius:50%;object-fit:cover;border:2px solid var(--gold-soft);flex:none}
+.agent-card .ph3{background:var(--ink);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px}
+.agent-card .nm{font-size:16px;font-weight:700;color:var(--ink)}
+.agent-card .rl{font-size:12.5px;color:var(--muted)}
+.agent-card .stars{color:var(--gold);font-size:13px;margin-top:3px;letter-spacing:1px}
+.map-box{margin-top:6px;border-radius:13px;overflow:hidden;border:1px solid var(--line);background:#EAF1EC}
+.map-box .cap{font-size:11px;font-weight:600;color:var(--muted);padding:9px 13px;background:var(--ivory);border-top:1px solid var(--line);display:flex;align-items:center;gap:6px}
+.map-box .cap svg{width:13px;height:13px;color:var(--gold)}
+
+/* ===== Pipeline (kanban) ===== */
+.kanban{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.kcol{background:var(--paper);border-radius:14px;padding:13px;min-height:200px}
+.kcol .kh{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;padding:0 4px}
+.kcol .kh .t{font-size:13px;font-weight:700;color:var(--ink);display:flex;align-items:center;gap:8px}
+.kcol .kh .dot{width:9px;height:9px;border-radius:50%}
+.kcol .kh .ct{font-size:12px;font-weight:700;color:var(--muted);background:var(--ivory);border-radius:30px;padding:2px 9px}
+.lead{background:var(--ivory);border:1px solid var(--line);border-radius:12px;padding:13px;margin-bottom:11px;cursor:pointer;transition:.18s;box-shadow:0 1px 2px rgba(15,42,67,.05)}
+.lead:hover{transform:translateY(-3px);box-shadow:var(--shadow);border-color:var(--gold-soft)}
+.lead .lt{display:flex;align-items:center;gap:9px;margin-bottom:9px}
+.lead .lt img,.lead .lt .ph4{width:34px;height:34px;border-radius:50%;object-fit:cover;flex:none}
+.lead .lt .ph4{background:var(--ink);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700}
+.lead .lt .nm{font-size:13.5px;font-weight:700;color:var(--ink)}
+.lead .lt .bd{font-size:11.5px;color:var(--muted)}
+.lead .ldet{font-size:12px;color:var(--text);display:flex;align-items:center;gap:6px;margin-top:5px}
+.lead .ldet svg{width:13px;height:13px;color:var(--gold);flex:none}
+.lead .lfoot{display:flex;align-items:center;justify-content:space-between;margin-top:10px;padding-top:9px;border-top:1px solid var(--line-2)}
+.lead .lbudget{font-size:13px;font-weight:700;color:var(--ink);font-family:'Playfair Display'}
+.lead .ltag{font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:20px}
+
+/* ===== Dashboard ===== */
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:22px}
+.kpi{background:var(--ivory);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.kpi .ic{width:40px;height:40px;border-radius:11px;display:flex;align-items:center;justify-content:center;margin-bottom:14px}
+.kpi .ic svg{width:21px;height:21px}
+.kpi .l{font-size:12.5px;color:var(--muted);font-weight:600}
+.kpi .v{font-size:32px;font-weight:700;color:var(--ink);font-family:'Playfair Display';margin-top:3px;line-height:1}
+.kpi .d{font-size:12px;font-weight:700;margin-top:9px;display:flex;align-items:center;gap:5px}
+.kpi .d.up{color:var(--green)}.kpi .d.dn{color:var(--red)}
+.kpi .d svg{width:14px;height:14px}
+.chart-row{display:grid;grid-template-columns:1.6fr 1fr;gap:18px;margin-bottom:22px}
+.panel{background:var(--ivory);border:1px solid var(--line);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow)}
+.panel .ph{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.panel .ph h3{font-size:16px;font-weight:700;color:var(--ink)}
+.panel .ph .sub{font-size:12px;color:var(--muted)}
+.legend{display:flex;gap:16px;flex-wrap:wrap;margin-top:14px}
+.legend span{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--text);font-weight:500}
+.legend i{width:11px;height:11px;border-radius:3px;display:block}
+.donut-wrap{display:flex;align-items:center;gap:22px;flex-wrap:wrap}
+
+/* ===== Table ===== */
+.tablecard{background:var(--ivory);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+.scrollx{overflow-x:auto}
+table.data{width:100%;border-collapse:collapse;font-size:13px}
+table.data th{text-align:left;font-size:11px;letter-spacing:.7px;text-transform:uppercase;color:var(--muted);font-weight:700;padding:14px 18px;border-bottom:1px solid var(--line);background:var(--cream)}
+table.data td{padding:14px 18px;border-bottom:1px solid var(--line-2);color:var(--text)}
+table.data tr:last-child td{border-bottom:none}
+table.data tbody tr{cursor:pointer;transition:.12s}
+table.data tbody tr:hover{background:var(--cream)}
+.tcell-prop{display:flex;align-items:center;gap:11px}
+.tcell-prop img{width:46px;height:38px;border-radius:8px;object-fit:cover;flex:none}
+.tcell-prop .pn{font-size:13px;font-weight:700;color:var(--ink)}
+.tcell-prop .pa{font-size:11.5px;color:var(--muted)}
+.tprice{font-weight:700;color:var(--ink);font-family:'Playfair Display';font-size:14px}
+
+/* ===== Drawer ===== */
+.drawer-ov{position:fixed;inset:0;background:rgba(15,42,67,.42);z-index:70;opacity:0;pointer-events:none;transition:.25s;backdrop-filter:blur(2px)}
+.drawer-ov.open{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;height:100%;width:430px;max-width:92vw;background:var(--cream);z-index:75;transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.1,1);box-shadow:-12px 0 40px rgba(15,42,67,.18);overflow-y:auto}
+.drawer.open{transform:none}
+.dr-hero{height:170px;position:relative;background:var(--ink)}
+.dr-hero img{width:100%;height:100%;object-fit:cover;opacity:.92}
+.dr-hero .x{position:absolute;top:14px;right:14px;width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.92);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--ink)}
+.dr-hero .x svg{width:17px;height:17px}
+.dr-hero .badge{position:absolute;bottom:14px;left:18px}
+.dr-body{padding:22px}
+.dr-body .dn{font-size:21px;font-weight:700;color:var(--ink)}
+.dr-body .db{font-size:13px;color:var(--muted);margin-top:2px}
+.dr-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin:18px 0}
+.dr-grid .it{background:var(--ivory);border:1px solid var(--line);border-radius:11px;padding:11px 13px}
+.dr-grid .it .l{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;font-weight:600}
+.dr-grid .it .v{font-size:15px;font-weight:700;color:var(--ink);margin-top:2px}
+.dr-sec-t{font-size:11px;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);font-weight:700;margin:18px 0 10px}
+.timeline{position:relative;padding-left:22px}
+.timeline::before{content:'';position:absolute;left:5px;top:4px;bottom:4px;width:2px;background:var(--line)}
+.tl-item{position:relative;padding-bottom:15px}
+.tl-item::before{content:'';position:absolute;left:-21px;top:3px;width:11px;height:11px;border-radius:50%;background:var(--gold);border:2px solid var(--cream)}
+.tl-item .tt{font-size:13px;font-weight:600;color:var(--ink)}
+.tl-item .td{font-size:11.5px;color:var(--muted)}
+.dr-actions{display:flex;gap:10px;margin-top:20px}
+.dr-actions .btn{flex:1;justify-content:center}
+
+/* ===== Overlay + responsive ===== */
+.sb-ov{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:55;opacity:0;pointer-events:none;transition:.2s}
+.sb-ov.open{opacity:1;pointer-events:auto}
+@media(max-width:1080px){
+  .detail-wrap{grid-template-columns:1fr}
+  .chart-row{grid-template-columns:1fr}
+  .kpis{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:900px){
+  .burger{display:flex}
+  .sidebar{position:fixed;left:0;top:0;z-index:60;transform:translateX(-100%);transition:transform .25s;height:100vh}
+  .sidebar.open{transform:none}
+  .topbar .search{display:none}
+  .kanban{grid-template-columns:1fr;gap:14px}
+  .content{padding:18px}
+  .gallery .hero{height:250px}
+  .pagetitle{font-size:18px}
+}
+@media(max-width:560px){
+  .kpis{grid-template-columns:1fr}
+  .specrow{grid-template-columns:1fr 1fr}
+  .thumbs{grid-template-columns:repeat(4,1fr)}
+  .topbar{padding:12px 16px}
+  .ticon.hide-sm{display:none}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sb">
+    <div class="brand">
+      <div class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5 10v9h14v-9"/><path d="M10 19v-5h4v5"/></svg></div>
+      <div><div class="name serif">Nest</div><div class="tag">Estates</div></div>
+    </div>
+    <nav class="nav">
+      <div class="lbl">Marketplace</div>
+      <a class="active" data-view="listings" onclick="go('listings')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Listings</a>
+      <a data-view="detail" onclick="openProperty(0)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 11.5 12 4l9 7.5"/><path d="M5 10v9h14v-9"/></svg>Featured Property</a>
+      <div class="lbl">Agent CRM</div>
+      <a data-view="pipeline" onclick="go('pipeline')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6h16M4 12h16M4 18h10"/></svg>Pipeline</a>
+      <a data-view="dashboard" onclick="go('dashboard')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg>Dashboard</a>
+      <div class="lbl">Workspace</div>
+      <a data-view="dashboard" onclick="go('dashboard')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 2v4M16 2v4M3 10h18"/></svg>Calendar</a>
+      <a data-view="pipeline" onclick="go('pipeline')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Messages</a>
+    </nav>
+    <div class="side-foot">
+      <img src="https://i.pravatar.cc/150?img=12" alt="" onerror="this.outerHTML='<div class=ph>SM</div>'">
+      <div><div class="nm">Sloane Mercer</div><div class="rl">Senior Agent</div></div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <header class="topbar">
+      <button class="burger" onclick="toggleSide()" aria-label="Menu"><span></span></button>
+      <div class="pagetitle serif" id="ptitle">Listings<small>Curated homes across premier US markets</small></div>
+      <div class="search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3-3"/></svg>
+        <input placeholder="Search by city, ZIP, or address…">
+      </div>
+      <div class="spacer"></div>
+      <div class="chip"><i></i>Demo</div>
+      <div class="ticon hide-sm" title="Saved"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 1 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg></div>
+      <div class="ticon hide-sm" title="Notifications"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></div>
+      <img class="av" src="https://i.pravatar.cc/150?img=12" alt="" onerror="this.remove()">
+    </header>
+
+    <div class="content">
+      <!-- ===== LISTINGS ===== -->
+      <section class="view active" id="v-listings">
+        <div class="filterbar">
+          <div class="loc">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <input id="locInput" value="Austin, TX" onkeyup="renderListings()">
+          </div>
+          <div class="divid"></div>
+          <select id="fPrice" onchange="renderListings()">
+            <option value="0">Any price</option>
+            <option value="500000">$500k+</option>
+            <option value="1000000">$1M+</option>
+            <option value="2000000">$2M+</option>
+          </select>
+          <select id="fBeds" onchange="renderListings()">
+            <option value="0">Any beds</option>
+            <option value="2">2+ beds</option>
+            <option value="3">3+ beds</option>
+            <option value="4">4+ beds</option>
+          </select>
+          <select id="fType" onchange="renderListings()">
+            <option value="">All types</option>
+            <option>House</option>
+            <option>Condo</option>
+            <option>Villa</option>
+            <option>Loft</option>
+          </select>
+          <select id="fStatus" onchange="renderListings()">
+            <option value="">Any status</option>
+            <option>For Sale</option>
+            <option>New</option>
+            <option>Pending</option>
+          </select>
+        </div>
+        <div class="results-meta">
+          <div><b id="resCount">0</b> homes in <b id="resLoc">Austin, TX</b></div>
+          <div>Sorted by · Featured</div>
+        </div>
+        <div class="grid" id="grid"></div>
+      </section>
+
+      <!-- ===== PROPERTY DETAIL ===== -->
+      <section class="view" id="v-detail">
+        <button class="detail-back" onclick="go('listings')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>Back to listings</button>
+        <div class="detail-wrap">
+          <div>
+            <div class="gallery">
+              <div class="hero"><img id="heroImg" src="https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=900&q=80" alt="Property"></div>
+              <div class="thumbs" id="thumbs"></div>
+            </div>
+            <div class="dcard" style="margin-top:20px">
+              <h3 style="font-size:17px;font-weight:700;color:var(--ink);margin-bottom:4px" class="serif">About this home</h3>
+              <p class="desc" id="dDesc"></p>
+              <div class="feat-list" id="dFeats"></div>
+            </div>
+            <div class="dcard">
+              <h3 style="font-size:17px;font-weight:700;color:var(--ink);margin-bottom:12px" class="serif">Neighborhood</h3>
+              <div class="map-box">
+                <svg viewBox="0 0 600 260" style="width:100%;display:block" id="mapSvg"></svg>
+                <div class="cap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg><span id="mapCap">Walk Score 88 · Transit 76 · 3 parks within 1 mi</span></div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="dcard">
+              <div class="badge b-sale" id="dBadge" style="margin-bottom:12px">For Sale</div>
+              <div class="d-price" id="dPrice">$0</div>
+              <div class="d-addr"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg><span id="dAddr"></span></div>
+              <div class="specrow">
+                <div class="sp"><div class="v" id="dBeds">—</div><div class="l">Beds</div></div>
+                <div class="sp"><div class="v" id="dBaths">—</div><div class="l">Baths</div></div>
+                <div class="sp"><div class="v" id="dSqft">—</div><div class="l">Sq Ft</div></div>
+              </div>
+            </div>
+            <div class="dcard">
+              <div class="agent-card">
+                <img id="agImg" src="https://i.pravatar.cc/150?img=5" alt="" onerror="this.style.visibility='hidden'">
+                <div>
+                  <div class="nm" id="agName">Sloane Mercer</div>
+                  <div class="rl">Listing Agent · Nest Estates</div>
+                  <div class="stars">★★★★★ <span style="color:var(--muted)">4.9 (128)</span></div>
+                </div>
+              </div>
+              <button class="btn btn-gold" style="width:100%;justify-content:center" onclick="openTour()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 2v4M16 2v4M3 10h18"/></svg>Schedule a tour</button>
+              <button class="btn" style="width:100%;justify-content:center;margin-top:10px" onclick="openTour()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Contact agent</button>
+            </div>
+            <div class="dcard">
+              <div class="dr-sec-t" style="margin-top:0">Monthly estimate</div>
+              <div style="font-size:26px;font-weight:700;color:var(--ink)" class="serif" id="dMonthly">$0/mo</div>
+              <div style="font-size:12px;color:var(--muted);margin-top:6px">Est. principal & interest at 6.4% APR, 20% down, 30-yr fixed.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== PIPELINE ===== -->
+      <section class="view" id="v-pipeline">
+        <div class="sec-head">
+          <div><h2 class="serif">Buyer Pipeline</h2><p>Track every lead from first inquiry to closing — click a card for details.</p></div>
+          <button class="btn btn-gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>Add lead</button>
+        </div>
+        <div class="kanban" id="kanban"></div>
+      </section>
+
+      <!-- ===== DASHBOARD ===== -->
+      <section class="view" id="v-dashboard">
+        <div class="sec-head">
+          <div><h2 class="serif">Sales Dashboard</h2><p>Your portfolio performance · Q2 2026 · Austin / Miami / Denver</p></div>
+          <button class="btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5M12 15V3"/></svg>Export report</button>
+        </div>
+        <div class="kpis" id="kpis"></div>
+        <div class="chart-row">
+          <div class="panel">
+            <div class="ph"><div><h3 class="serif">Sales Volume</h3><div class="sub">Closed transaction value · last 8 months</div></div><div class="badge b-new">+18.2% YoY</div></div>
+            <svg viewBox="0 0 720 280" style="width:100%" id="areaChart"></svg>
+          </div>
+          <div class="panel">
+            <div class="ph"><div><h3 class="serif">Listings by Status</h3><div class="sub">Current inventory</div></div></div>
+            <div class="donut-wrap">
+              <svg viewBox="0 0 200 200" style="width:170px;flex:none" id="donut"></svg>
+              <div class="legend" style="flex-direction:column;gap:11px" id="donutLegend"></div>
+            </div>
+          </div>
+        </div>
+        <div class="panel" style="padding:0">
+          <div style="padding:20px 22px 4px"><h3 class="serif" style="font-size:16px;font-weight:700;color:var(--ink)">Active Listings</h3></div>
+          <div class="scrollx">
+            <table class="data" style="min-width:640px" id="listTable"><thead><tr>
+              <th>Property</th><th>Status</th><th>List Price</th><th>Beds / Baths</th><th>Days on Market</th><th>Agent</th>
+            </tr></thead><tbody id="listTableBody"></tbody></table>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
+
+<!-- DRAWER (lead detail) -->
+<div class="drawer-ov" id="drov" onclick="closeDrawer()"></div>
+<aside class="drawer" id="drawer">
+  <div class="dr-hero">
+    <img id="drHero" src="https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=900&q=80" alt="">
+    <button class="x" onclick="closeDrawer()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    <div class="badge b-new" id="drStage">Touring</div>
+  </div>
+  <div class="dr-body">
+    <div style="display:flex;align-items:center;gap:13px;margin-bottom:6px">
+      <img id="drAv" src="https://i.pravatar.cc/150?img=44" style="width:48px;height:48px;border-radius:50%;object-fit:cover;border:2px solid var(--gold-soft)" alt="" onerror="this.style.visibility='hidden'">
+      <div><div class="dn" id="drName">—</div><div class="db" id="drMeta">—</div></div>
+    </div>
+    <div class="dr-grid">
+      <div class="it"><div class="l">Budget</div><div class="v" id="drBudget">—</div></div>
+      <div class="it"><div class="l">Pre-approved</div><div class="v" id="drApproved">—</div></div>
+      <div class="it"><div class="l">Target area</div><div class="v" id="drArea">—</div></div>
+      <div class="it"><div class="l">Source</div><div class="v" id="drSource">—</div></div>
+    </div>
+    <div class="dr-sec-t">Interested in</div>
+    <div id="drProps" style="display:flex;flex-direction:column;gap:9px"></div>
+    <div class="dr-sec-t">Activity timeline</div>
+    <div class="timeline" id="drTimeline"></div>
+    <div class="dr-actions">
+      <button class="btn btn-gold" onclick="closeDrawer()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></svg>Send message</button>
+      <button class="btn" onclick="closeDrawer()">Log call</button>
+    </div>
+  </div>
+</aside>
+
+<!-- Sidebar overlay -->
+<div class="sb-ov" id="sbov" onclick="toggleSide()"></div>
+
+<script>
+const PHOTO=id=>`https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=900&q=80`;
+const IDS=["1580587771525-78b9dba3b914","1613490493576-7fde63acd811","1613977257363-707ba9348227","1706808849780-7a04fbac83ef","1600596542815-ffad4c1539a9","1670589953882-b94c9cb380f5","1591474200742-8e512e6f98f8","1748063578185-3d68121b11ff","1628744448840-55bdb2497bd4","1613977257592-4871e5fcd7c4","1706855203772-c249b75fe016","1680874261352-ed1ee3d1cf01","1628744448839-a475cc0e90c3","1670589953903-b4e2f17a70a9"];
+const USD=n=>'$'+n.toLocaleString('en-US');
+
+const AGENTS=[
+  {n:"Sloane Mercer",img:5,init:"SM"},
+  {n:"Marcus Hale",img:13,init:"MH"},
+  {n:"Priya Nair",img:9,init:"PN"},
+  {n:"Diego Soto",img:33,init:"DS"}
+];
+
+const LISTINGS=[
+  {price:1250000,beds:4,baths:3,sqft:3120,addr:"1408 Travis Heights Blvd",city:"Austin, TX",type:"House",status:"For Sale",ph:0,agent:0,feats:["Pool","Smart Home","3-Car Garage","Wine Cellar"],desc:"A striking architectural residence in Travis Heights blending warm limestone, white oak, and walls of glass. Soaring great room opens to a resort-style backyard with a heated pool and outdoor kitchen — minutes from downtown."},
+  {price:2150000,beds:5,baths:5,sqft:4480,addr:"77 Lakeshore Terrace",city:"Austin, TX",type:"Villa",status:"New",ph:1,agent:1,feats:["Lake Views","Boat Dock","Chef's Kitchen","Home Theater"],desc:"Set on a coveted waterfront lot, this contemporary villa frames panoramic lake views from nearly every room. Floor-to-ceiling glass, a sculptural floating stair, and a private dock define lakeside living at its finest."},
+  {price:895000,beds:3,baths:2,sqft:1980,addr:"5120 Clarksville Rd",city:"Austin, TX",type:"Condo",status:"For Sale",ph:2,agent:2,feats:["Rooftop Deck","Concierge","EV Charging"],desc:"Refined urban condominium in the heart of Clarksville with designer finishes throughout. A chef's kitchen, spa-inspired baths, and a private rooftop terrace make this a turnkey city retreat."},
+  {price:1680000,beds:4,baths:4,sqft:3640,addr:"212 Coral Gables Way",city:"Miami, FL",type:"House",status:"For Sale",ph:3,agent:3,feats:["Ocean Breeze","Saltwater Pool","Summer Kitchen"],desc:"Mediterranean-inspired estate in Coral Gables surrounded by lush tropical landscaping. Coffered ceilings, imported stone, and a screened lanai overlook a private saltwater pool oasis."},
+  {price:3450000,beds:6,baths:6,sqft:5890,addr:"9 Star Island Dr",city:"Miami, FL",type:"Villa",status:"New",ph:4,agent:0,feats:["Bayfront","Private Dock","Elevator","Gym"],desc:"An exceptional bayfront villa on prestigious Star Island offering unobstructed skyline views, a private yacht dock, and over 100 feet of water frontage. The pinnacle of Miami waterfront luxury."},
+  {price:740000,beds:2,baths:2,sqft:1340,addr:"480 Brickell Ave #2200",city:"Miami, FL",type:"Condo",status:"Pending",ph:5,agent:1,feats:["Skyline Views","Valet","Spa","Pool Deck"],desc:"High-floor Brickell residence with sweeping bay and skyline views. Full-service building with a resort pool deck, fitness center, and 24-hour valet — steps from the city's best dining."},
+  {price:1095000,beds:4,baths:3,sqft:2870,addr:"3300 Cherry Creek Ln",city:"Denver, CO",type:"House",status:"For Sale",ph:6,agent:2,feats:["Mountain Views","Finished Basement","Heated Floors"],desc:"Modern farmhouse in coveted Cherry Creek with mountain vistas and an open, light-filled plan. Vaulted ceilings, a gourmet kitchen, and a finished lower level make it ideal for entertaining."},
+  {price:1875000,beds:5,baths:4,sqft:4100,addr:"18 Aspen Ridge Ct",city:"Denver, CO",type:"House",status:"New",ph:7,agent:3,feats:["Acreage","Triple Garage","Office","Mudroom"],desc:"A timeless mountain-modern home on nearly an acre backing to open space. Reclaimed timber, a dramatic stone fireplace, and expansive decks invite the Colorado outdoors in."},
+  {price:625000,beds:2,baths:2,sqft:1410,addr:"1750 LoDo Loft #5",city:"Denver, CO",type:"Loft",status:"For Sale",ph:8,agent:0,feats:["Exposed Brick","High Ceilings","Garage"],desc:"Authentic LoDo loft with exposed brick, soaring timber ceilings, and oversized industrial windows. Walkable to Union Station, Coors Field, and the city's liveliest restaurant district."},
+  {price:1420000,beds:4,baths:3,sqft:3340,addr:"640 Hyde Park Ave",city:"Austin, TX",type:"House",status:"For Sale",ph:9,agent:1,feats:["Historic","Wraparound Porch","Guest Suite"],desc:"Lovingly restored historic home in Hyde Park pairing period character with modern systems. A wraparound porch, original millwork, and a detached guest suite offer rare versatility."},
+  {price:2780000,beds:5,baths:5,sqft:5020,addr:"14 Palm Bay Cir",city:"Miami, FL",type:"Villa",status:"For Sale",ph:10,agent:2,feats:["Gated","Infinity Pool","Wine Room","Cabana"],desc:"Gated contemporary estate with a striking infinity-edge pool, glass-walled living spaces, and a temperature-controlled wine room. Designed for indoor-outdoor entertaining year-round."},
+  {price:980000,beds:3,baths:3,sqft:2240,addr:"22 Highland Park Dr",city:"Denver, CO",type:"Condo",status:"Pending",ph:11,agent:3,feats:["City Views","Rooftop Lounge","Concierge"],desc:"Sleek contemporary residence in Highland Park with floor-to-ceiling glass and a shared rooftop lounge. Minimalist interiors and premium appliances throughout."}
+];
+
+const LEADS=[
+  {n:"Hannah Whitfield",img:25,init:"HW",stage:"New",budget:1200000,approved:"Yes",area:"Travis Heights, Austin",source:"Zillow",props:[0,9],meta:"Buyer · First inquiry 2 days ago"},
+  {n:"Daniel Brooks",img:51,init:"DB",stage:"New",budget:760000,approved:"Pending",area:"Brickell, Miami",source:"Website",props:[5],meta:"Buyer · First inquiry 3 days ago"},
+  {n:"Olivia Tran",img:44,init:"OT",stage:"Touring",budget:2200000,approved:"Yes",area:"Lakeshore, Austin",source:"Referral",props:[1,4],meta:"Buyer · 2 tours scheduled"},
+  {n:"Marcus Bennett",img:60,init:"MB",stage:"Touring",budget:1100000,approved:"Yes",area:"Cherry Creek, Denver",source:"Open House",props:[6,7],meta:"Buyer · Toured 3 homes"},
+  {n:"Sofia Ramirez",img:48,init:"SR",stage:"Offer",budget:3400000,approved:"Yes",area:"Star Island, Miami",source:"Referral",props:[4],meta:"Buyer · Offer submitted"},
+  {n:"James Coleman",img:11,init:"JC",stage:"Offer",budget:980000,approved:"Yes",area:"Highland Park, Denver",source:"Zillow",props:[11],meta:"Buyer · Counter pending"},
+  {n:"Amara Okafor",img:32,init:"AO",stage:"Closing",budget:740000,approved:"Yes",area:"Brickell, Miami",source:"Website",props:[5],meta:"Buyer · Closing in 9 days"},
+  {n:"Ethan Wallace",img:53,init:"EW",stage:"Closing",budget:1680000,approved:"Yes",area:"Coral Gables, Miami",source:"Referral",props:[3],meta:"Buyer · Final walkthrough set"}
+];
+
+const STAGES=[{k:"New",c:"#2D6CB5"},{k:"Touring",c:"#B5751B"},{k:"Offer",c:"#7B57C7"},{k:"Closing",c:"#2E7D54"}];
+const STATUS_CLASS={"For Sale":"b-sale","New":"b-new","Pending":"b-pend","Sold":"b-sold"};
+
+function avatarTag(img,init,cls){
+  return `<img class="${cls}" src="https://i.pravatar.cc/150?img=${img}" alt="" onerror="this.outerHTML='<div class=&quot;${cls}&quot;>${init}</div>'">`;
+}
+
+/* ===== Listings ===== */
+function renderListings(){
+  const loc=document.getElementById('locInput').value.trim().toLowerCase();
+  const minP=+document.getElementById('fPrice').value;
+  const minB=+document.getElementById('fBeds').value;
+  const type=document.getElementById('fType').value;
+  const stat=document.getElementById('fStatus').value;
+  const out=LISTINGS.filter((p,i)=>{
+    p._i=i;
+    if(loc && !(p.city.toLowerCase().includes(loc)||p.addr.toLowerCase().includes(loc))) return false;
+    if(p.price<minP) return false;
+    if(p.beds<minB) return false;
+    if(type && p.type!==type) return false;
+    if(stat && p.status!==stat) return false;
+    return true;
+  });
+  document.getElementById('resCount').textContent=out.length;
+  document.getElementById('resLoc').textContent=document.getElementById('locInput').value||'all markets';
+  const g=document.getElementById('grid');
+  if(!out.length){g.innerHTML='<div style="padding:50px;text-align:center;color:var(--muted);grid-column:1/-1">No homes match these filters.</div>';return;}
+  g.innerHTML=out.map(p=>{
+    const ag=AGENTS[p.agent];
+    return `<article class="pcard" onclick="openProperty(${p._i})">
+      <div class="ph"><img src="${PHOTO(IDS[p.ph])}" alt="${p.addr}" onerror="this.style.display='none'">
+        <div class="top"><span class="badge ${STATUS_CLASS[p.status]}">${p.status}</span>
+        <span class="fav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 1 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg></span></div>
+      </div>
+      <div class="body">
+        <div class="price">${USD(p.price)}</div>
+        <div class="specs">
+          <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M3 7v11M3 12h18v6M21 18v-5a3 3 0 0 0-3-3H8"/></svg>${p.beds} bd</span>
+          <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M4 12V6a2 2 0 0 1 2-2h2v2M3 12h18v3a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4z"/></svg>${p.baths} ba</span>
+          <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/></svg>${p.sqft.toLocaleString()} sqft</span>
+        </div>
+        <div class="addr"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg>${p.addr}, ${p.city}</div>
+        <div class="agent">${avatarTag(ag.img,ag.init,'ph2')}<span class="an">Listed by <b>${ag.n}</b></span></div>
+      </div>
+    </article>`;
+  }).join('');
+}
+
+/* ===== Property detail ===== */
+function openProperty(i){
+  const p=LISTINGS[i];const ag=AGENTS[p.agent];
+  document.getElementById('heroImg').src=PHOTO(IDS[p.ph]);
+  const thumbIds=[p.ph,(p.ph+3)%IDS.length,(p.ph+6)%IDS.length,(p.ph+9)%IDS.length];
+  document.getElementById('thumbs').innerHTML=thumbIds.map((t,k)=>`<img class="${k===0?'sel':''}" src="${PHOTO(IDS[t])}" onclick="selThumb(this,'${IDS[t]}')" onerror="this.style.display='none'" alt="">`).join('');
+  document.getElementById('dPrice').textContent=USD(p.price);
+  document.getElementById('dAddr').textContent=p.addr+', '+p.city;
+  document.getElementById('dBeds').textContent=p.beds;
+  document.getElementById('dBaths').textContent=p.baths;
+  document.getElementById('dSqft').textContent=p.sqft.toLocaleString();
+  const bd=document.getElementById('dBadge');bd.textContent=p.status;bd.className='badge '+STATUS_CLASS[p.status];
+  document.getElementById('dDesc').textContent=p.desc;
+  document.getElementById('dFeats').innerHTML=p.feats.map(f=>`<span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>${f}</span>`).join('');
+  document.getElementById('agImg').src=`https://i.pravatar.cc/150?img=${ag.img}`;
+  document.getElementById('agName').textContent=ag.n;
+  const monthly=Math.round(p.price*0.8*0.00625);
+  document.getElementById('dMonthly').textContent=USD(monthly)+'/mo';
+  document.getElementById('mapCap').textContent=`${p.city} · Walk Score ${82+(i%12)} · Transit ${68+(i%14)} · ${2+(i%4)} parks nearby`;
+  drawMap();
+  go('detail');
+}
+function selThumb(el,id){
+  document.querySelectorAll('#thumbs img').forEach(t=>t.classList.remove('sel'));
+  el.classList.add('sel');
+  document.getElementById('heroImg').src=PHOTO(id);
+}
+function openTour(){alert('Demo: a tour scheduling flow would open here.');}
+
+function drawMap(){
+  const blocks=[[40,40,90,60],[150,30,80,80],[250,50,110,55],[380,35,90,70],[490,45,80,65],
+    [60,150,100,70],[180,160,90,60],[290,150,80,80],[390,165,110,55],[510,155,70,70]];
+  let r='<rect x="0" y="0" width="600" height="260" fill="#E7EFE7"/>';
+  // roads
+  r+='<rect x="0" y="118" width="600" height="22" fill="#F4EEE3"/>';
+  r+='<rect x="232" y="0" width="22" height="260" fill="#F4EEE3"/>';
+  r+='<rect x="0" y="118" width="600" height="22" fill="none" stroke="#E0D3B8" stroke-width="1" stroke-dasharray="9 7"/>';
+  // green / water
+  r+='<path d="M430 175 q40 -20 80 0 q20 30 -10 55 q-50 15 -75 -10 z" fill="#CBE3CC"/>';
+  r+='<ellipse cx="105" cy="210" rx="55" ry="26" fill="#BDD9EC"/>';
+  blocks.forEach((b,i)=>{
+    r+=`<rect x="${b[0]}" y="${b[1]}" width="${b[2]}" height="${b[3]}" rx="6" fill="${i%3===0?'#F6F1E6':'#EFE9DC'}" stroke="#E2D8C4" stroke-width="1.4"/>`;
+  });
+  // pin (subject property)
+  r+=`<g transform="translate(300,118)">
+    <ellipse cx="0" cy="3" rx="13" ry="5" fill="rgba(15,42,67,.18)"/>
+    <path d="M0 -34 C -15 -34 -22 -22 -22 -14 C -22 -2 0 6 0 6 C 0 6 22 -2 22 -14 C 22 -22 15 -34 0 -34 Z" fill="#C08A2E" stroke="#fff" stroke-width="2.5"/>
+    <circle cx="0" cy="-15" r="7" fill="#fff"/></g>`;
+  r+='<text x="300" y="135" text-anchor="middle" font-size="11" font-weight="700" fill="#0F2A43" font-family="Inter">This home</text>';
+  document.getElementById('mapSvg').innerHTML=r;
+}
+
+/* ===== Pipeline ===== */
+function renderKanban(){
+  const k=document.getElementById('kanban');
+  k.innerHTML=STAGES.map(s=>{
+    const items=LEADS.filter(l=>l.stage===s.k);
+    return `<div class="kcol">
+      <div class="kh"><div class="t"><span class="dot" style="background:${s.c}"></span>${s.k}</div><div class="ct">${items.length}</div></div>
+      ${items.map(l=>`<div class="lead" onclick="openLead('${l.n}')">
+        <div class="lt">${avatarTag(l.img,l.init,'ph4')}<div><div class="nm">${l.n}</div><div class="bd">${l.area}</div></div></div>
+        <div class="ldet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11.5 12 4l9 7.5"/><path d="M5 10v9h14v-9"/></svg>${l.props.length} home${l.props.length>1?'s':''} of interest</div>
+        <div class="lfoot"><span class="lbudget">${USD(l.budget)}</span><span class="ltag" style="background:${s.c}1f;color:${s.c}">${l.approved==='Yes'?'Pre-approved':'In review'}</span></div>
+      </div>`).join('')}
+    </div>`;
+  }).join('');
+}
+
+function openLead(name){
+  const l=LEADS.find(x=>x.n===name);if(!l)return;
+  const sc=STATUS_CLASS[l.props.length?LISTINGS[l.props[0]].status:'For Sale']||'b-sale';
+  document.getElementById('drHero').src=PHOTO(IDS[LISTINGS[l.props[0]].ph]);
+  const st=document.getElementById('drStage');st.textContent=l.stage;
+  const stColor=STAGES.find(s=>s.k===l.stage);
+  st.className='badge';st.style.background='#fff';st.style.color=stColor.c;st.style.border='1px solid '+stColor.c;
+  document.getElementById('drAv').src=`https://i.pravatar.cc/150?img=${l.img}`;
+  document.getElementById('drName').textContent=l.n;
+  document.getElementById('drMeta').textContent=l.meta;
+  document.getElementById('drBudget').textContent=USD(l.budget);
+  document.getElementById('drApproved').textContent=l.approved;
+  document.getElementById('drArea').textContent=l.area;
+  document.getElementById('drSource').textContent=l.source;
+  document.getElementById('drProps').innerHTML=l.props.map(pi=>{
+    const p=LISTINGS[pi];
+    return `<div style="display:flex;gap:11px;align-items:center;background:var(--ivory);border:1px solid var(--line);border-radius:11px;padding:9px;cursor:pointer" onclick="closeDrawer();openProperty(${pi})">
+      <img src="${PHOTO(IDS[p.ph])}" style="width:54px;height:44px;border-radius:8px;object-fit:cover;flex:none" onerror="this.style.display='none'" alt="">
+      <div style="min-width:0"><div style="font-size:13px;font-weight:700;color:var(--ink)">${USD(p.price)}</div><div style="font-size:11.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${p.addr}, ${p.city}</div></div>
+    </div>`;
+  }).join('');
+  const tl=[
+    {t:"Lead created from "+l.source,d:"Jun 8, 2026 · 9:14 AM"},
+    {t:"Sent curated listing collection",d:"Jun 9, 2026 · 2:40 PM"},
+    {t:"Phone consultation — 22 min",d:"Jun 11, 2026 · 11:05 AM"},
+    {t:l.stage==='Closing'?'Contract executed':l.stage==='Offer'?'Offer drafted & reviewed':'Tour scheduled',d:"Jun 13, 2026 · 4:30 PM"}
+  ];
+  document.getElementById('drTimeline').innerHTML=tl.map(t=>`<div class="tl-item"><div class="tt">${t.t}</div><div class="td">${t.d}</div></div>`).join('');
+  document.getElementById('drov').classList.add('open');
+  document.getElementById('drawer').classList.add('open');
+}
+function closeDrawer(){document.getElementById('drov').classList.remove('open');document.getElementById('drawer').classList.remove('open');}
+
+/* ===== Dashboard ===== */
+function renderKPIs(){
+  const data=[
+    {l:"Active Listings",v:"32",d:"+5 this month",up:true,bg:"var(--blue-bg)",fg:"var(--blue)",ic:'<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>'},
+    {l:"Under Contract",v:"11",d:"+3 vs last month",up:true,bg:"var(--amber-bg)",fg:"var(--amber)",ic:'<path d="M9 12l2 2 4-4"/><path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/>'},
+    {l:"Sold YTD",v:"47",d:"+18% YoY",up:true,bg:"var(--green-bg)",fg:"var(--green)",ic:'<path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/>'},
+    {l:"Volume YTD",v:"$62.4M",d:"+$9.1M YoY",up:true,bg:"#F1E9F8",fg:"#7B57C7",ic:'<path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>'}
+  ];
+  document.getElementById('kpis').innerHTML=data.map(k=>`<div class="kpi">
+    <div class="ic" style="background:${k.bg};color:${k.fg}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${k.ic}</svg></div>
+    <div class="l">${k.l}</div><div class="v">${k.v}</div>
+    <div class="d ${k.up?'up':'dn'}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="${k.up?'M7 17 17 7M17 7H9M17 7v8':'M7 7l10 10M17 17H9M17 17V9'}"/></svg>${k.d}</div>
+  </div>`).join('');
+}
+
+function renderArea(){
+  const vals=[4.2,5.1,4.6,6.8,7.4,6.9,8.6,9.8];
+  const labels=["Nov","Dec","Jan","Feb","Mar","Apr","May","Jun"];
+  const W=720,H=280,pl=46,pr=20,pt=18,pb=34;
+  const cw=W-pl-pr,ch=H-pt-pb;
+  const max=11,min=0;
+  const x=i=>pl+(cw*i/(vals.length-1));
+  const y=v=>pt+ch-(ch*(v-min)/(max-min));
+  let grid='',axis='';
+  for(let g=0;g<=11;g+=2){const yy=y(g);grid+=`<line x1="${pl}" y1="${yy}" x2="${W-pr}" y2="${yy}" stroke="#EFE8DA" stroke-width="1"/>`;axis+=`<text x="${pl-10}" y="${yy+4}" text-anchor="end" font-size="11" fill="#9AA4AD" font-family="Inter">$${g}M</text>`;}
+  labels.forEach((l,i)=>{axis+=`<text x="${x(i)}" y="${H-12}" text-anchor="middle" font-size="11" fill="#9AA4AD" font-family="Inter">${l}</text>`;});
+  let line=vals.map((v,i)=>`${i?'L':'M'}${x(i).toFixed(1)} ${y(v).toFixed(1)}`).join(' ');
+  let area=`M${x(0)} ${y(vals[0]).toFixed(1)} `+vals.map((v,i)=>`L${x(i).toFixed(1)} ${y(v).toFixed(1)}`).join(' ')+` L${x(vals.length-1)} ${pt+ch} L${pl} ${pt+ch} Z`;
+  let dots=vals.map((v,i)=>`<circle cx="${x(i).toFixed(1)}" cy="${y(v).toFixed(1)}" r="4" fill="#fff" stroke="#C08A2E" stroke-width="2.4"/>`).join('');
+  document.getElementById('areaChart').innerHTML=`
+    <defs><linearGradient id="ag" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#C08A2E" stop-opacity=".26"/><stop offset="1" stop-color="#C08A2E" stop-opacity="0"/></linearGradient></defs>
+    ${grid}<path d="${area}" fill="url(#ag)"/><path d="${line}" fill="none" stroke="#C08A2E" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"/>${dots}${axis}`;
+}
+
+function renderDonut(){
+  const segs=[{l:"For Sale",v:18,c:"#2D6CB5"},{l:"New",v:6,c:"#2E7D54"},{l:"Pending",v:5,c:"#B5751B"},{l:"Sold",v:14,c:"#9C7A45"}];
+  const total=segs.reduce((a,b)=>a+b.v,0);
+  const cx=100,cy=100,r=74,sw=26;const C=2*Math.PI*r;
+  let off=0,svg=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#F1EAdd" stroke-width="${sw}"/>`;
+  segs.forEach(s=>{
+    const len=C*s.v/total;
+    svg+=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${s.c}" stroke-width="${sw}" stroke-dasharray="${len.toFixed(2)} ${(C-len).toFixed(2)}" stroke-dashoffset="${(-off).toFixed(2)}" transform="rotate(-90 ${cx} ${cy})" stroke-linecap="butt"/>`;
+    off+=len;
+  });
+  svg+=`<text x="${cx}" y="${cy-4}" text-anchor="middle" font-size="30" font-weight="700" fill="#0F2A43" font-family="'Playfair Display',serif">${total}</text>`;
+  svg+=`<text x="${cx}" y="${cy+16}" text-anchor="middle" font-size="11" fill="#9AA4AD" font-family="Inter" letter-spacing="1">LISTINGS</text>`;
+  document.getElementById('donut').innerHTML=svg;
+  document.getElementById('donutLegend').innerHTML=segs.map(s=>`<span><i style="background:${s.c}"></i>${s.l} <b style="margin-left:auto;color:var(--ink);font-weight:700">${s.v}</b></span>`).join('');
+}
+
+function renderTable(){
+  const rows=LISTINGS.filter(p=>p.status!=='Sold').slice(0,8).map((p,idx)=>{
+    const ag=AGENTS[p.agent];const dom=[7,14,3,22,5,31,9,18][idx]||12;
+    return `<tr onclick="openProperty(${LISTINGS.indexOf(p)})">
+      <td><div class="tcell-prop"><img src="${PHOTO(IDS[p.ph])}" onerror="this.style.display='none'" alt=""><div><div class="pn">${p.addr}</div><div class="pa">${p.city}</div></div></div></td>
+      <td><span class="badge ${STATUS_CLASS[p.status]}">${p.status}</span></td>
+      <td><span class="tprice">${USD(p.price)}</span></td>
+      <td>${p.beds} bd / ${p.baths} ba</td>
+      <td>${dom} days</td>
+      <td><div style="display:flex;align-items:center;gap:8px">${avatarTag(ag.img,ag.init,'ph2')}<span style="font-size:12.5px;font-weight:500">${ag.n}</span></div></td>
+    </tr>`;
+  }).join('');
+  document.getElementById('listTableBody').innerHTML=rows;
+}
+
+/* ===== Nav ===== */
+const TITLES={
+  listings:["Listings","Curated homes across premier US markets"],
+  detail:["Property","Full listing detail & neighborhood"],
+  pipeline:["Pipeline","Your buyer leads, end to end"],
+  dashboard:["Dashboard","Portfolio performance at a glance"]
+};
+function go(view){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  const el=document.getElementById('v-'+view);if(el)el.classList.add('active');
+  document.querySelectorAll('.nav a').forEach(a=>a.classList.toggle('active',a.dataset.view===view));
+  const t=TITLES[view];if(t)document.getElementById('ptitle').innerHTML=t[0]+'<small>'+t[1]+'</small>';
+  document.getElementById('sb').classList.remove('open');
+  document.getElementById('sbov').classList.remove('open');
+  window.scrollTo(0,0);
+}
+function toggleSide(){
+  const s=document.getElementById('sb'),o=document.getElementById('sbov');
+  const op=s.classList.toggle('open');o.classList.toggle('open',op);
+}
+
+function render(){
+  renderListings();
+  renderKanban();
+  renderKPIs();
+  renderArea();
+  renderDonut();
+  renderTable();
+  drawMap();
+}
+render();
+</script>
+</body>
+</html>

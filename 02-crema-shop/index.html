@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CREMA — спешелти-кофе свежей обжарки</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;450;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FAF7F2;--panel:#FFFFFF;--ink:#1C140D;--muted:#857668;--faint:#AEA193;
+  --line:#ECE3D7;--soft:#F3ECE2;--brand:#241810;--accent:#B5552B;--accent-d:#97461F;--accent-soft:#F6E9DF;
+  --ok:#3F7A5E;--ok-bg:#E8F1EC;--warn:#B07A18;--warn-bg:#FBF1DC;--bad:#B23B3B;--bad-bg:#F8E7E5;--blue:#3E6E8C;--blue-bg:#E7EFF4;
+  --serif:'Fraunces',Georgia,'Times New Roman',serif;--sans:'Inter',-apple-system,'Segoe UI',Roboto,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:var(--sans);background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;font-size:15px}
+.icon{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex:none}
+img,svg{display:block}
+.wrap{max-width:1240px;margin:0 auto;padding:0 32px}
+.view{display:none}.view.active{display:block}
+h1,h2,h3,.serif{font-family:var(--serif)}
+/* ---------- STOREFRONT ---------- */
+.shead{position:sticky;top:0;z-index:30;background:rgba(250,247,242,.88);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.shead .bar{display:flex;align-items:center;gap:30px;height:74px;max-width:1240px;margin:0 auto;padding:0 32px}
+.logo{display:flex;align-items:center;gap:10px;cursor:pointer}
+.logo .bn{width:38px;height:38px;border-radius:50%;background:var(--brand);color:#fff;display:flex;align-items:center;justify-content:center}
+.logo .wm{font-family:var(--serif);font-size:23px;font-weight:600;letter-spacing:2px}
+.snav{display:flex;gap:26px;margin-left:6px}
+.snav a{font-size:14.5px;color:var(--ink);font-weight:450;cursor:pointer;text-decoration:none;transition:.15s}
+.snav a:hover{color:var(--accent)}
+.shead .actions{margin-left:auto;display:flex;align-items:center;gap:11px}
+.ibtn{width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:var(--panel);display:flex;align-items:center;justify-content:center;color:var(--ink);cursor:pointer;position:relative;transition:.15s}
+.ibtn:hover{border-color:var(--accent);color:var(--accent)}
+.cbadge{position:absolute;top:-3px;right:-3px;min-width:19px;height:19px;border-radius:10px;background:var(--accent);color:#fff;font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center;padding:0 5px;font-family:var(--sans)}
+.lnk-admin{font-size:13px;color:var(--muted);border:1px solid var(--line);background:var(--panel);border-radius:9px;padding:9px 13px;cursor:pointer;font-weight:500;display:flex;align-items:center;gap:7px;transition:.15s}
+.lnk-admin:hover{color:var(--ink);border-color:var(--ink)}
+.demo-tag{font-size:11px;font-weight:600;color:var(--muted);background:var(--panel);border:1px solid var(--line);padding:5px 10px;border-radius:20px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;height:50px;padding:0 26px;border-radius:13px;background:var(--brand);color:#fff;font-size:15px;font-weight:500;border:0;cursor:pointer;white-space:nowrap;transition:.16s;font-family:var(--sans)}
+.btn:hover{background:#372619;transform:translateY(-1px)}
+.btn.sm{height:42px;padding:0 18px;font-size:13.5px;border-radius:10px}
+.btn.acc{background:var(--accent)}.btn.acc:hover{background:var(--accent-d)}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid #D8CCBD}
+.btn.ghost:hover{border-color:var(--ink);background:transparent}
+.btn.light{background:#fff;color:var(--ink)}.btn.light:hover{background:#fff}
+.btn.block{width:100%}
+/* hero */
+.hero{position:relative;height:560px;display:flex;align-items:center;overflow:hidden}
+.hero .hbg{position:absolute;inset:0;background-size:cover;background-position:center;transform:scale(1.02)}
+.hero .hov{position:absolute;inset:0;background:linear-gradient(90deg,rgba(20,13,8,.82),rgba(20,13,8,.45) 55%,rgba(20,13,8,.15))}
+.hero .hin{position:relative;color:#fff;max-width:560px}
+.hero .eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:#E9C9AE;margin-bottom:18px}
+.hero h1{font-family:var(--serif);font-size:60px;line-height:1.02;font-weight:600;letter-spacing:-.015em}
+.hero p{font-size:17px;line-height:1.6;color:rgba(255,255,255,.86);margin:20px 0 28px;max-width:460px}
+.hero .hrow{display:flex;gap:14px;align-items:center}
+.hero .hrate{display:flex;align-items:center;gap:10px;margin-top:26px;font-size:13.5px;color:rgba(255,255,255,.8)}
+.hstars{display:flex;color:#E9A86A}.hstars .icon{width:16px;height:16px;fill:#E9A86A;stroke:none}
+.trust{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;padding:34px 0;border-bottom:1px solid var(--line)}
+.trust .t{display:flex;align-items:center;gap:13px}
+.trust .t .ic{width:44px;height:44px;border-radius:12px;background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center;flex:none}
+.trust .t .tt{font-size:14px;font-weight:600}.trust .t .ts{font-size:12.5px;color:var(--muted);margin-top:2px}
+.sect-h{display:flex;align-items:flex-end;justify-content:space-between;margin:54px 0 26px;gap:20px}
+.sect-h h2{font-family:var(--serif);font-size:38px;font-weight:600;letter-spacing:-.01em;line-height:1.05}
+.sect-h .sub{font-size:15px;color:var(--muted);margin-top:8px;max-width:440px}
+.filters{display:flex;gap:9px;flex-wrap:wrap}
+.fchip{font-size:13.5px;font-weight:500;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:9px 16px;cursor:pointer;transition:.15s}
+.fchip:hover{border-color:#D8CCBD}
+.fchip.active{background:var(--brand);color:#fff;border-color:var(--brand)}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;padding-bottom:20px}
+.pcard{background:var(--panel);border:1px solid var(--line);border-radius:18px;overflow:hidden;cursor:pointer;transition:.18s;box-shadow:0 1px 2px rgba(36,24,16,.04)}
+.pcard:hover{transform:translateY(-4px);box-shadow:0 18px 36px rgba(36,24,16,.12);border-color:#E3D6C6}
+.ptile{aspect-ratio:1/1;position:relative;overflow:hidden;background:var(--soft)}
+.ptile img{width:100%;height:100%;object-fit:cover;transition:.4s}
+.pcard:hover .ptile img{transform:scale(1.06)}
+.ptile .roast{position:absolute;top:13px;left:13px;font-size:11px;font-weight:600;background:rgba(255,255,255,.92);color:var(--brand);padding:5px 11px;border-radius:20px;backdrop-filter:blur(4px)}
+.ptile .fav{position:absolute;top:11px;right:11px;width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.92);display:flex;align-items:center;justify-content:center;color:var(--ink);opacity:0;transition:.18s}
+.pcard:hover .fav{opacity:1}
+.pbody{padding:17px 18px 18px}
+.pbody .porg{font-size:12px;color:var(--accent);font-weight:600;letter-spacing:.02em;margin-bottom:5px;text-transform:uppercase}
+.pbody .pname{font-family:var(--serif);font-size:20px;font-weight:600}
+.pbody .pnote{font-size:13px;color:var(--muted);margin-top:6px;min-height:36px;line-height:1.5}
+.pbody .pf{display:flex;align-items:center;justify-content:space-between;margin-top:14px}
+.price{font-size:19px;font-weight:600}
+.addb{width:42px;height:42px;border-radius:12px;background:var(--brand);color:#fff;border:0;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.15s}
+.addb:hover{background:var(--accent);transform:scale(1.05)}
+/* about band */
+.band{display:grid;grid-template-columns:1fr 1fr;gap:0;background:var(--panel);border:1px solid var(--line);border-radius:24px;overflow:hidden;margin:64px 0}
+.band .bimg{min-height:420px;background-size:cover;background-position:center}
+.band .btext{padding:56px 52px;display:flex;flex-direction:column;justify-content:center}
+.band .btext .eyebrow{font-size:12.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:14px}
+.band .btext h2{font-family:var(--serif);font-size:34px;font-weight:600;line-height:1.1;margin-bottom:16px}
+.band .btext p{font-size:15px;color:var(--muted);line-height:1.7;margin-bottom:14px}
+.statline{display:flex;gap:36px;margin-top:14px}
+.statline .s .v{font-family:var(--serif);font-size:30px;font-weight:600}
+.statline .s .l{font-size:12.5px;color:var(--muted);margin-top:2px}
+/* testimonials */
+.tg{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;padding-bottom:10px}
+.tcard{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:26px}
+.tcard .ts2{display:flex;color:var(--accent);margin-bottom:14px}.tcard .ts2 .icon{width:17px;height:17px;fill:var(--accent);stroke:none}
+.tcard .tq{font-size:15px;line-height:1.6;color:var(--ink)}
+.tcard .tp{display:flex;align-items:center;gap:11px;margin-top:18px}
+.tcard .ta{width:40px;height:40px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:14px}
+.tcard .tn{font-size:14px;font-weight:600}.tcard .tr{font-size:12.5px;color:var(--muted)}
+.sfoot{background:var(--brand);color:#C9B8A6;margin-top:70px}
+.sfoot .fin{max-width:1240px;margin:0 auto;padding:54px 32px 30px;display:grid;grid-template-columns:2fr 1fr 1fr 1.4fr;gap:34px}
+.sfoot h4{color:#fff;font-family:var(--serif);font-size:18px;margin-bottom:16px;font-weight:600}
+.sfoot .fcol a{display:block;color:#C9B8A6;font-size:14px;margin-bottom:10px;text-decoration:none;cursor:pointer}
+.sfoot .fcol a:hover{color:#fff}
+.sfoot .flogo{font-family:var(--serif);font-size:26px;color:#fff;letter-spacing:2px;margin-bottom:12px;font-weight:600}
+.sfoot .fb{border-top:1px solid rgba(255,255,255,.1);padding:18px 32px;text-align:center;font-size:12.5px;color:#9C8B79;max-width:1240px;margin:0 auto}
+.nl{display:flex;gap:8px;margin-top:14px}
+.nl input{flex:1;height:44px;border-radius:10px;border:0;padding:0 14px;font-size:14px;background:rgba(255,255,255,.08);color:#fff;outline:0}
+.nl input::placeholder{color:#9C8B79}
+/* product page */
+.pp{display:grid;grid-template-columns:1.05fr 1fr;gap:50px;padding:36px 0 10px}
+.pp-main{border-radius:22px;overflow:hidden;background:var(--soft);aspect-ratio:1/1}
+.pp-main img{width:100%;height:100%;object-fit:cover}
+.pp-thumbs{display:flex;gap:12px;margin-top:14px}
+.pp-thumbs .th{width:84px;height:84px;border-radius:12px;overflow:hidden;border:2px solid transparent;cursor:pointer;background:var(--soft)}
+.pp-thumbs .th.active{border-color:var(--accent)}
+.pp-thumbs .th img{width:100%;height:100%;object-fit:cover}
+.crumb{font-size:13.5px;color:var(--muted);margin-bottom:16px;display:flex;align-items:center;gap:7px;cursor:pointer;width:max-content}
+.crumb:hover{color:var(--ink)}
+.pp .org{font-size:12.5px;color:var(--accent);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.pp h1{font-family:var(--serif);font-size:42px;font-weight:600;letter-spacing:-.02em;margin:6px 0 10px;line-height:1.05}
+.stars{display:flex;align-items:center;gap:8px;color:var(--accent);font-size:13.5px;margin-bottom:20px}
+.stars .icon{width:17px;height:17px;fill:var(--accent);stroke:none}.stars .c{color:var(--muted)}
+.pp .desc{font-size:15.5px;color:#5b5048;line-height:1.7;margin-bottom:26px}
+.specrow{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:26px}
+.spec{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:11px 15px;font-size:13px;min-width:100px}
+.spec .sl{color:var(--muted);font-size:11.5px;margin-bottom:3px}.spec .sv{font-weight:600}
+.opt{margin-bottom:20px}.opt .ol{font-size:13.5px;font-weight:600;margin-bottom:10px}
+.segs{display:flex;gap:10px;flex-wrap:wrap}
+.segs button{font-size:13.5px;font-weight:500;padding:10px 17px;border-radius:11px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer;transition:.14s}
+.segs button:hover{border-color:#D8CCBD}
+.segs button.active{border-color:var(--brand);background:var(--brand);color:#fff}
+.pp-buy{display:flex;align-items:center;gap:16px;margin:28px 0 18px}
+.pp-buy .pv{font-family:var(--serif);font-size:34px;font-weight:600}
+.qty{display:flex;align-items:center;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--panel)}
+.qty button{width:46px;height:50px;border:0;background:transparent;color:var(--ink);cursor:pointer;display:flex;align-items:center;justify-content:center}
+.qty button:hover{background:var(--soft)}
+.qty span{width:42px;text-align:center;font-weight:600}
+.feats{display:flex;flex-direction:column;gap:12px;margin-top:24px;border-top:1px solid var(--line);padding-top:22px}
+.feats .f{display:flex;align-items:center;gap:12px;font-size:14px;color:#5b5048}
+.feats .f .icon{color:var(--accent);width:19px;height:19px}
+.reviews{padding:20px 0 70px}
+.rev{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px 22px;margin-bottom:14px}
+.rev .rh{display:flex;align-items:center;gap:11px;margin-bottom:10px}
+.rev .ra{width:38px;height:38px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:14px}
+.rev .rn{font-weight:600;font-size:14px}.rev .rt{font-size:14px;color:#5b5048;line-height:1.6}
+/* cart & checkout */
+.cart-wrap,.co-wrap{display:grid;grid-template-columns:1.6fr 1fr;gap:30px;padding:30px 0 60px;align-items:start}
+.citem{display:grid;grid-template-columns:96px 1fr auto;gap:18px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:15px}
+.citem .ct{width:96px;height:96px;border-radius:13px;overflow:hidden;background:var(--soft)}
+.citem .ct img{width:100%;height:100%;object-fit:cover}
+.citem .cn{font-family:var(--serif);font-size:18px;font-weight:600}
+.citem .co{font-size:12.5px;color:var(--muted);margin-top:3px}
+.citem .cr{display:flex;align-items:center;gap:18px}
+.qty.sm button{width:36px;height:40px}.qty.sm span{width:36px}
+.trash{color:var(--faint);cursor:pointer;width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:9px}
+.trash:hover{color:var(--bad);background:var(--bad-bg)}
+.summary{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:26px;position:sticky;top:94px;box-shadow:0 1px 2px rgba(36,24,16,.04)}
+.summary h3{font-family:var(--serif);font-size:21px;font-weight:600;margin-bottom:18px}
+.srow{display:flex;justify-content:space-between;font-size:14.5px;padding:8px 0;color:#5b5048}
+.srow.tot{font-family:var(--serif);font-size:22px;font-weight:600;color:var(--ink);border-top:1px solid var(--line);margin-top:10px;padding-top:16px}
+.promo{display:flex;gap:9px;margin:16px 0}
+.promo input{flex:1;height:46px;border:1px solid var(--line);border-radius:11px;padding:0 14px;font-size:14px;outline:0;background:var(--bg);font-family:var(--sans)}
+.promo input:focus{border-color:var(--accent)}
+.promo-msg{font-size:13px;margin:-8px 0 12px;font-weight:600}
+.empty{text-align:center;color:var(--muted);padding:70px 0;font-size:16px}
+.fcard{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:26px;margin-bottom:20px}
+.fcard h3{font-family:var(--serif);font-size:20px;font-weight:600;margin-bottom:18px;display:flex;align-items:center;gap:11px}
+.fcard h3 .n{width:28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;font-size:14px;display:flex;align-items:center;justify-content:center;font-weight:600;font-family:var(--sans)}
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:0 18px}
+.field{margin-bottom:15px}.field.full{grid-column:1/3}
+.field label{display:block;font-size:12.5px;color:var(--muted);font-weight:500;margin-bottom:7px}
+.field input{width:100%;height:46px;border:1px solid var(--line);border-radius:11px;padding:0 14px;font-size:14.5px;outline:0;background:var(--bg);font-family:var(--sans)}
+.field input:focus{border-color:var(--accent)}
+.radio{display:flex;gap:13px;flex-wrap:wrap}
+.ropt{flex:1;min-width:155px;border:1px solid var(--line);border-radius:13px;padding:15px;cursor:pointer;display:flex;gap:12px;align-items:flex-start;transition:.14s}
+.ropt.active{border-color:var(--accent);background:var(--accent-soft)}
+.ropt .rdot{width:19px;height:19px;border-radius:50%;border:2px solid var(--faint);flex:none;margin-top:1px}
+.ropt.active .rdot{border-color:var(--accent);background:var(--accent);box-shadow:inset 0 0 0 3px #fff}
+.ropt .rl{font-size:14px;font-weight:600}.ropt .rs{font-size:12.5px;color:var(--muted);margin-top:3px}
+.mini{display:flex;align-items:center;gap:12px;padding:9px 0;font-size:14px}
+.mini .mt{width:46px;height:46px;border-radius:10px;overflow:hidden;flex:none;background:var(--soft)}.mini .mt img{width:100%;height:100%;object-fit:cover}
+.mini .mq{margin-left:auto;color:var(--muted);font-weight:600;font-size:13px}
+.done{max-width:560px;margin:0 auto;text-align:center;padding:70px 0 90px}
+.done .dc{width:88px;height:88px;border-radius:50%;background:var(--ok-bg);color:var(--ok);display:flex;align-items:center;justify-content:center;margin:0 auto 24px}
+.done .dc .icon{width:44px;height:44px;stroke-width:2.4}
+.done h1{font-family:var(--serif);font-size:34px;font-weight:600;margin-bottom:12px}
+.done p{color:var(--muted);font-size:15.5px;line-height:1.65;margin-bottom:26px}
+/* ---------- ADMIN ---------- */
+#admin{display:none;min-height:100vh;font-size:14px}
+.asb{width:248px;flex:none;background:var(--brand);display:flex;flex-direction:column;padding:20px 14px;position:sticky;top:0;height:100vh}
+.asb .alogo{display:flex;align-items:center;gap:11px;padding:6px 8px 18px;color:#fff}
+.asb .alogo .bn{width:34px;height:34px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center}
+.asb .alogo .wm{font-family:var(--serif);font-size:19px;font-weight:600;letter-spacing:1.5px}
+.asb .alogo .ad{font-size:10px;color:#C9B6A6;background:rgba(255,255,255,.1);padding:2px 6px;border-radius:5px;font-weight:600}
+.alabel{font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:#7A6452;padding:14px 10px 6px;font-weight:600}
+.nav-item{display:flex;align-items:center;gap:12px;padding:10px 11px;border-radius:10px;color:#C9B6A6;font-size:14px;font-weight:500;cursor:pointer;margin-bottom:2px}
+.nav-item:hover{background:rgba(255,255,255,.06);color:#fff}
+.nav-item.active{background:var(--accent);color:#fff}
+.nav-item .icon{width:19px;height:19px}
+.nav-item .badge{margin-left:auto;background:rgba(255,255,255,.14);color:#fff;font-size:11px;padding:1px 8px;border-radius:20px;font-weight:600}
+.asb .tostore{margin-top:auto;border-top:1px solid rgba(255,255,255,.1);padding-top:12px}
+.amain{flex:1;min-width:0;display:flex;flex-direction:column}
+.atop{height:70px;flex:none;display:flex;align-items:center;gap:14px;padding:0 28px;border-bottom:1px solid var(--line);background:var(--panel);position:sticky;top:0;z-index:10}
+.atop h1{font-family:var(--serif);font-size:21px;font-weight:600}
+.atop .sub{font-size:12.5px;color:var(--muted);margin-top:1px}
+.asearch{margin-left:auto;display:flex;align-items:center;gap:8px;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:0 13px;height:40px;width:230px;color:var(--faint)}
+.asearch input{border:0;background:transparent;outline:0;font-size:13.5px;color:var(--ink);width:100%;font-family:var(--sans)}
+.acontent{padding:24px 28px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:16px;margin-bottom:18px}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:17px 19px;box-shadow:0 1px 2px rgba(36,24,16,.03)}
+.kpi .lab{color:var(--muted);font-size:13px;font-weight:500;display:flex;justify-content:space-between;align-items:center}
+.kpi .lab .ic{width:36px;height:36px;border-radius:10px;background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center}
+.kpi .val{font-family:var(--serif);font-size:27px;font-weight:600;margin-top:13px;letter-spacing:-.01em}
+.kpi .d{font-size:12px;font-weight:600;margin-top:8px}.kpi .d.up{color:var(--ok)}.kpi .d.down{color:var(--bad)}
+.acard{background:var(--panel);border:1px solid var(--line);border-radius:14px;margin-bottom:18px;box-shadow:0 1px 2px rgba(36,24,16,.03)}
+.acard .hd{display:flex;align-items:center;justify-content:space-between;padding:16px 19px;border-bottom:1px solid var(--line)}
+.acard .hd h3{font-family:var(--serif);font-size:16px;font-weight:600}
+.acard .hd .lk{font-size:13px;color:var(--accent);font-weight:600;cursor:pointer}
+.acard .bd{padding:19px}
+.aover{display:grid;grid-template-columns:1.7fr 1fr;gap:18px;align-items:start}
+table{width:100%;border-collapse:collapse}
+thead th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--faint);font-weight:600;padding:0 14px 11px}
+tbody tr{cursor:pointer}tbody tr:hover{background:var(--bg)}
+tbody td{padding:13px 14px;border-top:1px solid var(--line);font-size:13.5px}
+.prod-mini{display:flex;align-items:center;gap:11px;font-weight:600}
+.prod-mini .pm{width:38px;height:38px;border-radius:9px;overflow:hidden;flex:none;background:var(--soft)}.prod-mini .pm img{width:100%;height:100%;object-fit:cover}
+.cust-mini{display:flex;align-items:center;gap:11px;font-weight:600}
+.cust-mini .ca{width:34px;height:34px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex:none}
+.stt{font-size:12px;font-weight:600;padding:4px 11px;border-radius:7px;display:inline-block;white-space:nowrap}
+.s-new{background:var(--blue-bg);color:var(--blue)}.s-pack{background:var(--warn-bg);color:var(--warn)}.s-ship{background:var(--accent-soft);color:var(--accent-d)}.s-done{background:var(--ok-bg);color:var(--ok)}.s-cancel{background:var(--bad-bg);color:var(--bad)}
+.tg2{background:var(--soft);color:#6b5d4f}.tg-vip{background:#F3E8CF;color:#8A6A12}
+.atabs{display:flex;gap:4px;margin-bottom:16px;flex-wrap:wrap}
+.atab{font-size:13px;font-weight:500;color:var(--muted);padding:8px 14px;border-radius:9px;cursor:pointer;border:1px solid transparent}
+.atab:hover{color:var(--ink)}
+.atab.active{background:var(--panel);border-color:var(--line);color:var(--ink);font-weight:600}
+.atab .cnt{color:var(--faint);margin-left:5px}
+.feed .fi{display:flex;gap:12px;padding:11px 0;border-bottom:1px solid var(--line)}
+.feed .fi:last-child{border:0}
+.feed .fi .fd{width:32px;height:32px;border-radius:9px;background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center;flex:none}
+.feed .fi .ft{font-size:13.5px}.feed .fi .fm{font-size:12px;color:var(--faint);margin-top:2px}
+.lowstock .ls{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--line)}
+.lowstock .ls:last-child{border:0}
+.lowstock .ls .lm{width:38px;height:38px;border-radius:9px;overflow:hidden;flex:none;background:var(--soft)}.lowstock .ls .lm img{width:100%;height:100%;object-fit:cover}
+.lowstock .ls .ln{font-size:13.5px;font-weight:600}.lowstock .ls .lc{font-size:12px;color:var(--muted);margin-top:1px}
+.bars{display:flex;flex-direction:column;gap:14px}
+.bar{display:grid;grid-template-columns:150px 1fr 64px;align-items:center;gap:12px}
+.bar .bl{font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar .track{height:10px;background:var(--accent-soft);border-radius:6px;overflow:hidden}.bar .fill{height:100%;background:var(--accent);border-radius:6px}
+.bar .bv{font-size:13px;color:var(--muted);text-align:right;font-weight:600}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.donut-wrap{display:flex;align-items:center;gap:22px}
+.legend{display:flex;flex-direction:column;gap:11px;flex:1}
+.lg{display:flex;align-items:center;gap:9px;font-size:13px}.lg .sw{width:11px;height:11px;border-radius:3px;flex:none}.lg .pc{margin-left:auto;color:var(--muted);font-weight:600}
+.muted{color:var(--muted)}.amt{font-weight:600}
+/* drawer */
+.overlay{position:fixed;inset:0;background:rgba(28,20,13,.42);z-index:40;opacity:0;pointer-events:none;transition:.2s}
+.overlay.open{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;height:100vh;width:450px;max-width:92vw;background:#fff;z-index:50;transform:translateX(100%);transition:transform .26s cubic-bezier(.4,0,.2,1);box-shadow:-10px 0 44px rgba(28,20,13,.18);display:flex;flex-direction:column}
+.drawer.open{transform:none}
+.dr-h{padding:21px 23px;border-bottom:1px solid var(--line);display:flex;align-items:flex-start;gap:12px}
+.dr-h .x{margin-left:auto;cursor:pointer;color:var(--muted);width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center}.dr-h .x:hover{background:var(--bg)}
+.dr-b{flex:1;overflow:auto;padding:21px 23px}
+.kv{display:grid;grid-template-columns:120px 1fr;gap:11px 12px;font-size:13.5px;margin-bottom:8px}
+.kv .k{color:var(--muted)}.kv .v{font-weight:500;text-align:right}
+.blk{margin-top:24px}.blk h4{font-size:11.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--faint);font-weight:600;margin-bottom:13px}
+.statusbar{display:flex;gap:6px;margin:6px 0 4px}.statusbar .s{flex:1;height:6px;border-radius:3px;background:var(--line)}.statusbar .s.on{background:var(--accent)}
+.aburger{display:none;width:40px;height:40px;border-radius:10px;border:1px solid var(--line);background:var(--panel);align-items:center;justify-content:center;color:var(--ink);cursor:pointer;flex:none}
+.sb-ov{position:fixed;inset:0;background:rgba(28,20,13,.45);z-index:55;opacity:0;pointer-events:none;transition:.2s}
+.sb-ov.open{opacity:1;pointer-events:auto}
+@media(max-width:1100px){.grid{grid-template-columns:repeat(2,1fr)}.pp,.cart-wrap,.co-wrap,.band,.row2,.aover,.trust,.tg{grid-template-columns:1fr}.hero h1{font-size:42px}}
+@media(max-width:900px){
+ .aburger{display:flex}
+ .asb{position:fixed;left:0;top:0;z-index:60;transform:translateX(-100%);transition:transform .25s ease;box-shadow:8px 0 40px rgba(28,20,13,.3)}
+ .asb.open{transform:none}
+ .asearch{display:none}
+ .acontent{padding:16px 14px}
+ .atabs{flex-wrap:wrap}
+ .acard .bd{overflow-x:auto}.acard .bd table{min-width:520px}
+ .snav{display:none}
+}
+@media(max-width:680px){
+ .shead .bar{height:64px;gap:12px;padding:0 16px}
+ .demo-tag{display:none}
+ .hero{height:auto;padding:50px 0}.hero h1{font-size:30px}.hero p{font-size:15px}.hero .hrow{flex-direction:column;align-items:stretch}.hero .hrow .btn{width:100%}
+ .sect-h{flex-direction:column;align-items:flex-start;gap:10px;margin:34px 0 18px}
+ .sect-h h2{font-size:26px}
+ .band .btext{padding:34px 24px}
+ .wrap{padding:0 18px}
+ .pp h1{font-size:30px}
+ .sfoot .fin{grid-template-columns:1fr 1fr;gap:24px;padding:40px 20px 24px}
+}
+@media(max-width:520px){.grid{grid-template-columns:1fr 1fr}.sfoot .fin{grid-template-columns:1fr}.citem{grid-template-columns:56px 1fr auto;gap:12px}.citem .ct{width:56px;height:56px}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="i-cart" viewBox="0 0 24 24"><circle cx="9" cy="20" r="1.5"/><circle cx="17" cy="20" r="1.5"/><path d="M3 4h2.2l2 11.2a1.5 1.5 0 0 0 1.5 1.3h7.6a1.5 1.5 0 0 0 1.5-1.2L20 8H6"/></symbol>
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.3-3.3"/></symbol>
+<symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+<symbol id="i-star" viewBox="0 0 24 24"><path d="M12 4l2.4 5 5.4.5-4.1 3.6 1.3 5.3L12 16.2 7 18.4l1.3-5.3L4.2 9.5 9.6 9z"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+<symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+<symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+<symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+<symbol id="i-back" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 5 5L20 7"/></symbol>
+<symbol id="i-truck" viewBox="0 0 24 24"><rect x="2.5" y="6" width="11" height="9" rx="1.5"/><path d="M13.5 9H18l3 3v3h-7.5"/><circle cx="7" cy="18" r="1.7"/><circle cx="17.5" cy="18" r="1.7"/></symbol>
+<symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 5-3.5 8-7 9-3.5-1-7-4-7-9V6z"/><path d="m9 12 2 2 4-4"/></symbol>
+<symbol id="i-leaf" viewBox="0 0 24 24"><path d="M5 19c0-8 6-13.5 14.5-13.5C19.5 14 14 19.5 5 19z"/><path d="M5.5 18.5C8.5 13 12.5 10 16.5 9"/></symbol>
+<symbol id="i-bean" viewBox="0 0 24 24"><ellipse cx="12" cy="12" rx="6.5" ry="9"/><path d="M12 3.4c-2.6 3.6-2.6 13.6 0 17.2"/></symbol>
+<symbol id="i-box" viewBox="0 0 24 24"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.7 12 12l8-4.3M12 12v9"/></symbol>
+<symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.5"/></symbol>
+<symbol id="i-receipt" viewBox="0 0 24 24"><path d="M6 3h12v18l-2.5-1.6L13 21l-2.5-1.6L8 21l-2-1.6V3z"/><path d="M9 8h6M9 12h6"/></symbol>
+<symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 20V4M4 20h16"/><rect x="7.5" y="11" width="3.4" height="6" rx="1"/><rect x="13.5" y="7" width="3.4" height="10" rx="1"/></symbol>
+<symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 20c0-3.3 2.6-5.4 5.5-5.4s5.5 2.1 5.5 5.4"/><path d="M16 5.2a3 3 0 0 1 0 5.6"/><path d="M17.6 14.9c2.1.5 3.7 2.3 3.7 5.1"/></symbol>
+<symbol id="i-tag" viewBox="0 0 24 24"><path d="M4 4h7l9 9-7 7-9-9z"/><circle cx="8.5" cy="8.5" r="1.4"/></symbol>
+<symbol id="i-set" viewBox="0 0 24 24"><path d="M4 7.5h16M4 14.5h16"/><circle cx="9" cy="7.5" r="2.2"/><circle cx="15" cy="14.5" r="2.2"/></symbol>
+<symbol id="i-trash" viewBox="0 0 24 24"><path d="M5 7h14M9 7V5h6v2M7.5 7l.8 12h7.4l.8-12"/></symbol>
+<symbol id="i-coin" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M14.5 9.2c0-1.2-1.1-1.9-2.5-1.9s-2.5.8-2.5 2 1.1 1.7 2.5 2 2.5.7 2.5 1.9-1.1 2-2.5 2-2.6-.7-2.6-1.9"/></symbol>
+<symbol id="i-undo" viewBox="0 0 24 24"><path d="M9 7H5V3M5 7a9 9 0 1 1-2 5"/></symbol>
+</defs></svg>
+
+<!-- ============ STOREFRONT ============ -->
+<div id="store">
+  <header class="shead">
+    <div class="bar">
+      <div class="logo" onclick="go('s-shop')"><span class="bn"><svg class="icon" style="width:20px;height:20px;fill:#fff;stroke:#fff"><use href="#i-bean"/></svg></span><span class="wm">CREMA</span></div>
+      <nav class="snav"><a onclick="go('s-shop')">Каталог</a><a onclick="go('s-shop')">Подписка</a><a onclick="go('s-shop')">О бренде</a><a onclick="go('s-shop')">Доставка</a></nav>
+      <div class="actions">
+        <span class="demo-tag">Демо-продукт</span>
+        <div class="ibtn"><svg class="icon" style="width:18px;height:18px"><use href="#i-search"/></svg></div>
+        <div class="ibtn" onclick="go('s-cart')"><svg class="icon" style="width:18px;height:18px"><use href="#i-cart"/></svg><span class="cbadge" id="cbadge">3</span></div>
+        <button class="lnk-admin" onclick="showAdmin()"><svg class="icon" style="width:15px;height:15px"><use href="#i-box"/></svg>Админка</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- SHOP -->
+  <section class="view active" id="s-shop">
+    <div class="hero">
+      <div class="hbg" id="hero-bg"></div><div class="hov"></div>
+      <div class="wrap"><div class="hin">
+        <span class="eyebrow"><svg class="icon" style="width:15px;height:15px"><use href="#i-leaf"/></svg>Обжарка под заказ · с 2018 года</span>
+        <h1>Кофе, обжаренный<br>в день отправки</h1>
+        <p>Спешелти-зерно с лучших ферм мира. Обжариваем маленькими партиями и отправляем в течение 24 часов — чтобы чашка раскрылась так, как задумано.</p>
+        <div class="hrow"><button class="btn light" onclick="document.getElementById('catalog').scrollIntoView({behavior:'smooth'})">Смотреть каталог</button><button class="btn ghost" style="color:#fff;border-color:rgba(255,255,255,.4)" onclick="go('s-shop')">Оформить подписку</button></div>
+        <div class="hrate"><span class="hstars"><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg></span>4.9 из 5 · более 1 240 отзывов</div>
+      </div></div>
+    </div>
+    <div class="wrap">
+      <div class="trust">
+        <div class="t"><span class="ic"><svg class="icon"><use href="#i-leaf"/></svg></span><div><div class="tt">Обжарка под заказ</div><div class="ts">Дата обжарки на пачке</div></div></div>
+        <div class="t"><span class="ic"><svg class="icon"><use href="#i-truck"/></svg></span><div><div class="tt">Доставка 1–3 дня</div><div class="ts">Бесплатно от 3 000 ₽</div></div></div>
+        <div class="t"><span class="ic"><svg class="icon"><use href="#i-shield"/></svg></span><div><div class="tt">Гарантия вкуса</div><div class="ts">Заменим или вернём деньги</div></div></div>
+        <div class="t"><span class="ic"><svg class="icon"><use href="#i-bean"/></svg></span><div><div class="tt">100% арабика</div><div class="ts">Прямые закупки, Q-grade</div></div></div>
+      </div>
+      <div id="catalog">
+        <div class="sect-h"><div><h2>Каталог обжарки</h2><div class="sub">Моносорта и фирменные смеси. Свежая обжарка под каждый заказ.</div></div>
+          <div class="filters"><span class="fchip active">Все</span><span class="fchip">Светлая</span><span class="fchip">Средняя</span><span class="fchip">Тёмная</span><span class="fchip">Декаф</span></div>
+        </div>
+        <div class="grid" id="grid"></div>
+      </div>
+      <div class="band">
+        <div class="bimg" id="about-img"></div>
+        <div class="btext">
+          <span class="eyebrow">Наша обжарка</span>
+          <h2>Свежесть, которую слышно в аромате</h2>
+          <p>Мы закупаем зелёное зерно напрямую у фермеров и обжариваем его на ростере Probat небольшими партиями. Никаких складских остатков — только кофе, обжаренный под ваш заказ.</p>
+          <p>Каждую партию профилируем и каппируем, чтобы раскрыть характер сорта: от ягодной кислотности Эфиопии до плотного шоколада бразильской классики.</p>
+          <div class="statline"><div class="s"><div class="v">6</div><div class="l">лет обжарки</div></div><div class="s"><div class="v">28</div><div class="l">сортов в год</div></div><div class="s"><div class="v">24ч</div><div class="l">до отправки</div></div></div>
+        </div>
+      </div>
+      <div class="sect-h" style="margin-bottom:26px"><div><h2>Нам доверяют</h2><div class="sub">Более 1 240 оценок со средним баллом 4.9</div></div></div>
+      <div class="tg">
+        <div class="tcard"><div class="ts2"><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg></div><div class="tq">«Лучший фильтр, что я пил дома. Эфиопия — это просто компот из ягод. Приходит свежайшим.»</div><div class="tp"><span class="ta">МД</span><div><div class="tn">Мария Д.</div><div class="tr">Москва · постоянный клиент</div></div></div></div>
+        <div class="tcard"><div class="ts2"><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg></div><div class="tq">«Подписка — топ. Каждые две недели новый сорт, не надо думать. Эспрессо CREMA теперь база на кухне.»</div><div class="tp"><span class="ta">ИК</span><div><div class="tn">Игорь К.</div><div class="tr">СПб · подписка</div></div></div></div>
+        <div class="tcard"><div class="ts2"><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg></div><div class="tq">«Заказывали в офис — все довольны. Доставка на следующий день, упаковка с клапаном, всё по уму.»</div><div class="tp"><span class="ta">ОБ</span><div><div class="tn">Ольга Б.</div><div class="tr">Казань · опт для офиса</div></div></div></div>
+      </div>
+    </div>
+    <footer class="sfoot">
+      <div class="fin">
+        <div><div class="flogo">CREMA</div><p style="font-size:14px;line-height:1.6;max-width:280px">Спешелти-кофе свежей обжарки. Обжариваем под заказ и доставляем по всей России.</p></div>
+        <div class="fcol"><h4>Магазин</h4><a onclick="go('s-shop')">Каталог</a><a onclick="go('s-shop')">Подписка</a><a onclick="go('s-shop')">Подарочные наборы</a><a onclick="go('s-shop')">Опт для кофеен</a></div>
+        <div class="fcol"><h4>Компания</h4><a onclick="go('s-shop')">О бренде</a><a onclick="go('s-shop')">Доставка и оплата</a><a onclick="go('s-shop')">Контакты</a><a onclick="go('s-shop')">Блог</a></div>
+        <div class="fcol"><h4>Рассылка</h4><p style="font-size:14px;line-height:1.5">Новинки обжарки и −10% на первый заказ.</p><div class="nl"><input placeholder="Ваш email"><button class="btn acc sm">ОК</button></div></div>
+      </div>
+      <div class="fb">© 2025 CREMA · демо-проект для портфолио. Фото: Unsplash.</div>
+    </footer>
+  </section>
+
+  <!-- PRODUCT -->
+  <section class="view" id="s-product">
+    <div class="wrap">
+      <div class="pp">
+        <div>
+          <div class="pp-main"><img id="pp-img" src="" alt="" onerror="this.style.visibility='hidden'"></div>
+          <div class="pp-thumbs" id="pp-thumbs"></div>
+        </div>
+        <div>
+          <div class="crumb" onclick="go('s-shop')"><svg class="icon" style="width:15px;height:15px"><use href="#i-back"/></svg>Каталог</div>
+          <div class="org" id="pp-org">—</div>
+          <h1 id="pp-name">—</h1>
+          <div class="stars"><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><span class="c" id="pp-rev">4.9 · 128 отзывов</span></div>
+          <div class="desc" id="pp-desc">—</div>
+          <div class="specrow" id="pp-specs"></div>
+          <div class="opt"><div class="ol">Вес</div><div class="segs"><button class="active">250 г</button><button>500 г</button><button>1 кг</button></div></div>
+          <div class="opt"><div class="ol">Помол</div><div class="segs"><button class="active">В зёрнах</button><button>Фильтр</button><button>Эспрессо</button><button>Турка</button></div></div>
+          <div class="pp-buy"><span class="pv" id="pp-price">—</span>
+            <div class="qty"><button onclick="ppQ(-1)"><svg class="icon" style="width:16px;height:16px"><use href="#i-minus"/></svg></button><span id="pp-qty">1</span><button onclick="ppQ(1)"><svg class="icon" style="width:16px;height:16px"><use href="#i-plus"/></svg></button></div>
+          </div>
+          <button class="btn block" style="height:56px;font-size:16px" onclick="ppAdd()"><svg class="icon" style="width:20px;height:20px"><use href="#i-cart"/></svg>Добавить в корзину</button>
+          <div class="feats">
+            <div class="f"><svg class="icon"><use href="#i-leaf"/></svg>Обжарено под ваш заказ · дата обжарки на упаковке</div>
+            <div class="f"><svg class="icon"><use href="#i-truck"/></svg>Бесплатная доставка от 3 000 ₽, отправка за 24 часа</div>
+            <div class="f"><svg class="icon"><use href="#i-shield"/></svg>Не понравится вкус — заменим сорт или вернём деньги</div>
+          </div>
+        </div>
+      </div>
+      <div class="reviews">
+        <div class="sect-h" style="margin:30px 0 20px"><h2 style="font-size:28px">Отзывы покупателей</h2></div>
+        <div class="rev"><div class="rh"><span class="ra">МД</span><div><div class="rn">Мария Д.</div><div class="stars" style="margin:0"><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg></div></div></div><div class="rt">Беру третий раз. Аромат раскрывается потрясающе, в фильтре — ягодная кислотность. Приходит свежим, дата обжарки за пару дней до отправки.</div></div>
+        <div class="rev"><div class="rh"><span class="ra">ИК</span><div><div class="rn">Игорь К.</div><div class="stars" style="margin:0"><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg></div></div></div><div class="rt">Идеально для эспрессо: плотное тело, сладость карамели, без горечи. Упаковка с дегазационным клапаном — всё на уровне.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CART -->
+  <section class="view" id="s-cart">
+    <div class="wrap">
+      <div class="sect-h" style="margin:36px 0 24px"><div><h2>Корзина</h2><div class="sub" id="cart-sub">—</div></div><div class="crumb" onclick="go('s-shop')" style="margin:0"><svg class="icon" style="width:15px;height:15px"><use href="#i-back"/></svg>Продолжить покупки</div></div>
+      <div class="cart-wrap">
+        <div id="cart-items"></div>
+        <div class="summary">
+          <h3>Итог заказа</h3>
+          <div class="promo"><input id="promo" placeholder="Промокод (CREMA10)"><button class="btn sm ghost" onclick="applyPromo()">ОК</button></div>
+          <div class="promo-msg" id="promo-msg" style="display:none"></div>
+          <div class="srow"><span>Товары</span><span id="s-sub">—</span></div>
+          <div class="srow" id="s-disc-row" style="display:none;color:var(--ok)"><span>Скидка по промокоду</span><span id="s-disc">—</span></div>
+          <div class="srow"><span>Доставка</span><span id="s-del">—</span></div>
+          <div class="srow tot"><span>К оплате</span><span id="s-tot">—</span></div>
+          <button class="btn block" style="margin-top:18px;height:54px" onclick="go('s-checkout')">Оформить заказ</button>
+          <div style="display:flex;align-items:center;gap:8px;justify-content:center;margin-top:14px;font-size:12.5px;color:var(--muted)"><svg class="icon" style="width:15px;height:15px"><use href="#i-shield"/></svg>Безопасная оплata · возврат 14 дней</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CHECKOUT -->
+  <section class="view" id="s-checkout">
+    <div class="wrap">
+      <div class="sect-h" style="margin:36px 0 24px"><div><h2>Оформление</h2><div class="sub">Демо-форма — данные никуда не отправляются</div></div><div class="crumb" onclick="go('s-cart')" style="margin:0"><svg class="icon" style="width:15px;height:15px"><use href="#i-back"/></svg>В корзину</div></div>
+      <div class="co-wrap">
+        <div>
+          <div class="fcard"><h3><span class="n">1</span>Контактные данные</h3><div class="fgrid">
+            <div class="field"><label>Имя и фамилия</label><input value="Анна Орлова"></div>
+            <div class="field"><label>Телефон</label><input value="+7 903 118-22-90"></div>
+            <div class="field full"><label>Email</label><input value="a.orlova@example.ru"></div>
+          </div></div>
+          <div class="fcard"><h3><span class="n">2</span>Доставка</h3>
+            <div class="radio" style="margin-bottom:18px">
+              <div class="ropt active"><span class="rdot"></span><div><div class="rl">Курьер</div><div class="rs">1–2 дня · 300 ₽</div></div></div>
+              <div class="ropt"><span class="rdot"></span><div><div class="rl">Самовывоз</div><div class="rs">Сегодня · бесплатно</div></div></div>
+              <div class="ropt"><span class="rdot"></span><div><div class="rl">Почта РФ</div><div class="rs">3–7 дней · 250 ₽</div></div></div>
+            </div>
+            <div class="fgrid"><div class="field"><label>Город</label><input value="Москва"></div><div class="field"><label>Индекс</label><input value="101000"></div><div class="field full"><label>Адрес</label><input value="ул. Тверская, 12, кв. 45"></div></div>
+          </div>
+          <div class="fcard"><h3><span class="n">3</span>Оплата</h3><div class="radio">
+            <div class="ropt active"><span class="rdot"></span><div><div class="rl">Картой онлайн</div><div class="rs">Visa · Mastercard · МИР</div></div></div>
+            <div class="ropt"><span class="rdot"></span><div><div class="rl">СБП</div><div class="rs">По QR-коду</div></div></div>
+            <div class="ropt"><span class="rdot"></span><div><div class="rl">При получении</div><div class="rs">Наличными или картой</div></div></div>
+          </div></div>
+        </div>
+        <div class="summary">
+          <h3>Ваш заказ</h3>
+          <div id="co-items"></div>
+          <div class="srow" style="border-top:1px solid var(--line);margin-top:12px;padding-top:14px"><span>Товары</span><span id="c-sub">—</span></div>
+          <div class="srow" id="c-disc-row" style="display:none;color:var(--ok)"><span>Скидка</span><span id="c-disc">—</span></div>
+          <div class="srow"><span>Доставка</span><span id="c-del">—</span></div>
+          <div class="srow tot"><span>К оплате</span><span id="c-tot">—</span></div>
+          <button class="btn acc block" style="margin-top:18px;height:56px;font-size:16px" onclick="placeOrder()"><svg class="icon" style="width:19px;height:19px"><use href="#i-shield"/></svg><span id="pay-btn">Оплатить</span></button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DONE -->
+  <section class="view" id="s-done">
+    <div class="wrap"><div class="done">
+      <div class="dc"><svg class="icon"><use href="#i-check"/></svg></div>
+      <h1>Спасибо за заказ!</h1>
+      <p>Заказ <b id="done-num">#1044</b> принят. Мы обжарим кофе под вас и отправим в течение 24 часов — трек-номер придёт на email и в SMS.</p>
+      <button class="btn" onclick="go('s-shop')"><svg class="icon" style="width:18px;height:18px"><use href="#i-back"/></svg>Вернуться в магазин</button>
+    </div></div>
+  </section>
+</div>
+
+<!-- ============ ADMIN ============ -->
+<div id="admin">
+  <aside class="asb" id="asb">
+    <div class="alogo"><span class="bn"><svg class="icon" style="width:18px;height:18px;fill:#fff;stroke:#fff"><use href="#i-bean"/></svg></span><span class="wm">CREMA</span><span class="ad">admin</span></div>
+    <div class="alabel">Управление</div>
+    <div class="nav-item active" data-view="a-over"><svg class="icon"><use href="#i-grid"/></svg>Обзор</div>
+    <div class="nav-item" data-view="a-orders"><svg class="icon"><use href="#i-receipt"/></svg>Заказы<span class="badge">3</span></div>
+    <div class="nav-item" data-view="a-products"><svg class="icon"><use href="#i-box"/></svg>Товары</div>
+    <div class="nav-item" data-view="a-customers"><svg class="icon"><use href="#i-users"/></svg>Клиенты</div>
+    <div class="alabel">Маркетинг</div>
+    <div class="nav-item" data-view="a-promos"><svg class="icon"><use href="#i-tag"/></svg>Промокоды</div>
+    <div class="nav-item" data-view="a-analytics"><svg class="icon"><use href="#i-chart"/></svg>Аналитика</div>
+    <div class="tostore"><div class="nav-item" onclick="showStore()"><svg class="icon"><use href="#i-back"/></svg>На витрину</div></div>
+  </aside>
+  <main class="amain">
+    <header class="atop"><button class="aburger" onclick="toggleASide()"><svg class="icon" style="width:20px;height:20px"><use href="#i-menu"/></svg></button><div><h1 id="a-title">Обзор</h1><div class="sub" id="a-sub">Сводка магазина · сегодня</div></div><span class="demo-tag" style="margin-left:14px">Демо-продукт</span><div class="asearch" style="margin-left:auto"><svg class="icon" style="width:16px;height:16px"><use href="#i-search"/></svg><input placeholder="Поиск заказов, товаров, клиентов"></div><button class="btn sm"><svg class="icon" style="width:16px;height:16px"><use href="#i-plus"/></svg>Создать</button></header>
+    <div class="acontent">
+      <!-- OVERVIEW -->
+      <section class="view active" id="a-over">
+        <div class="kpis">
+          <div class="kpi"><div class="lab">Выручка сегодня<span class="ic"><svg class="icon" style="width:18px;height:18px"><use href="#i-coin"/></svg></span></div><div class="val">₽ 84 200</div><div class="d up">↑ 12,4% ко вчера</div></div>
+          <div class="kpi"><div class="lab">Заказов сегодня<span class="ic"><svg class="icon" style="width:18px;height:18px"><use href="#i-receipt"/></svg></span></div><div class="val">42</div><div class="d up">↑ 6 к среднему</div></div>
+          <div class="kpi"><div class="lab">Средний чек<span class="ic"><svg class="icon" style="width:18px;height:18px"><use href="#i-cart"/></svg></span></div><div class="val">₽ 2 005</div><div class="d up">↑ 3,1%</div></div>
+          <div class="kpi"><div class="lab">Новые клиенты<span class="ic"><svg class="icon" style="width:18px;height:18px"><use href="#i-users"/></svg></span></div><div class="val">17</div><div class="d up">↑ 9%</div></div>
+          <div class="kpi"><div class="lab">Конверсия<span class="ic"><svg class="icon" style="width:18px;height:18px"><use href="#i-chart"/></svg></span></div><div class="val">3,8%</div><div class="d up">↑ 0,5 п.п.</div></div>
+          <div class="kpi"><div class="lab">Возвраты<span class="ic"><svg class="icon" style="width:18px;height:18px"><use href="#i-undo"/></svg></span></div><div class="val">0,6%</div><div class="d down">↓ 0,2 п.п.</div></div>
+        </div>
+        <div class="aover">
+          <div class="acard"><div class="hd"><h3>Последние заказы</h3><span class="lk" onclick="go('a-orders')">Все заказы →</span></div><div class="bd" style="padding:8px 6px 12px"><table><thead><tr><th>Заказ</th><th>Клиент</th><th>Сумма</th><th>Статус</th></tr></thead><tbody id="over-orders"></tbody></table></div></div>
+          <div>
+            <div class="acard"><div class="hd"><h3>Заканчивается</h3><span class="lk" onclick="go('a-products')">Товары →</span></div><div class="bd lowstock" id="lowstock"></div></div>
+            <div class="acard"><div class="hd"><h3>Активность</h3></div><div class="bd feed">
+              <div class="fi"><span class="fd"><svg class="icon" style="width:16px;height:16px"><use href="#i-receipt"/></svg></span><div><div class="ft">Новый заказ <b>#1043</b> от Анны Орловой</div><div class="fm">5 минут назад</div></div></div>
+              <div class="fi"><span class="fd"><svg class="icon" style="width:16px;height:16px"><use href="#i-coin"/></svg></span><div><div class="ft">Оплата ₽ 4 360 прошла успешно</div><div class="fm">12 минут назад</div></div></div>
+              <div class="fi"><span class="fd"><svg class="icon" style="width:16px;height:16px"><use href="#i-users"/></svg></span><div><div class="ft">Новый клиент: Денис Лис</div><div class="fm">28 минут назад</div></div></div>
+              <div class="fi"><span class="fd"><svg class="icon" style="width:16px;height:16px"><use href="#i-truck"/></svg></span><div><div class="ft">Заказ <b>#1040</b> передан в доставку</div><div class="fm">1 час назад</div></div></div>
+              <div class="fi"><span class="fd"><svg class="icon" style="width:16px;height:16px"><use href="#i-star"/></svg></span><div><div class="ft">Новый отзыв 5★ на «Эфиопия Иргачеффе»</div><div class="fm">2 часа назад</div></div></div>
+            </div></div>
+          </div>
+        </div>
+      </section>
+      <!-- ORDERS -->
+      <section class="view" id="a-orders">
+        <div class="atabs" id="order-tabs">
+          <div class="atab active" data-f="all">Все<span class="cnt">7</span></div>
+          <div class="atab" data-f="Новый">Новые<span class="cnt">2</span></div>
+          <div class="atab" data-f="Собирается">Собираются<span class="cnt">1</span></div>
+          <div class="atab" data-f="Отправлен">Отправлены<span class="cnt">1</span></div>
+          <div class="atab" data-f="Доставлен">Доставлены<span class="cnt">2</span></div>
+        </div>
+        <div class="acard"><div class="bd" style="padding:8px 6px 12px"><table><thead><tr><th>Заказ</th><th>Клиент</th><th>Товаров</th><th>Сумма</th><th>Статус</th><th>Дата</th></tr></thead><tbody id="orders-table"></tbody></table></div></div>
+      </section>
+      <!-- PRODUCTS -->
+      <section class="view" id="a-products">
+        <div class="acard"><div class="bd" style="padding:8px 6px 12px"><table><thead><tr><th>Товар</th><th>Обжарка</th><th>Цена</th><th>Остаток</th><th>Продано</th><th>Статус</th></tr></thead><tbody id="prod-table"></tbody></table></div></div>
+      </section>
+      <!-- CUSTOMERS -->
+      <section class="view" id="a-customers">
+        <div class="acard"><div class="bd" style="padding:8px 6px 12px"><table><thead><tr><th>Клиент</th><th>Email</th><th>Заказов</th><th>Сумма покупок</th><th>Последний</th><th>Сегмент</th></tr></thead><tbody id="cust-table"></tbody></table></div></div>
+      </section>
+      <!-- PROMOS -->
+      <section class="view" id="a-promos">
+        <div class="acard"><div class="hd"><h3>Промокоды</h3><button class="btn sm"><svg class="icon" style="width:15px;height:15px"><use href="#i-plus"/></svg>Новый код</button></div><div class="bd" style="padding:8px 6px 12px"><table><thead><tr><th>Код</th><th>Скидка</th><th>Использований</th><th>Действует до</th><th>Статус</th></tr></thead><tbody id="promo-table"></tbody></table></div></div>
+      </section>
+      <!-- ANALYTICS -->
+      <section class="view" id="a-analytics">
+        <div class="kpis">
+          <div class="kpi"><div class="lab">Выручка за месяц<span class="ic"><svg class="icon" style="width:18px;height:18px"><use href="#i-coin"/></svg></span></div><div class="val">₽ 842 400</div><div class="d up">↑ 16,4%</div></div>
+          <div class="kpi"><div class="lab">Заказов<span class="ic"><svg class="icon" style="width:18px;height:18px"><use href="#i-receipt"/></svg></span></div><div class="val">438</div><div class="d up">↑ 9,2%</div></div>
+          <div class="kpi"><div class="lab">Средний чек<span class="ic"><svg class="icon" style="width:18px;height:18px"><use href="#i-cart"/></svg></span></div><div class="val">₽ 1 924</div><div class="d up">↑ 4,1%</div></div>
+          <div class="kpi"><div class="lab">Повторные покупки<span class="ic"><svg class="icon" style="width:18px;height:18px"><use href="#i-undo"/></svg></span></div><div class="val">47%</div><div class="d up">↑ 2,3 п.п.</div></div>
+        </div>
+        <div class="acard"><div class="hd"><h3>Выручка по месяцам</h3><span class="stt s-done">+16% к прошлому году</span></div><div class="bd">
+          <svg viewBox="0 0 580 215" role="img" aria-label="Выручка по месяцам" style="width:100%;height:auto">
+            <line x1="50" y1="32" x2="566" y2="32" stroke="#F0E9E1"/><line x1="50" y1="78" x2="566" y2="78" stroke="#F0E9E1"/><line x1="50" y1="124" x2="566" y2="124" stroke="#F0E9E1"/><line x1="50" y1="170" x2="566" y2="170" stroke="#E7DDD2"/>
+            <g fill="#B5552B"><rect x="58" y="104" width="30" height="66" rx="3"/><rect x="102" y="95" width="30" height="75" rx="3"/><rect x="146" y="99" width="30" height="71" rx="3"/><rect x="190" y="86" width="30" height="84" rx="3"/><rect x="234" y="78" width="30" height="92" rx="3"/><rect x="278" y="70" width="30" height="100" rx="3"/><rect x="322" y="74" width="30" height="96" rx="3"/><rect x="366" y="60" width="30" height="110" rx="3"/><rect x="410" y="48" width="30" height="122" rx="3"/><rect x="454" y="54" width="30" height="116" rx="3"/><rect x="498" y="38" width="30" height="132" rx="3"/><rect x="542" y="28" width="30" height="142" rx="3"/></g>
+            <g font-size="10.5" fill="#AEA193" text-anchor="middle"><text x="73" y="186">Янв</text><text x="117" y="186">Фев</text><text x="161" y="186">Мар</text><text x="205" y="186">Апр</text><text x="249" y="186">Май</text><text x="293" y="186">Июн</text><text x="337" y="186">Июл</text><text x="381" y="186">Авг</text><text x="425" y="186">Сен</text><text x="469" y="186">Окт</text><text x="513" y="186">Ноя</text><text x="557" y="186">Дек</text></g>
+          </svg>
+        </div></div>
+        <div class="row2">
+          <div class="acard"><div class="hd"><h3>Топ товаров</h3></div><div class="bd"><div class="bars">
+            <div class="bar"><span class="bl">Эфиопия Иргачеффе</span><span class="track"><span class="fill" style="width:100%"></span></span><span class="bv">214</span></div>
+            <div class="bar"><span class="bl">Эспрессо CREMA</span><span class="track"><span class="fill" style="width:86%"></span></span><span class="bv">184</span></div>
+            <div class="bar"><span class="bl">Колумбия Супремо</span><span class="track"><span class="fill" style="width:64%"></span></span><span class="bv">137</span></div>
+            <div class="bar"><span class="bl">Кения АА</span><span class="track"><span class="fill" style="width:48%"></span></span><span class="bv">102</span></div>
+            <div class="bar"><span class="bl">Бразилия Сантос</span><span class="track"><span class="fill" style="width:39%"></span></span><span class="bv">84</span></div>
+          </div></div></div>
+          <div class="acard"><div class="hd"><h3>Каналы продаж</h3></div><div class="bd"><div class="donut-wrap">
+            <svg width="140" height="140" viewBox="0 0 140 140" role="img" aria-label="Каналы продаж">
+              <circle cx="70" cy="70" r="54" fill="none" stroke="#F1EBE3" stroke-width="18"/>
+              <g transform="rotate(-90 70 70)" fill="none" stroke-width="18">
+                <circle cx="70" cy="70" r="54" stroke="#B5552B" stroke-dasharray="166.2 339.3"/>
+                <circle cx="70" cy="70" r="54" stroke="#3F7A5E" stroke-dasharray="91.6 339.3" stroke-dashoffset="-166.2"/>
+                <circle cx="70" cy="70" r="54" stroke="#D99A5B" stroke-dasharray="54.3 339.3" stroke-dashoffset="-257.8"/>
+                <circle cx="70" cy="70" r="54" stroke="#C9BDB0" stroke-dasharray="27.1 339.3" stroke-dashoffset="-312.1"/>
+              </g>
+              <text x="70" y="67" text-anchor="middle" font-size="21" font-weight="600" fill="#1C140D" font-family="Fraunces,serif">438</text><text x="70" y="85" text-anchor="middle" font-size="11" fill="#AEA193">заказов</text>
+            </svg>
+            <div class="legend">
+              <div class="lg"><span class="sw" style="background:#B5552B"></span>Сайт<span class="pc">49%</span></div>
+              <div class="lg"><span class="sw" style="background:#3F7A5E"></span>Подписка<span class="pc">27%</span></div>
+              <div class="lg"><span class="sw" style="background:#D99A5B"></span>Маркетплейсы<span class="pc">16%</span></div>
+              <div class="lg"><span class="sw" style="background:#C9BDB0"></span>Опт<span class="pc">8%</span></div>
+            </div>
+          </div></div></div>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<div class="overlay" id="ov" onclick="closeDrawer()"></div>
+<div class="sb-ov" id="asbov" onclick="toggleASide()"></div>
+<aside class="drawer" id="dr-order">
+  <div class="dr-h"><div><div style="font-family:var(--serif);font-size:19px;font-weight:600" id="do-num">—</div><div style="font-size:13px;color:var(--muted);margin-top:3px" id="do-date">—</div></div><div class="x" onclick="closeDrawer()"><svg class="icon"><use href="#i-x"/></svg></div></div>
+  <div class="dr-b">
+    <div style="margin-bottom:6px"><span class="stt" id="do-status">—</span></div>
+    <div class="statusbar" id="do-bar"></div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:20px" id="do-stage">—</div>
+    <div class="blk" style="margin-top:6px"><h4>Клиент</h4><div class="kv"><span class="k">Имя</span><span class="v" id="do-cust">—</span><span class="k">Телефон</span><span class="v" id="do-phone">—</span><span class="k">Доставка</span><span class="v">Курьер · Москва</span></div></div>
+    <div class="blk"><h4>Состав заказа</h4><div id="do-items"></div></div>
+    <div class="blk"><h4>Итог</h4><div class="srow"><span>Товары</span><span id="do-sub">—</span></div><div class="srow"><span>Доставка</span><span>300 ₽</span></div><div class="srow tot" style="font-size:17px"><span>Итого</span><span id="do-tot">—</span></div></div>
+    <div style="display:flex;gap:9px;margin-top:24px"><button class="btn block sm">Изменить статус</button><button class="btn ghost block sm">Накладная</button></div>
+  </div>
+</aside>
+
+<script>
+const IMG=(id,w)=>'https://images.unsplash.com/photo-'+id+'?auto=format&fit=crop&w='+(w||700)+'&q=80';
+const products=[
+ {id:1,name:'Иргачеффе',org:'Эфиопия',roast:'Светлая',note:'Ягоды, жасмин, чёрный чай',price:1290,img:'1611691934391-5a8805e0bd1a',stock:42,sold:214,proc:'Мытая',acid:'Высокая'},
+ {id:2,name:'Супремо',org:'Колумбия',roast:'Средняя',note:'Молочный шоколад, орех, карамель',price:1090,img:'1628546459752-b92e62a89cd8',stock:58,sold:137,proc:'Мытая',acid:'Средняя'},
+ {id:3,name:'Сантос',org:'Бразилия',roast:'Средняя',note:'Карамель, миндаль, мягкое тело',price:990,img:'1598811465492-4138d1f4fbee',stock:71,sold:84,proc:'Натуральная',acid:'Низкая'},
+ {id:4,name:'АА',org:'Кения',roast:'Светлая',note:'Чёрная смородина, цитрус, вино',price:1390,img:'1589476915062-05701fb874c4',stock:23,sold:102,proc:'Мытая',acid:'Высокая'},
+ {id:5,name:'Антигуа',org:'Гватемала',roast:'Средняя',note:'Какао, специи, сухофрукты',price:1190,img:'1592920704646-99d0d6792133',stock:26,sold:61,proc:'Мытая',acid:'Средняя'},
+ {id:6,name:'Эспрессо CREMA',org:'Фирменная смесь',roast:'Тёмная',note:'Карамель, тёмный шоколад, плотное тело',price:1090,img:'1540965555-ef9a836372ed',stock:64,sold:184,proc:'Бленд',acid:'Низкая'},
+ {id:7,name:'Декаф Перу',org:'Перу · без кофеина',roast:'Средняя',note:'Мягкий, сладкий, орехи',price:1150,img:'1543159781-9b7d0203ad48',stock:38,sold:47,proc:'Swiss Water',acid:'Низкая'},
+ {id:8,name:'Суматра',org:'Индонезия',roast:'Тёмная',note:'Земля, табак, тёмный шоколад',price:1250,img:'1587049016823-69ef9d68bd44',stock:19,sold:73,proc:'Giling Basah',acid:'Низкая'}
+];
+const HERO='1521767703556-c4c44fd6e280',ABOUT='1512663827140-3ef55c96cd49';
+const orders=[
+ {n:'#1043',cust:'Анна Орлова',phone:'+7 903 118-22-90',items:[[1,2],[6,1]],status:'Новый',cls:'s-new',date:'15 июня, 11:24',stage:1},
+ {n:'#1042',cust:'Игорь Петров',phone:'+7 901 220-11-04',items:[[4,1],[2,2]],status:'Собирается',cls:'s-pack',date:'15 июня, 09:50',stage:2},
+ {n:'#1041',cust:'Мария Ким',phone:'+7 905 555-01-72',items:[[6,3]],status:'Новый',cls:'s-new',date:'14 июня, 20:10',stage:1},
+ {n:'#1040',cust:'Денис Лис',phone:'+375 29 311-00-77',items:[[8,1],[5,1]],status:'Отправлен',cls:'s-ship',date:'14 июня, 15:32',stage:3},
+ {n:'#1039',cust:'Ольга Белая',phone:'+7 999 201-77-43',items:[[1,1],[7,1],[3,1]],status:'Доставлен',cls:'s-done',date:'13 июня, 12:05',stage:4},
+ {n:'#1038',cust:'Павел Раков',phone:'+7 921 654-08-15',items:[[2,4]],status:'Доставлен',cls:'s-done',date:'12 июня, 18:40',stage:4},
+ {n:'#1037',cust:'Юлия Сон',phone:'+7 926 400-19-58',items:[[4,2]],status:'Отменён',cls:'s-cancel',date:'12 июня, 10:15',stage:0}
+];
+const customers=[
+ {name:'Анна Орлова',email:'a.orlova@example.ru',orders:9,spent:'₽ 38 400',last:'15 июня',seg:'VIP',sc:'tg-vip'},
+ {name:'Игорь Петров',email:'i.petrov@example.ru',orders:6,spent:'₽ 21 900',last:'15 июня',seg:'Постоянный',sc:'tg2'},
+ {name:'Мария Ким',email:'m.kim@example.ru',orders:4,spent:'₽ 14 200',last:'14 июня',seg:'Постоянный',sc:'tg2'},
+ {name:'Денис Лис',email:'denis@example.by',orders:1,spent:'₽ 2 240',last:'14 июня',seg:'Новый',sc:'s-new'},
+ {name:'Ольга Белая',email:'o.belaya@example.ru',orders:12,spent:'₽ 51 600',last:'13 июня',seg:'VIP',sc:'tg-vip'},
+ {name:'Павел Раков',email:'p.rakov@example.ru',orders:3,spent:'₽ 9 800',last:'12 июня',seg:'Постоянный',sc:'tg2'},
+ {name:'Юлия Сон',email:'y.son@example.ru',orders:2,spent:'₽ 5 400',last:'12 июня',seg:'Новый',sc:'s-new'},
+ {name:'Роман Гай',email:'r.gai@example.ru',orders:5,spent:'₽ 17 300',last:'11 июня',seg:'Постоянный',sc:'tg2'}
+];
+const promos=[
+ {code:'CREMA10',disc:'−10%',uses:'142 / 500',till:'31.12.2025',st:'Активен',cls:'s-done'},
+ {code:'WELCOME',disc:'−15% первый заказ',uses:'318 / ∞',till:'бессрочно',st:'Активен',cls:'s-done'},
+ {code:'FREESHIP',disc:'Бесплатная доставка',uses:'87 / 200',till:'30.06.2025',st:'Активен',cls:'s-done'},
+ {code:'SPRING24',disc:'−20%',uses:'500 / 500',till:'31.05.2025',st:'Завершён',cls:'s-cancel'}
+];
+const titlesA={'a-over':['Обзор','Сводка магазина · сегодня'],'a-orders':['Заказы','7 заказов · 3 новых'],'a-products':['Товары','8 позиций в каталоге'],'a-customers':['Клиенты','1 240 клиентов в базе'],'a-promos':['Промокоды','3 активных кампании'],'a-analytics':['Аналитика','Обновлено сегодня в 09:00']};
+
+const $=id=>document.getElementById(id);
+const prod=id=>products.find(p=>p.id===id);
+const money=n=>n.toLocaleString('ru-RU')+' ₽';
+const imgEl=(src,cls)=>'<img src="'+src+'" alt="" class="'+(cls||'')+'" onerror="this.style.visibility=\'hidden\'">';
+
+let cart=[{id:1,qty:2},{id:6,qty:1}];
+let promo=0,ppId=1,ppQty=1,orderFilter='all';
+const DELIVERY=300,FREE=3000;
+const cartCount=()=>cart.reduce((s,x)=>s+x.qty,0);
+const subtotal=()=>cart.reduce((s,x)=>s+prod(x.id).price*x.qty,0);
+function totals(){const sub=subtotal();const disc=Math.round(sub*promo);const del=cart.length?(sub-disc>=FREE?0:DELIVERY):0;return{sub,disc,del,tot:sub-disc+del};}
+
+function renderGrid(){
+ $('hero-bg').style.backgroundImage='url('+IMG(HERO,1600)+')';
+ $('about-img').style.backgroundImage='url('+IMG(ABOUT,900)+')';
+ $('grid').innerHTML=products.map(p=>'<div class="pcard" onclick="openProduct('+p.id+')"><div class="ptile"><span class="roast">'+p.roast+'</span><span class="fav"><svg class="icon" style="width:17px;height:17px"><use href="#i-star"/></svg></span>'+imgEl(IMG(p.img,500))+'</div><div class="pbody"><div class="porg">'+p.org+'</div><div class="pname">'+p.name+'</div><div class="pnote">'+p.note+'</div><div class="pf"><span class="price">'+money(p.price)+'</span><button class="addb" onclick="event.stopPropagation();addToCart('+p.id+')"><svg class="icon" style="width:18px;height:18px"><use href="#i-plus"/></svg></button></div></div></div>').join('');
+}
+function openProduct(id){const p=prod(id);ppId=id;ppQty=1;$('pp-img').src=IMG(p.img,900);$('pp-org').textContent=p.org+' · '+p.roast+' обжарка';$('pp-name').textContent=p.name;$('pp-desc').textContent=p.note+'. Обжариваем под заказ небольшими партиями и отправляем в течение 24 часов, чтобы вкус раскрылся максимально полно.';$('pp-price').textContent=money(p.price);$('pp-qty').textContent='1';
+ $('pp-specs').innerHTML=[['Обжарка',p.roast],['Обработка',p.proc],['Кислотность',p.acid],['Регион',p.org]].map(s=>'<div class="spec"><div class="sl">'+s[0]+'</div><div class="sv">'+s[1]+'</div></div>').join('');
+ $('pp-thumbs').innerHTML=[p.img,'1592920704646-99d0d6792133',ABOUT].map((im,i)=>'<div class="th'+(i===0?' active':'')+'">'+imgEl(IMG(im,200))+'</div>').join('');
+ go('s-product');}
+function ppQ(d){ppQty=Math.max(1,ppQty+d);$('pp-qty').textContent=ppQty;}
+function ppAdd(){addToCart(ppId,ppQty);go('s-cart');}
+
+function addToCart(id,q){q=q||1;const e=cart.find(x=>x.id===id);if(e)e.qty+=q;else cart.push({id,qty:q});sync();const b=$('cbadge');b.style.transform='scale(1.4)';setTimeout(()=>b.style.transform='',180);}
+function setQty(id,d){const e=cart.find(x=>x.id===id);if(!e)return;e.qty+=d;if(e.qty<=0)cart=cart.filter(x=>x.id!==id);sync();}
+function removeFromCart(id){cart=cart.filter(x=>x.id!==id);sync();}
+function applyPromo(){const v=($('promo').value||'').trim().toUpperCase();const m=$('promo-msg');m.style.display='block';if(v==='CREMA10'){promo=0.10;m.textContent='Промокод применён: −10%';m.style.color='var(--ok)';}else{promo=0;m.textContent='Промокод недействителен';m.style.color='var(--bad)';}sync();}
+
+function renderCart(){
+ const box=$('cart-items');
+ if(!cart.length){box.innerHTML='<div class="empty">Корзина пуста.<br><a style="color:var(--accent);cursor:pointer" onclick="go(\'s-shop\')">Перейти в каталог →</a></div>';$('cart-sub').textContent='0 товаров';}
+ else{box.innerHTML=cart.map(x=>{const p=prod(x.id);return '<div class="citem"><div class="ct">'+imgEl(IMG(p.img,200))+'</div><div><div class="cn">'+p.name+'</div><div class="co">'+p.org+' · 250 г · в зёрнах</div><div style="margin-top:10px;font-weight:600">'+money(p.price)+'</div></div><div class="cr"><div class="qty sm"><button onclick="setQty('+x.id+',-1)"><svg class="icon" style="width:15px;height:15px"><use href="#i-minus"/></svg></button><span>'+x.qty+'</span><button onclick="setQty('+x.id+',1)"><svg class="icon" style="width:15px;height:15px"><use href="#i-plus"/></svg></button></div><div class="trash" onclick="removeFromCart('+x.id+')"><svg class="icon" style="width:18px;height:18px"><use href="#i-trash"/></svg></div></div></div>';}).join('');$('cart-sub').textContent=cartCount()+' товара на '+money(subtotal());}
+ const t=totals();$('s-sub').textContent=money(t.sub);$('s-del').textContent=t.del?money(t.del):'Бесплатно';$('s-tot').textContent=money(t.tot);
+ $('s-disc-row').style.display=t.disc?'flex':'none';if(t.disc)$('s-disc').textContent='−'+money(t.disc);
+}
+function renderCheckout(){
+ $('co-items').innerHTML=cart.map(x=>{const p=prod(x.id);return '<div class="mini"><span class="mt">'+imgEl(IMG(p.img,120))+'</span><div><div style="font-weight:600">'+p.name+'</div><div style="font-size:12px;color:var(--muted)">'+p.org+'</div></div><span class="mq">'+x.qty+' × '+money(p.price)+'</span></div>';}).join('');
+ const t=totals();$('c-sub').textContent=money(t.sub);$('c-del').textContent=t.del?money(t.del):'Бесплатно';$('c-tot').textContent=money(t.tot);$('pay-btn').textContent='Оплатить '+money(t.tot);
+ $('c-disc-row').style.display=t.disc?'flex':'none';if(t.disc)$('c-disc').textContent='−'+money(t.disc);
+}
+function placeOrder(){cart=[];promo=0;sync();go('s-done');}
+function sync(){$('cbadge').textContent=cartCount();$('cbadge').style.display=cartCount()?'flex':'none';renderCart();renderCheckout();}
+
+function orderRow(o){const cnt=o.items.reduce((s,it)=>s+it[1],0);const tot=o.items.reduce((s,it)=>s+prod(it[0]).price*it[1],0)+300;return '<tr onclick="openOrder(\''+o.n+'\')"><td style="font-weight:600">'+o.n+'</td><td>'+o.cust+'</td><td class="muted">'+cnt+' тов.</td><td class="amt">'+money(tot)+'</td><td><span class="stt '+o.cls+'">'+o.status+'</span></td><td class="muted">'+o.date+'</td></tr>';}
+function renderOrders(){const list=orderFilter==='all'?orders:orders.filter(o=>o.status===orderFilter);$('orders-table').innerHTML=list.map(orderRow).join('');}
+function renderAdmin(){
+ $('over-orders').innerHTML=orders.slice(0,5).map(o=>{const tot=o.items.reduce((s,it)=>s+prod(it[0]).price*it[1],0)+300;return '<tr onclick="openOrder(\''+o.n+'\')"><td style="font-weight:600">'+o.n+'</td><td>'+o.cust+'</td><td class="amt">'+money(tot)+'</td><td><span class="stt '+o.cls+'">'+o.status+'</span></td></tr>';}).join('');
+ $('lowstock').innerHTML=products.filter(p=>p.stock<30).sort((a,b)=>a.stock-b.stock).map(p=>'<div class="ls"><span class="lm">'+imgEl(IMG(p.img,80))+'</span><div style="flex:1"><div class="ln">'+p.name+'</div><div class="lc">'+p.org+'</div></div><span class="stt s-pack">'+p.stock+' шт</span></div>').join('');
+ renderOrders();
+ $('prod-table').innerHTML=products.map(p=>'<tr><td><div class="prod-mini"><span class="pm">'+imgEl(IMG(p.img,80))+'</span>'+p.name+'</div></td><td class="muted">'+p.org+' · '+p.roast+'</td><td class="amt">'+money(p.price)+'</td><td>'+(p.stock<30?'<span class="stt s-pack">'+p.stock+' шт</span>':p.stock+' шт')+'</td><td class="muted">'+p.sold+'</td><td><span class="stt s-done">В продаже</span></td></tr>').join('');
+ $('cust-table').innerHTML=customers.map(c=>'<tr><td><div class="cust-mini"><span class="ca">'+c.name.split(' ').map(w=>w[0]).join('').slice(0,2)+'</span>'+c.name+'</div></td><td class="muted">'+c.email+'</td><td>'+c.orders+'</td><td class="amt">'+c.spent+'</td><td class="muted">'+c.last+'</td><td><span class="stt '+c.sc+'">'+c.seg+'</span></td></tr>').join('');
+ $('promo-table').innerHTML=promos.map(p=>'<tr><td style="font-weight:600;font-family:ui-monospace,monospace">'+p.code+'</td><td>'+p.disc+'</td><td class="muted">'+p.uses+'</td><td class="muted">'+p.till+'</td><td><span class="stt '+p.cls+'">'+p.st+'</span></td></tr>').join('');
+}
+function openOrder(n){const o=orders.find(x=>x.n===n);$('do-num').textContent='Заказ '+o.n;$('do-date').textContent=o.date;const st=$('do-status');st.textContent=o.status;st.className='stt '+o.cls;$('do-cust').textContent=o.cust;$('do-phone').textContent=o.phone;const sub=o.items.reduce((s,it)=>s+prod(it[0]).price*it[1],0);$('do-sub').textContent=money(sub);$('do-tot').textContent=money(sub+300);
+ const steps=['Отменён','Новый','Собирается','Отправлен','Доставлен'];$('do-bar').innerHTML=[1,2,3,4].map(s=>'<span class="s'+(o.stage>=s?' on':'')+'"></span>').join('');$('do-stage').textContent=o.stage===0?'Заказ отменён':'Этап '+o.stage+' из 4 · '+steps[o.stage];
+ $('do-items').innerHTML=o.items.map(it=>{const p=prod(it[0]);return '<div class="mini"><span class="mt">'+imgEl(IMG(p.img,120))+'</span><div><div style="font-weight:600">'+p.name+'</div><div style="font-size:12px;color:var(--muted)">'+p.org+'</div></div><span class="mq">'+it[1]+' × '+money(p.price)+'</span></div>';}).join('');
+ $('ov').classList.add('open');$('dr-order').classList.add('open');}
+function closeDrawer(){$('ov').classList.remove('open');document.querySelectorAll('.drawer').forEach(d=>d.classList.remove('open'));}
+
+function go(id){document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===id));if(id.indexOf('a-')===0){document.querySelectorAll('.asb .nav-item[data-view]').forEach(n=>n.classList.toggle('active',n.dataset.view===id));$('a-title').textContent=titlesA[id][0];$('a-sub').textContent=titlesA[id][1];}const sb=document.getElementById('asb');if(sb){sb.classList.remove('open');document.getElementById('asbov').classList.remove('open');}window.scrollTo(0,0);}
+function toggleASide(){const s=document.getElementById('asb'),o=document.getElementById('asbov');const op=s.classList.toggle('open');o.classList.toggle('open',op);}
+function showStore(){$('admin').style.display='none';$('store').style.display='block';go('s-shop');}
+function showAdmin(){$('store').style.display='none';$('admin').style.display='flex';go('a-over');}
+document.querySelectorAll('.asb .nav-item[data-view]').forEach(n=>n.addEventListener('click',()=>go(n.dataset.view)));
+document.getElementById('order-tabs').addEventListener('click',e=>{const t=e.target.closest('.atab');if(!t)return;document.querySelectorAll('#order-tabs .atab').forEach(x=>x.classList.remove('active'));t.classList.add('active');orderFilter=t.dataset.f;renderOrders();});
+document.querySelectorAll('.segs').forEach(g=>g.addEventListener('click',e=>{const b=e.target.closest('button');if(b){g.querySelectorAll('button').forEach(x=>x.classList.remove('active'));b.classList.add('active');}}));
+document.querySelectorAll('.radio').forEach(g=>g.addEventListener('click',e=>{const o=e.target.closest('.ropt');if(o){g.querySelectorAll('.ropt').forEach(b=>b.classList.remove('active'));o.classList.add('active');}}));
+document.querySelectorAll('.fchip').forEach(c=>c.addEventListener('click',()=>{document.querySelectorAll('.fchip').forEach(x=>x.classList.remove('active'));c.classList.add('active');}));
+document.getElementById('pp-thumbs').addEventListener('click',e=>{const t=e.target.closest('.th');if(!t)return;document.querySelectorAll('#pp-thumbs .th').forEach(x=>x.classList.remove('active'));t.classList.add('active');const im=t.querySelector('img');if(im)$('pp-img').src=im.src.replace('w=200','w=900');});
+
+renderGrid();renderAdmin();sync();
+</script>
+</body>
+</html>

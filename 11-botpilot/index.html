@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Botpilot — Telegram bots for business</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F4F7FB;--panel:#FFFFFF;--ink:#0F1B2A;--muted:#647488;--faint:#9AA8B8;--line:#E7EDF3;
+  --brand:#229ED9;--brand-d:#1B86BA;--soft:#E4F3FB;--ok:#16A34A;--ok-bg:#E8F7EE;--warn:#B45309;--warn-bg:#FBF1E0;--bad:#DC2626;--bad-bg:#FBEAEA;--violet:#7C3AED;
+  --disp:'Sora',-apple-system,'Segoe UI',sans-serif;--sans:'Inter',-apple-system,'Segoe UI',Roboto,sans-serif;
+  --sh:0 1px 2px rgba(15,27,42,.04),0 6px 18px rgba(15,27,42,.05);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:var(--sans);background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;font-size:14px}
+h1,h2,h3,.disp{font-family:var(--disp);letter-spacing:-.01em}
+.icon{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.app{display:flex;min-height:100vh}
+.sb{width:236px;flex:none;background:var(--panel);border-right:1px solid var(--line);display:flex;flex-direction:column;padding:18px 14px;position:sticky;top:0;height:100vh}
+.brand{display:flex;align-items:center;gap:11px;padding:6px 8px 18px}
+.brand .lg{width:38px;height:38px;border-radius:11px;background:var(--brand);color:#fff;display:flex;align-items:center;justify-content:center}
+.brand .wm{font-family:var(--disp);font-size:20px;font-weight:700}
+.brand .tag{font-size:10px;color:var(--brand);background:var(--soft);padding:2px 7px;border-radius:5px;font-weight:700}
+.nlabel{font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--faint);padding:14px 10px 6px;font-weight:700}
+.nav-item{display:flex;align-items:center;gap:12px;padding:10px 11px;border-radius:10px;color:var(--muted);font-size:14px;font-weight:500;cursor:pointer;margin-bottom:2px}
+.nav-item:hover{background:var(--bg);color:var(--ink)}
+.nav-item.active{background:var(--soft);color:var(--brand-d);font-weight:600}
+.nav-item .icon{width:19px;height:19px}
+.nav-item .badge{margin-left:auto;background:var(--soft);color:var(--brand-d);font-size:11px;padding:1px 8px;border-radius:20px;font-weight:700}
+.sb-foot{margin-top:auto;display:flex;align-items:center;gap:10px;padding:12px 8px 4px;border-top:1px solid var(--line)}
+.main{flex:1;min-width:0;display:flex;flex-direction:column}
+.top{height:66px;flex:none;display:flex;align-items:center;gap:14px;padding:0 24px;border-bottom:1px solid var(--line);background:rgba(255,255,255,.86);backdrop-filter:blur(8px);position:sticky;top:0;z-index:20}
+.top h1{font-size:19px;font-weight:700}.top .sub{font-size:12px;color:var(--muted);margin-top:1px}
+.search{margin-left:auto;display:flex;align-items:center;gap:8px;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:0 12px;height:38px;width:220px;color:var(--faint)}
+.search input{border:0;background:transparent;outline:0;font-size:13px;color:var(--ink);width:100%;font-family:var(--sans)}
+.burger{display:none;width:38px;height:38px;border-radius:10px;border:1px solid var(--line);background:var(--panel);align-items:center;justify-content:center;color:var(--ink);cursor:pointer;flex:none}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;height:38px;padding:0 16px;border-radius:10px;background:var(--brand);color:#fff;font-size:13px;font-weight:600;border:0;cursor:pointer;white-space:nowrap;font-family:var(--sans)}
+.btn:hover{background:var(--brand-d)}.btn .icon{width:16px;height:16px}
+.btn.ghost{background:var(--panel);color:var(--ink);border:1px solid var(--line)}.btn.ghost:hover{background:var(--bg)}
+.btn.block{width:100%}
+.ava{border-radius:50%;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-weight:600;flex:none;position:relative;overflow:hidden;background:var(--brand)}
+.ava img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.demo-chip{font-size:11px;font-weight:600;color:var(--muted);background:var(--bg);border:1px solid var(--line);padding:5px 10px;border-radius:20px}
+.content{flex:1;min-height:0}
+.view{display:none}.view.active{display:block}
+.pad{padding:20px 24px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:15px 17px;box-shadow:var(--sh)}
+.kpi .lab{color:var(--muted);font-size:12.5px;font-weight:500;display:flex;justify-content:space-between;align-items:center}
+.kpi .ic{width:34px;height:34px;border-radius:9px;background:var(--soft);color:var(--brand);display:flex;align-items:center;justify-content:center}
+.kpi .ic.g{background:var(--ok-bg);color:var(--ok)}.kpi .ic.v{background:#F0E9FE;color:var(--violet)}
+.kpi .val{font-family:var(--disp);font-size:26px;font-weight:700;margin-top:10px}
+.kpi .d{font-size:12px;font-weight:600;margin-top:6px;color:var(--ok)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:var(--sh);margin-bottom:16px}
+.card .hd{display:flex;align-items:center;justify-content:space-between;padding:15px 18px;border-bottom:1px solid var(--line)}
+.card .hd h3{font-size:15px;font-weight:700}.card .hd .mut{font-size:12px;color:var(--muted)}
+.card .bd{padding:16px 18px}
+.live{display:inline-flex;align-items:center;gap:5px;color:var(--ok);font-weight:600;font-size:11px}
+.live::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--ok)}
+.over{display:grid;grid-template-columns:360px 1fr;gap:20px;align-items:start}
+/* phone */
+.phone{width:330px;margin:0 auto;background:#11202e;border-radius:40px;padding:11px;box-shadow:0 20px 50px rgba(15,27,42,.22)}
+.screen{border-radius:30px;overflow:hidden;height:600px;display:flex;flex-direction:column;background:#9fb6c9}
+.tg-head{background:#fff;display:flex;align-items:center;gap:10px;padding:10px 13px;border-bottom:1px solid #e7edf3;flex:none}
+.tg-head .nm{font-weight:600;font-size:14px}.tg-head .st{font-size:11.5px;color:var(--brand)}
+.tg-body{flex:1;overflow:auto;padding:14px 12px;display:flex;flex-direction:column;gap:7px;background:linear-gradient(180deg,#b3c6d6,#a6bccb)}
+.tgm{max-width:80%;padding:7px 11px;border-radius:13px;font-size:13px;line-height:1.42;box-shadow:0 1px 1px rgba(0,0,0,.05);position:relative}
+.tgm.bot{background:#fff;align-self:flex-start;border-bottom-left-radius:5px}
+.tgm.me{background:#e6fdcf;align-self:flex-end;border-bottom-right-radius:5px}
+.tgm .tm{font-size:9.5px;color:rgba(0,0,0,.35);margin-left:8px;float:right;margin-top:5px}
+.tgm.pay{background:#fff;border:1px solid #cfe6f4}
+.tgm .payhd{font-weight:600;color:var(--brand);font-size:12px;margin-bottom:4px;display:flex;align-items:center;gap:6px}
+.tgkb{display:flex;flex-direction:column;gap:5px;align-self:stretch;margin:2px 0 4px}
+.tgkb.row{flex-direction:row;flex-wrap:wrap}
+.tgbtn{background:rgba(255,255,255,.94);color:#2f9fd6;border:0;border-radius:9px;padding:9px 12px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:var(--sans);flex:1;min-width:30%;box-shadow:0 1px 2px rgba(0,0,0,.06)}
+.tgbtn:hover{background:#fff}
+.tgbtn.pay{background:var(--brand);color:#fff}
+.tg-foot{background:#fff;border-top:1px solid #e7edf3;display:flex;align-items:center;gap:8px;padding:9px 12px;flex:none;color:var(--faint)}
+.tg-foot .f{flex:1;font-size:12.5px;color:var(--faint)}
+.phone-cap{text-align:center;font-size:12px;color:var(--muted);margin-top:12px}
+.list .li{display:flex;align-items:center;gap:11px;padding:11px 0;border-bottom:1px solid var(--line)}
+.list .li:last-child{border:0}
+.list .li .t{font-size:13.5px;font-weight:600}.list .li .s{font-size:12px;color:var(--muted);margin-top:1px}
+.list .li .r{margin-left:auto;text-align:right}
+.amt{font-family:var(--disp);font-weight:600}
+table{width:100%;border-collapse:collapse}
+thead th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--faint);font-weight:600;padding:0 14px 11px}
+tbody tr{cursor:pointer}tbody tr:hover{background:var(--bg)}
+tbody td{padding:12px 14px;border-top:1px solid var(--line);font-size:13px}
+.who{display:flex;align-items:center;gap:10px;font-weight:500}
+.muted{color:var(--muted)}
+.stt{font-size:11.5px;font-weight:600;padding:4px 10px;border-radius:7px;display:inline-block;white-space:nowrap}
+.s-ok{background:var(--ok-bg);color:var(--ok)}.s-new{background:var(--soft);color:var(--brand-d)}.s-paid{background:var(--ok-bg);color:var(--ok)}.s-pend{background:var(--warn-bg);color:var(--warn)}
+.flow{border:1px solid var(--line);border-radius:13px;padding:16px 18px;margin-bottom:14px;background:var(--panel);box-shadow:var(--sh)}
+.flow .fh{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.flow .fh .fi{width:38px;height:38px;border-radius:10px;background:var(--soft);color:var(--brand);display:flex;align-items:center;justify-content:center}
+.flow .fh .fn{font-weight:700;font-size:15px}.flow .fh .fd{font-size:12px;color:var(--muted)}
+.steps{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.step{background:var(--bg);border:1px solid var(--line);border-radius:9px;padding:8px 12px;font-size:12.5px;font-weight:500}
+.step b{color:var(--brand-d)}
+.sep{color:var(--faint)}
+.field{margin-bottom:14px}.field label{display:block;font-size:12.5px;color:var(--muted);font-weight:500;margin-bottom:6px}
+.field input,.field textarea,.field select{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:13.5px;outline:0;background:var(--bg);font-family:var(--sans)}
+.field textarea{min-height:90px;resize:vertical}
+.field input:focus,.field textarea:focus{border-color:var(--brand)}
+.chart-wrap svg{width:100%;height:auto;display:block}
+.seg{display:inline-flex;background:var(--bg);border:1px solid var(--line);border-radius:9px;padding:3px;gap:2px}
+.seg button{border:0;background:transparent;color:var(--muted);font-size:12.5px;font-weight:600;padding:6px 11px;border-radius:7px;cursor:pointer;font-family:var(--sans)}
+.seg button.active{background:#fff;color:var(--brand-d);box-shadow:var(--sh)}
+.overlay{position:fixed;inset:0;background:rgba(15,27,42,.4);z-index:40;opacity:0;pointer-events:none;transition:.2s}.overlay.open{opacity:1;pointer-events:auto}
+.sb-ov{position:fixed;inset:0;background:rgba(15,27,42,.4);z-index:55;opacity:0;pointer-events:none;transition:.2s}.sb-ov.open{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;height:100vh;width:420px;max-width:92vw;background:var(--panel);z-index:50;transform:translateX(100%);transition:transform .26s cubic-bezier(.4,0,.2,1);box-shadow:-10px 0 40px rgba(15,27,42,.16);display:flex;flex-direction:column}
+.drawer.open{transform:none}
+.dr-h{padding:20px 22px;border-bottom:1px solid var(--line);display:flex;align-items:flex-start;gap:12px}
+.dr-h .x{margin-left:auto;cursor:pointer;color:var(--muted);width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center}.dr-h .x:hover{background:var(--bg)}
+.dr-b{flex:1;overflow:auto;padding:20px 22px}
+.kv{display:grid;grid-template-columns:110px 1fr;gap:11px 12px;font-size:13.5px}.kv .k{color:var(--muted)}.kv .v{font-weight:500;text-align:right}
+@media(max-width:1080px){.over{grid-template-columns:1fr}.phone{margin:0 auto}}
+@media(max-width:900px){
+ .burger{display:flex}
+ .sb{position:fixed;left:0;top:0;z-index:60;transform:translateX(-100%);transition:transform .25s}.sb.open{transform:none}
+ .search{display:none}.pad{padding:14px 14px}
+ .scrollx{overflow-x:auto}.scrollx table{min-width:560px}
+}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.5"/></symbol>
+<symbol id="i-flow" viewBox="0 0 24 24"><circle cx="6" cy="6" r="2.5"/><circle cx="6" cy="18" r="2.5"/><circle cx="18" cy="12" r="2.5"/><path d="M8.5 6H13a3 3 0 0 1 3 3v.5M8.5 18H13a3 3 0 0 0 3-3v-.5"/></symbol>
+<symbol id="i-send" viewBox="0 0 24 24"><path d="M4 12 20 4l-6 16-3-7z"/><path d="m11 13 9-9"/></symbol>
+<symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 20c0-3.3 2.6-5.4 5.5-5.4s5.5 2.1 5.5 5.4"/><path d="M16 5.2a3 3 0 0 1 0 5.6"/><path d="M17.6 14.9c2.1.5 3.7 2.3 3.7 5.1"/></symbol>
+<symbol id="i-card" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M3 10h18"/></symbol>
+<symbol id="i-msg" viewBox="0 0 24 24"><path d="M5 5h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H9l-4 4V7a2 2 0 0 1 2-2z"/></symbol>
+<symbol id="i-bag" viewBox="0 0 24 24"><path d="M6 8h12l-1 12H7z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></symbol>
+<symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 3 5 13.2h6l-1 7.8 8-10.2h-6z"/></symbol>
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.3-3.3"/></symbol>
+<symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 9.5a6 6 0 0 1 12 0c0 4.5 2 5.5 2 5.5H4s2-1 2-5.5"/><path d="M10 19a2 2 0 0 0 4 0"/></symbol>
+<symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+<symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+<symbol id="i-bot" viewBox="0 0 24 24"><rect x="4" y="8" width="16" height="11" rx="3"/><path d="M12 8V4M9 4h6"/><circle cx="9.5" cy="13" r="1.2"/><circle cx="14.5" cy="13" r="1.2"/></symbol>
+<symbol id="i-dollar" viewBox="0 0 24 24"><path d="M12 3v18"/><path d="M16.4 7.4c0-1.9-2-3-4.4-3s-4.5 1.3-4.5 3.3 2 2.8 4.5 3.3 4.5 1 4.5 3.2-2 3.3-4.5 3.3-4.6-1.1-4.6-3.1"/></symbol>
+</defs></svg>
+
+<div class="app">
+  <aside class="sb" id="sb">
+    <div class="brand"><span class="lg"><svg class="icon" style="width:21px;height:21px"><use href="#i-send"/></svg></span><span class="wm">Botpilot</span><span class="tag">bot</span></div>
+    <div class="nlabel">Bot</div>
+    <div class="nav-item active" data-view="v-over"><svg class="icon"><use href="#i-grid"/></svg>Overview</div>
+    <div class="nav-item" data-view="v-flows"><svg class="icon"><use href="#i-flow"/></svg>Flows</div>
+    <div class="nav-item" data-view="v-broadcasts"><svg class="icon"><use href="#i-send"/></svg>Broadcasts</div>
+    <div class="nav-item" data-view="v-users"><svg class="icon"><use href="#i-users"/></svg>Subscribers<span class="badge">8.4k</span></div>
+    <div class="nav-item" data-view="v-pay"><svg class="icon"><use href="#i-card"/></svg>Payments</div>
+    <div class="sb-foot"><span class="ava" style="width:36px;height:36px;font-size:13px">NC<img src="https://i.pravatar.cc/100?img=12" onerror="this.remove()"></span><div><div style="font-size:13px;font-weight:600">Northwind Coffee</div><div style="font-size:11.5px;color:var(--faint)">@northwind_bot</div></div></div>
+  </aside>
+
+  <main class="main">
+    <header class="top">
+      <button class="burger" onclick="toggleSide()"><svg class="icon"><use href="#i-menu"/></svg></button>
+      <div><h1 id="pg-title">Overview</h1><div class="sub" id="pg-sub"><span class="live">Bot online</span> · @northwind_bot</div></div>
+      <div class="search"><svg class="icon" style="width:16px;height:16px"><use href="#i-search"/></svg><input placeholder="Search subscribers, orders…"></div>
+      <button class="btn"><svg class="icon"><use href="#i-plus"/></svg>New flow</button>
+      <span class="demo-chip" style="margin-left:4px">Demo</span>
+    </header>
+
+    <div class="content">
+      <!-- OVERVIEW -->
+      <section class="view active pad" id="v-over">
+        <div class="over">
+          <div>
+            <div class="phone">
+              <div class="screen">
+                <div class="tg-head"><span class="ava" style="width:38px;height:38px;font-size:13px;background:var(--brand)"><svg class="icon" style="width:20px;height:20px;stroke:#fff"><use href="#i-bot"/></svg></span><div><div class="nm">Northwind Coffee</div><div class="st">bot · online</div></div></div>
+                <div class="tg-body" id="tg-body"></div>
+                <div class="tg-foot"><span class="f">Message</span><svg class="icon" style="width:20px;height:20px;color:var(--brand)"><use href="#i-send"/></svg></div>
+              </div>
+            </div>
+            <div class="phone-cap">↑ Live preview — tap the buttons to try the order flow</div>
+          </div>
+          <div>
+            <div class="kpis" style="grid-template-columns:1fr 1fr">
+              <div class="kpi"><div class="lab">Active users (30d)<span class="ic g"><svg class="icon" style="width:18px;height:18px"><use href="#i-users"/></svg></span></div><div class="val">8,412</div><div class="d">↑ 11.2%</div></div>
+              <div class="kpi"><div class="lab">Messages today<span class="ic"><svg class="icon" style="width:18px;height:18px"><use href="#i-msg"/></svg></span></div><div class="val">3,190</div><div class="d">↑ 6.4%</div></div>
+              <div class="kpi"><div class="lab">Orders today<span class="ic"><svg class="icon" style="width:18px;height:18px"><use href="#i-bag"/></svg></span></div><div class="val">142</div><div class="d">↑ 18%</div></div>
+              <div class="kpi"><div class="lab">Revenue today<span class="ic v"><svg class="icon" style="width:18px;height:18px"><use href="#i-dollar"/></svg></span></div><div class="val">$1,840</div><div class="d">↑ 9%</div></div>
+            </div>
+            <div class="card" style="margin-top:16px"><div class="hd"><h3>Messages handled</h3><div class="mut">AI answered 71% without a human</div></div><div class="bd"><div class="chart-wrap">
+              <svg viewBox="0 0 560 180" role="img" aria-label="Messages handled per day">
+                <line x1="36" y1="22" x2="548" y2="22" stroke="#EEF3F8"/><line x1="36" y1="68" x2="548" y2="68" stroke="#EEF3F8"/><line x1="36" y1="114" x2="548" y2="114" stroke="#E7EDF3"/>
+                <g fill="#229ED9"><rect x="60" y="74" width="34" height="40" rx="3"/><rect x="124" y="62" width="34" height="52" rx="3"/><rect x="188" y="70" width="34" height="44" rx="3"/><rect x="252" y="50" width="34" height="64" rx="3"/><rect x="316" y="40" width="34" height="74" rx="3"/><rect x="380" y="46" width="34" height="68" rx="3"/><rect x="444" y="30" width="34" height="84" rx="3"/></g>
+                <g font-size="10.5" fill="#9AA8B8" text-anchor="middle"><text x="77" y="130">Mon</text><text x="141" y="130">Tue</text><text x="205" y="130">Wed</text><text x="269" y="130">Thu</text><text x="333" y="130">Fri</text><text x="397" y="130">Sat</text><text x="461" y="130">Sun</text></g>
+              </svg>
+            </div></div></div>
+            <div class="card" style="margin-bottom:0"><div class="hd"><h3>Recent orders</h3><span class="mut" style="color:var(--brand);cursor:pointer" onclick="go('v-pay')">View all →</span></div><div class="bd list" id="recent-orders"></div></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- FLOWS -->
+      <section class="view pad" id="v-flows">
+        <div class="flow"><div class="fh"><span class="fi"><svg class="icon"><use href="#i-msg"/></svg></span><div><div class="fn">Welcome & menu</div><div class="fd">Triggered on /start · 8,412 runs</div></div><span class="stt s-ok" style="margin-left:auto">Active</span></div>
+          <div class="steps"><span class="step"><b>Trigger:</b> /start</span><span class="sep">→</span><span class="step">Greet user</span><span class="sep">→</span><span class="step">Show menu buttons</span><span class="sep">→</span><span class="step">Route to Order / Track / Ask</span></div></div>
+        <div class="flow"><div class="fh"><span class="fi"><svg class="icon"><use href="#i-bag"/></svg></span><div><div class="fn">Order & pay</div><div class="fd">Coffee ordering with Telegram Payments · 142 runs today</div></div><span class="stt s-ok" style="margin-left:auto">Active</span></div>
+          <div class="steps"><span class="step">Pick product</span><span class="sep">→</span><span class="step">Pick quantity</span><span class="sep">→</span><span class="step"><b>Action:</b> create invoice</span><span class="sep">→</span><span class="step"><b>Payment:</b> Stripe via Telegram</span><span class="sep">→</span><span class="step">Confirm + notify barista</span></div></div>
+        <div class="flow"><div class="fh"><span class="fi"><svg class="icon"><use href="#i-bot"/></svg></span><div><div class="fn">AI support</div><div class="fd">Answers FAQs from your knowledge base · 71% auto-resolved</div></div><span class="stt s-ok" style="margin-left:auto">Active</span></div>
+          <div class="steps"><span class="step">User asks a question</span><span class="sep">→</span><span class="step"><b>AI:</b> search knowledge base</span><span class="sep">→</span><span class="step">Reply with answer</span><span class="sep">→</span><span class="step">Escalate to human if unsure</span></div></div>
+        <div class="flow"><div class="fh"><span class="fi"><svg class="icon"><use href="#i-bolt"/></svg></span><div><div class="fn">Abandoned cart</div><div class="fd">Re-engage users who didn't pay · +$2,100 recovered/mo</div></div><span class="stt s-pend" style="margin-left:auto">Paused</span></div>
+          <div class="steps"><span class="step"><b>Trigger:</b> invoice unpaid 30 min</span><span class="sep">→</span><span class="step">Send reminder + 10% code</span><span class="sep">→</span><span class="step">Follow up next day</span></div></div>
+      </section>
+
+      <!-- BROADCASTS -->
+      <section class="view pad" id="v-broadcasts">
+        <div style="display:grid;grid-template-columns:1fr 1.3fr;gap:18px" class="over">
+          <div class="card" style="margin:0"><div class="hd"><h3>New broadcast</h3></div><div class="bd">
+            <div class="field"><label>Audience</label><select><option>All subscribers (8,412)</option><option>Active last 30 days (5,120)</option><option>Has ordered (2,740)</option></select></div>
+            <div class="field"><label>Message</label><textarea>☕ Weekend special: any latte $3.50 until Sunday! Tap below to order.</textarea></div>
+            <div class="field"><label>Button (optional)</label><input value="Order now → /order"></div>
+            <button class="btn block"><svg class="icon"><use href="#i-send"/></svg>Send broadcast</button>
+          </div></div>
+          <div class="card" style="margin:0"><div class="hd"><h3>Recent broadcasts</h3></div><div class="bd scrollx"><table><thead><tr><th>Message</th><th>Audience</th><th>Sent</th><th>Open rate</th></tr></thead><tbody id="bc-table"></tbody></table></div></div>
+        </div>
+      </section>
+
+      <!-- SUBSCRIBERS -->
+      <section class="view pad" id="v-users">
+        <div class="card" style="margin:0"><div class="hd"><h3>Subscribers</h3><div class="mut">8,412 total · 142 new this week</div></div><div class="bd scrollx" style="padding:8px 6px 12px"><table><thead><tr><th>User</th><th>Username</th><th>Joined</th><th>Orders</th><th>Spent</th><th>Status</th></tr></thead><tbody id="users-table"></tbody></table></div></div>
+      </section>
+
+      <!-- PAYMENTS -->
+      <section class="view pad" id="v-pay">
+        <div class="kpis" style="margin-bottom:16px">
+          <div class="kpi"><div class="lab">Revenue (30d)<span class="ic v"><svg class="icon" style="width:18px;height:18px"><use href="#i-dollar"/></svg></span></div><div class="val">$48,920</div><div class="d">↑ 14%</div></div>
+          <div class="kpi"><div class="lab">Orders (30d)<span class="ic"><svg class="icon" style="width:18px;height:18px"><use href="#i-bag"/></svg></span></div><div class="val">2,684</div><div class="d">↑ 12%</div></div>
+          <div class="kpi"><div class="lab">Avg order<span class="ic"><svg class="icon" style="width:18px;height:18px"><use href="#i-card"/></svg></span></div><div class="val">$18.20</div><div class="d">↑ 3%</div></div>
+          <div class="kpi"><div class="lab">Paid in-chat<span class="ic g"><svg class="icon" style="width:18px;height:18px"><use href="#i-bolt"/></svg></span></div><div class="val">100%</div><div class="d">Telegram Payments</div></div>
+        </div>
+        <div class="card"><div class="hd"><h3>Revenue</h3><div class="seg"><button class="active">30d</button><button>90d</button></div></div><div class="bd"><div class="chart-wrap">
+          <svg viewBox="0 0 560 190" role="img" aria-label="Revenue last 30 days">
+            <line x1="36" y1="20" x2="548" y2="20" stroke="#EEF3F8"/><line x1="36" y1="64" x2="548" y2="64" stroke="#EEF3F8"/><line x1="36" y1="108" x2="548" y2="108" stroke="#EEF3F8"/><line x1="36" y1="152" x2="548" y2="152" stroke="#E7EDF3"/>
+            <path d="M44,120 100,112 156,124 212,96 268,84 324,92 380,66 436,58 492,70 540,44 L540,152 L44,152 Z" fill="#229ED9" fill-opacity="0.08"/>
+            <path d="M44,120 100,112 156,124 212,96 268,84 324,92 380,66 436,58 492,70 540,44" fill="none" stroke="#229ED9" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div></div></div>
+        <div class="card" style="margin-bottom:0"><div class="hd"><h3>Transactions</h3></div><div class="bd scrollx" style="padding:8px 6px 12px"><table><thead><tr><th>Order</th><th>Customer</th><th>Items</th><th>Amount</th><th>Status</th><th>Time</th></tr></thead><tbody id="tx-table"></tbody></table></div></div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<div class="overlay" id="ov" onclick="closeDrawer()"></div>
+<div class="sb-ov" id="sbov" onclick="toggleSide()"></div>
+<aside class="drawer" id="dr-order">
+  <div class="dr-h"><div><div style="font-family:var(--disp);font-size:18px;font-weight:700" id="do-id">—</div><div style="font-size:13px;color:var(--muted);margin-top:3px" id="do-cust">—</div></div><div class="x" onclick="closeDrawer()"><svg class="icon"><use href="#i-x"/></svg></div></div>
+  <div class="dr-b">
+    <div style="margin-bottom:14px"><span class="stt s-paid" id="do-status">Paid</span></div>
+    <div class="kv"><span class="k">Items</span><span class="v" id="do-items">—</span><span class="k">Amount</span><span class="v" id="do-amt">—</span><span class="k">Paid via</span><span class="v">Telegram · Stripe</span><span class="k">Channel</span><span class="v">@northwind_bot</span><span class="k">Time</span><span class="v" id="do-time">—</span></div>
+    <div style="margin-top:22px;font-size:11.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--faint);font-weight:600;margin-bottom:10px">Bot conversation</div>
+    <div style="background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:14px;font-size:13px;line-height:1.6;color:var(--muted)">User started <b>/order</b> → picked <b>2× Latte</b> → paid <b>$10.00</b> in-chat → bot confirmed and notified the barista. Order auto-added to the kitchen queue.</div>
+    <div style="display:flex;gap:9px;margin-top:20px"><button class="btn block"><svg class="icon"><use href="#i-send"/></svg>Message customer</button><button class="btn ghost block">Refund</button></div>
+  </div>
+</aside>
+
+<script>
+const $=id=>document.getElementById(id);
+const AV=n=>'https://i.pravatar.cc/100?img='+n;
+function ava(name,p,size){const ini=name.split(' ').map(w=>w[0]).join('').slice(0,2);return '<span class="ava" style="width:'+size+'px;height:'+size+'px;font-size:'+Math.round(size*0.38)+'px">'+ini+'<img src="'+AV(p)+'" onerror="this.remove()"></span>';}
+
+/* ---- Telegram interactive chat ---- */
+let tgState=[];
+function tgPush(html){tgState.push(html);renderTg();}
+function renderTg(){$('tg-body').innerHTML=tgState.join('');const b=$('tg-body');b.scrollTop=b.scrollHeight;}
+function botMsg(text,kb){return '<div class="tgm bot">'+text+'<span class="tm">14:0'+(tgState.length)+'</span></div>'+(kb||'');}
+function meMsg(text){return '<div class="tgm me">'+text+'<span class="tm">14:0'+(tgState.length)+' ✓✓</span></div>';}
+function kb(btns){return '<div class="tgkb'+(btns.length>2?' row':'')+'">'+btns.map(b=>'<button class="tgbtn'+(b.pay?' pay':'')+'" onclick="tg(\''+b.a+'\')">'+b.t+'</button>').join('')+'</div>';}
+function tgInit(){tgState=[botMsg('👋 Welcome to <b>Northwind Coffee</b>! What can I do for you?', kb([{t:'☕ Order coffee',a:'order'},{t:'📦 Track order',a:'track'},{t:'💬 Ask a question',a:'ask'}]))];renderTg();}
+function tg(a){
+  if(a==='order'){stripKb();tgPush(meMsg('Order coffee'));tgPush(botMsg('Great choice! Pick your drink ☕', kb([{t:'Latte · $5',a:'p_latte'},{t:'Cappuccino · $4.5',a:'p_capp'},{t:'Cold Brew · $5.5',a:'p_cold'}])));}
+  else if(a.indexOf('p_')===0){const n={p_latte:'Latte',p_capp:'Cappuccino',p_cold:'Cold Brew'}[a];stripKb();tgPush(meMsg(n));tgPush(botMsg('How many '+n+'s? 🙂', kb([{t:'1',a:'q_1'},{t:'2',a:'q_2'},{t:'3',a:'q_3'}])));}
+  else if(a.indexOf('q_')===0){const q=a.split('_')[1];stripKb();tgPush(meMsg(q));tgPush('<div class="tgm pay"><div class="payhd">💳 Invoice</div>'+q+'× Latte — <b>$'+(q*5).toFixed(2)+'</b><div class="tgkb"><button class="tgbtn pay" onclick="tg(\'pay_'+q+'\')">Pay $'+(q*5).toFixed(2)+'</button></div></div>');}
+  else if(a.indexOf('pay_')===0){const q=a.split('_')[1];stripKb();tgPush(meMsg('Paid $'+(q*5).toFixed(2)+' 💳'));tgPush(botMsg('✅ <b>Payment received</b> — $'+(q*5).toFixed(2)+'. Order <b>#1048</b> confirmed! Ready in ~12 min at the counter. I\'ll ping you when it\'s done ☕'));}
+  else if(a==='track'){stripKb();tgPush(meMsg('Track order'));tgPush(botMsg('Your order <b>#1043</b> is being prepared 👨‍🍳 — ready in ~4 min. I\'ll notify you!'));}
+  else if(a==='ask'){stripKb();tgPush(meMsg('Do you have oat milk?'));tgPush(botMsg('Yes! 🥛 We have <b>oat, almond and soy</b> milk — no extra charge. Anything else? <span style="color:#9AA8B8;font-size:11px">· answered by AI</span>'));}
+}
+function stripKb(){tgState[tgState.length-1]=tgState[tgState.length-1].replace(/<div class="tgkb[\s\S]*?<\/div>\s*$/,'');}
+
+const orders=[
+ {id:'#1048',cust:'Emma Carter',p:45,items:'2× Latte',amt:10.0,status:'Paid',cls:'s-paid',time:'2 min ago'},
+ {id:'#1047',cust:'James Wright',p:11,items:'1× Cold Brew',amt:5.5,status:'Paid',cls:'s-paid',time:'8 min ago'},
+ {id:'#1046',cust:'Olivia Bennett',p:31,items:'3× Cappuccino',amt:13.5,status:'Paid',cls:'s-paid',time:'14 min ago'},
+ {id:'#1045',cust:'Noah Mitchell',p:52,items:'1× Latte + Muffin',amt:8.0,status:'Paid',cls:'s-paid',time:'21 min ago'},
+ {id:'#1044',cust:'Sophia Reed',p:44,items:'2× Flat White',amt:11.0,status:'Pending',cls:'s-pend',time:'24 min ago'},
+ {id:'#1043',cust:'Liam Foster',p:13,items:'1× Espresso',amt:3.5,status:'Paid',cls:'s-paid',time:'30 min ago'}
+];
+const broadcasts=[
+ {msg:'☕ Weekend special: any latte $3.50!',aud:'All (8,412)',sent:'Sat 09:00',open:'62%'},
+ {msg:'New seasonal menu is live 🍂',aud:'Active (5,120)',sent:'Mon 10:30',open:'58%'},
+ {msg:'Your free coffee is waiting ☕',aud:'Loyalty (1,240)',sent:'Thu 12:00',open:'74%'},
+ {msg:'We miss you — 15% off this week',aud:'Inactive (3,200)',sent:'Tue 11:00',open:'31%'}
+];
+const users=[
+ {n:'Emma Carter',u:'@emmac',p:45,joined:'Jun 2',orders:14,spent:'$182',status:'VIP',cls:'s-ok'},
+ {n:'James Wright',u:'@jwright',p:11,joined:'Jun 5',orders:6,spent:'$71',status:'Active',cls:'s-new'},
+ {n:'Olivia Bennett',u:'@oliviab',p:31,joined:'May 28',orders:21,spent:'$248',status:'VIP',cls:'s-ok'},
+ {n:'Noah Mitchell',u:'@noahm',p:52,joined:'Jun 9',orders:3,spent:'$28',status:'Active',cls:'s-new'},
+ {n:'Sophia Reed',u:'@sophiar',p:44,joined:'Jun 1',orders:9,spent:'$104',status:'Active',cls:'s-new'},
+ {n:'Liam Foster',u:'@liamf',p:13,joined:'May 22',orders:2,spent:'$11',status:'New',cls:'s-pend'},
+ {n:'Ava Morgan',u:'@avam',p:47,joined:'Jun 7',orders:12,spent:'$156',status:'VIP',cls:'s-ok'},
+ {n:'Ethan Brooks',u:'@ethanb',p:15,joined:'Jun 3',orders:5,spent:'$59',status:'Active',cls:'s-new'}
+];
+
+function render(){
+ tgInit();
+ $('recent-orders').innerHTML=orders.slice(0,5).map(o=>'<div class="li" onclick="openOrder(\''+o.id+'\')" style="cursor:pointer">'+ava(o.cust,o.p,34)+'<div><div class="t">'+o.cust+'</div><div class="s">'+o.items+'</div></div><div class="r"><div class="amt">$'+o.amt.toFixed(2)+'</div><div class="s">'+o.time+'</div></div></div>').join('');
+ $('bc-table').innerHTML=broadcasts.map(b=>'<tr><td style="font-weight:500">'+b.msg+'</td><td class="muted">'+b.aud+'</td><td class="muted">'+b.sent+'</td><td><span class="stt s-ok">'+b.open+'</span></td></tr>').join('');
+ $('users-table').innerHTML=users.map(u=>'<tr><td><div class="who">'+ava(u.n,u.p,30)+u.n+'</div></td><td class="muted">'+u.u+'</td><td class="muted">'+u.joined+'</td><td>'+u.orders+'</td><td class="amt">'+u.spent+'</td><td><span class="stt '+u.cls+'">'+u.status+'</span></td></tr>').join('');
+ $('tx-table').innerHTML=orders.map(o=>'<tr onclick="openOrder(\''+o.id+'\')"><td style="font-weight:600;color:var(--brand-d)">'+o.id+'</td><td><div class="who">'+ava(o.cust,o.p,28)+o.cust+'</div></td><td class="muted">'+o.items+'</td><td class="amt">$'+o.amt.toFixed(2)+'</td><td><span class="stt '+o.cls+'">'+o.status+'</span></td><td class="muted">'+o.time+'</td></tr>').join('');
+}
+function openOrder(id){const o=orders.find(x=>x.id===id);$('do-id').textContent=o.id;$('do-cust').textContent=o.cust;const s=$('do-status');s.textContent=o.status;s.className='stt '+o.cls;$('do-items').textContent=o.items;$('do-amt').textContent='$'+o.amt.toFixed(2);$('do-time').textContent=o.time;$('ov').classList.add('open');$('dr-order').classList.add('open');}
+function closeDrawer(){$('ov').classList.remove('open');document.querySelectorAll('.drawer').forEach(d=>d.classList.remove('open'));}
+
+const titles={'v-over':['Overview','@northwind_bot'],'v-flows':['Flows','4 automation flows'],'v-broadcasts':['Broadcasts','Reach your subscribers'],'v-users':['Subscribers','8,412 total'],'v-pay':['Payments','In-chat Telegram Payments']};
+function go(id){document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===id));document.querySelectorAll('.nav-item[data-view]').forEach(n=>n.classList.toggle('active',n.dataset.view===id));$('pg-title').textContent=titles[id][0];if(id==='v-over'){$('pg-sub').innerHTML='<span class="live">Bot online</span> · @northwind_bot';}else{$('pg-sub').textContent=titles[id][1];}const sb=$('sb');if(sb){sb.classList.remove('open');$('sbov').classList.remove('open');}window.scrollTo(0,0);}
+function toggleSide(){const s=$('sb'),o=$('sbov');const op=s.classList.toggle('open');o.classList.toggle('open',op);}
+document.querySelectorAll('.nav-item[data-view]').forEach(n=>n.addEventListener('click',()=>go(n.dataset.view)));
+
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Harvest — Web Scraping & Data Pipelines</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --teal:#0891B2; --teal-d:#0E7490; --teal-l:#E0F7FB; --teal-l2:#CFF0F6;
+  --ink:#0F1B23; --ink2:#3B4D58; --muted:#6B7B85; --line:#E4EBEF;
+  --bg:#F5F8FA; --card:#FFFFFF; --soft:#F0F5F8;
+  --ok:#0F9D6E; --ok-bg:#E3F7EF; --warn:#D98A0B; --warn-bg:#FBF0DC; --bad:#DC4B45; --bad-bg:#FBE9E8;
+  --up:#DC4B45; --down:#0F9D6E;
+  --shadow:0 1px 2px rgba(16,40,55,.04),0 8px 24px rgba(16,40,55,.06);
+  --shadow-l:0 12px 40px rgba(16,40,55,.14);
+  --radius:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;font-size:14px;line-height:1.5}
+.display{font-family:'Outfit',sans-serif}
+a{color:inherit;text-decoration:none}
+::selection{background:var(--teal-l2)}
+.app{display:flex;min-height:100vh}
+
+/* SIDEBAR */
+.sidebar{width:248px;background:#0B2530;color:#C7D7DE;flex-shrink:0;display:flex;flex-direction:column;position:sticky;top:0;height:100vh}
+.brand{display:flex;align-items:center;gap:11px;padding:20px 20px 18px}
+.brand .mark{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#0891B2,#22C7E0);display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 4px 14px rgba(8,145,178,.45)}
+.brand .mark svg{width:20px;height:20px}
+.brand .name{font-family:'Outfit',sans-serif;font-weight:700;font-size:19px;color:#fff;letter-spacing:-.3px}
+.brand .name span{color:#5FE0F0}
+.nav{padding:8px 12px;flex:1;overflow-y:auto}
+.nav-label{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#5E7884;padding:14px 12px 6px;font-weight:600}
+.nav-item{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;cursor:pointer;color:#AEC4CD;font-weight:500;margin-bottom:2px;transition:background .15s,color .15s;font-size:14px}
+.nav-item svg{width:19px;height:19px;flex-shrink:0;opacity:.85}
+.nav-item:hover{background:rgba(255,255,255,.06);color:#fff}
+.nav-item.active{background:linear-gradient(135deg,rgba(8,145,178,.95),rgba(34,199,224,.85));color:#fff;box-shadow:0 4px 14px rgba(8,145,178,.35)}
+.nav-item.active svg{opacity:1}
+.nav-badge{margin-left:auto;background:rgba(255,255,255,.16);color:#fff;font-size:11px;font-weight:600;padding:1px 8px;border-radius:20px}
+.side-foot{padding:14px;border-top:1px solid rgba(255,255,255,.07);margin:8px}
+.side-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:13px}
+.side-card .t{font-weight:600;color:#fff;font-size:13px;margin-bottom:3px}
+.side-card .d{font-size:12px;color:#90A8B2;line-height:1.45;margin-bottom:10px}
+.side-card button{width:100%;background:#0891B2;color:#fff;border:none;padding:8px;border-radius:8px;font-weight:600;font-size:12.5px;cursor:pointer;font-family:inherit}
+.side-card button:hover{background:#22C7E0}
+
+/* MAIN */
+.main{flex:1;min-width:0;display:flex;flex-direction:column}
+.topbar{display:flex;align-items:center;gap:16px;padding:14px 28px;background:rgba(255,255,255,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:40}
+.burger{display:none;width:40px;height:40px;border:1px solid var(--line);background:#fff;border-radius:10px;cursor:pointer;align-items:center;justify-content:center;flex-direction:column;gap:4px;flex-shrink:0}
+.burger span{width:18px;height:2px;background:var(--ink);border-radius:2px;display:block}
+.page-title{font-family:'Outfit',sans-serif;font-weight:700;font-size:21px;letter-spacing:-.4px}
+.page-sub{font-size:12.5px;color:var(--muted);margin-top:1px}
+.search{margin-left:auto;position:relative;width:280px}
+.search input{width:100%;padding:9px 14px 9px 38px;border:1px solid var(--line);border-radius:10px;background:var(--soft);font-family:inherit;font-size:13.5px;color:var(--ink)}
+.search input:focus{outline:none;border-color:var(--teal);background:#fff;box-shadow:0 0 0 3px rgba(8,145,178,.12)}
+.search svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:16px;height:16px;color:var(--muted)}
+.chip-demo{background:linear-gradient(135deg,#0891B2,#22C7E0);color:#fff;font-weight:600;font-size:11.5px;padding:5px 12px;border-radius:20px;letter-spacing:.02em;flex-shrink:0;box-shadow:0 3px 10px rgba(8,145,178,.3)}
+.top-actions{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.icon-btn{width:38px;height:38px;border:1px solid var(--line);background:#fff;border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;position:relative}
+.icon-btn:hover{background:var(--soft)}
+.icon-btn svg{width:18px;height:18px;color:var(--ink2)}
+.icon-btn .dot{position:absolute;top:8px;right:9px;width:7px;height:7px;background:#DC4B45;border-radius:50%;border:1.5px solid #fff}
+.avatar-top{width:38px;height:38px;border-radius:50%;overflow:hidden;flex-shrink:0;border:2px solid #fff;box-shadow:var(--shadow);background:var(--teal-l);display:flex;align-items:center;justify-content:center;font-weight:600;color:var(--teal-d);font-size:13px}
+.avatar-top img{width:100%;height:100%;object-fit:cover}
+
+.content{padding:26px 28px 40px;flex:1}
+.view{display:none}
+.view.active{display:block;animation:fade .35s ease}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* KPI */
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:22px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px 18px 16px;box-shadow:var(--shadow);position:relative;overflow:hidden;transition:transform .18s,box-shadow .18s}
+.kpi:hover{transform:translateY(-3px);box-shadow:var(--shadow-l)}
+.kpi .ic{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;margin-bottom:14px}
+.kpi .ic svg{width:19px;height:19px}
+.kpi .lbl{font-size:12.5px;color:var(--muted);font-weight:500;margin-bottom:5px}
+.kpi .val{font-family:'Outfit',sans-serif;font-weight:700;font-size:30px;letter-spacing:-1px;line-height:1}
+.kpi .delta{display:inline-flex;align-items:center;gap:3px;font-size:12px;font-weight:600;margin-top:9px;padding:2px 8px;border-radius:20px}
+.delta.pos{color:var(--ok);background:var(--ok-bg)}
+.delta.neg{color:var(--bad);background:var(--bad-bg)}
+.delta svg{width:12px;height:12px}
+
+.grid-2{display:grid;grid-template-columns:1.55fr 1fr;gap:18px;margin-bottom:18px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+.panel-head{display:flex;align-items:center;justify-content:space-between;padding:18px 20px 12px}
+.panel-head .h{font-family:'Outfit',sans-serif;font-weight:600;font-size:16px}
+.panel-head .s{font-size:12px;color:var(--muted);margin-top:2px}
+.panel-body{padding:0 20px 20px}
+.legend{display:flex;gap:14px;font-size:12px;color:var(--muted)}
+.legend span{display:flex;align-items:center;gap:5px}
+.legend i{width:9px;height:9px;border-radius:3px;display:inline-block}
+.seg{display:flex;gap:2px;background:var(--soft);border-radius:9px;padding:3px}
+.seg button{border:none;background:none;font-family:inherit;font-size:12px;font-weight:500;color:var(--muted);padding:5px 11px;border-radius:7px;cursor:pointer}
+.seg button.on{background:#fff;color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.08);font-weight:600}
+
+/* runs list */
+.run{display:flex;align-items:center;gap:13px;padding:12px 0;border-bottom:1px solid var(--line)}
+.run:last-child{border-bottom:none}
+.run-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.run .mono{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:#fff;flex-shrink:0;font-family:'Outfit'}
+.run .info{flex:1;min-width:0}
+.run .info .t{font-weight:600;font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.run .info .m{font-size:12px;color:var(--muted);margin-top:1px}
+.run .meta{text-align:right;flex-shrink:0}
+.run .meta .rec{font-weight:600;font-size:13.5px;font-family:'Outfit'}
+.run .meta .ago{font-size:11.5px;color:var(--muted)}
+
+/* pills */
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;padding:3px 9px;border-radius:20px;white-space:nowrap}
+.pill .pd{width:6px;height:6px;border-radius:50%}
+.pill.run-p{color:var(--teal-d);background:var(--teal-l)}
+.pill.ok-p{color:var(--ok);background:var(--ok-bg)}
+.pill.fail-p{color:var(--bad);background:var(--bad-bg)}
+.pill.warn-p{color:var(--warn);background:var(--warn-bg)}
+
+/* TABLE */
+.scrollx{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+thead th{text-align:left;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);font-weight:600;padding:11px 14px;border-bottom:1px solid var(--line);white-space:nowrap;background:var(--soft)}
+tbody td{padding:13px 14px;border-bottom:1px solid var(--line);font-size:13.5px;vertical-align:middle}
+tbody tr{cursor:pointer;transition:background .12s}
+tbody tr:hover{background:var(--soft)}
+tbody tr:last-child td{border-bottom:none}
+.fav{width:30px;height:30px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:13px;font-family:'Outfit';flex-shrink:0}
+.site-cell{display:flex;align-items:center;gap:11px}
+.site-cell .dom{font-weight:600;font-size:13.5px}
+.site-cell .sub{font-size:11.5px;color:var(--muted)}
+.rate-bar{display:flex;align-items:center;gap:8px}
+.rate-track{width:54px;height:6px;background:var(--line);border-radius:4px;overflow:hidden}
+.rate-fill{height:100%;border-radius:4px}
+.num{font-family:'Outfit';font-weight:600}
+.up{color:var(--up);font-weight:600}
+.down{color:var(--down);font-weight:600}
+
+.toolbar{display:flex;align-items:center;gap:12px;padding:16px 20px;flex-wrap:wrap}
+.toolbar .search-mini{position:relative;flex:1;min-width:180px;max-width:320px}
+.toolbar .search-mini input{width:100%;padding:9px 14px 9px 36px;border:1px solid var(--line);border-radius:10px;background:var(--soft);font-family:inherit;font-size:13px}
+.toolbar .search-mini input:focus{outline:none;border-color:var(--teal);background:#fff;box-shadow:0 0 0 3px rgba(8,145,178,.12)}
+.toolbar .search-mini svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);width:15px;height:15px;color:var(--muted)}
+.fbtn{border:1px solid var(--line);background:#fff;padding:8px 14px;border-radius:10px;font-family:inherit;font-size:13px;font-weight:500;cursor:pointer;color:var(--ink2);display:flex;align-items:center;gap:7px}
+.fbtn:hover{background:var(--soft)}
+.fbtn svg{width:15px;height:15px}
+.fbtn.primary{background:var(--teal);color:#fff;border-color:var(--teal)}
+.fbtn.primary:hover{background:var(--teal-d)}
+
+/* PIPELINE */
+.pipe-wrap{padding:8px 20px 26px;overflow-x:auto}
+.stage-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;padding:0 20px 22px}
+.stat-mini{background:var(--soft);border-radius:12px;padding:14px 16px}
+.stat-mini .l{font-size:12px;color:var(--muted);font-weight:500}
+.stat-mini .v{font-family:'Outfit';font-weight:700;font-size:22px;margin-top:4px;letter-spacing:-.5px}
+
+/* REPORTS */
+.rep-grid{display:grid;grid-template-columns:340px 1fr;gap:18px}
+.rep-item{display:flex;align-items:center;gap:13px;padding:14px 16px;border-bottom:1px solid var(--line);cursor:pointer;transition:background .12s}
+.rep-item:hover{background:var(--soft)}
+.rep-item.sel{background:var(--teal-l)}
+.rep-item:last-child{border-bottom:none}
+.rep-ic{width:40px;height:40px;border-radius:11px;background:var(--teal-l);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--teal-d)}
+.rep-ic svg{width:19px;height:19px}
+.rep-item .t{font-weight:600;font-size:13.5px}
+.rep-item .m{font-size:12px;color:var(--muted);margin-top:1px}
+.report-doc{background:#fff;border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+.report-head{padding:24px 26px;border-bottom:1px solid var(--line);background:linear-gradient(135deg,#0B2530,#0E7490);color:#fff}
+.report-head .meta{font-size:12px;color:#9FD4E0;font-weight:500;letter-spacing:.05em;text-transform:uppercase}
+.report-head h2{font-family:'Outfit';font-weight:700;font-size:23px;margin:6px 0 4px;letter-spacing:-.4px}
+.report-head .range{font-size:13px;color:#C7E5EC}
+.report-body{padding:24px 26px}
+.rep-tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
+.rep-tile{background:var(--soft);border-radius:12px;padding:15px}
+.rep-tile .l{font-size:11.5px;color:var(--muted);font-weight:500}
+.rep-tile .v{font-family:'Outfit';font-weight:700;font-size:24px;margin-top:5px;letter-spacing:-.5px}
+.rep-tile .d{font-size:11.5px;font-weight:600;margin-top:3px}
+.sec-title{font-family:'Outfit';font-weight:600;font-size:14px;margin:0 0 12px;display:flex;align-items:center;gap:8px}
+.sec-title svg{width:16px;height:16px;color:var(--teal)}
+
+/* DRAWER */
+.drawer-ov{position:fixed;inset:0;background:rgba(11,37,48,.45);z-index:70;opacity:0;pointer-events:none;transition:opacity .25s}
+.drawer-ov.open{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;height:100vh;width:460px;max-width:92vw;background:#fff;z-index:71;box-shadow:-12px 0 40px rgba(16,40,55,.18);transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column}
+.drawer.open{transform:none}
+.drawer-head{padding:22px 24px 18px;border-bottom:1px solid var(--line);display:flex;align-items:flex-start;gap:14px}
+.drawer-head .x{margin-left:auto;width:34px;height:34px;border:1px solid var(--line);border-radius:9px;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.drawer-head .x:hover{background:var(--soft)}
+.drawer-head .x svg{width:16px;height:16px}
+.drawer-body{padding:22px 24px;overflow-y:auto;flex:1}
+.dr-section{margin-bottom:24px}
+.dr-section .lbl{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:11px}
+.cfg-row{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--line);font-size:13px}
+.cfg-row:last-child{border-bottom:none}
+.cfg-row .k{color:var(--muted)}
+.cfg-row .v{font-weight:600;text-align:right}
+.run-mini{display:flex;align-items:center;gap:11px;padding:10px 0;border-bottom:1px solid var(--line)}
+.run-mini:last-child{border-bottom:none}
+.run-mini .when{font-weight:600;font-size:13px;flex:1}
+.run-mini .dur{font-size:12px;color:var(--muted)}
+.fields-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.field-chip{background:var(--soft);border:1px solid var(--line);border-radius:9px;padding:9px 11px}
+.field-chip .fn{font-size:11px;color:var(--muted);font-weight:500}
+.field-chip .fv{font-size:13px;font-weight:600;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+.sb-ov{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:55;opacity:0;pointer-events:none;transition:.2s}
+.sb-ov.open{opacity:1;pointer-events:auto}
+
+@media(max-width:1080px){
+  .kpi-row{grid-template-columns:repeat(2,1fr)}
+  .grid-2{grid-template-columns:1fr}
+  .stage-stats{grid-template-columns:repeat(2,1fr)}
+  .rep-grid{grid-template-columns:1fr}
+  .rep-tiles{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:900px){
+  .burger{display:flex}
+  .sidebar{position:fixed;left:0;top:0;z-index:60;transform:translateX(-100%);transition:transform .25s;height:100vh}
+  .sidebar.open{transform:none}
+  .search{display:none}
+  .content{padding:18px 16px 32px}
+  .topbar{padding:12px 16px}
+  .page-title{font-size:18px}
+  table{min-width:560px}
+}
+@media(max-width:560px){
+  .kpi-row{grid-template-columns:1fr}
+  .rep-tiles{grid-template-columns:repeat(2,1fr)}
+  .stage-stats{grid-template-columns:1fr}
+  .page-sub{display:none}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sb">
+    <div class="brand">
+      <div class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M3 17l5-5 4 3 5-7 4 4" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="8" cy="12" r="1.6" fill="#fff"/><circle cx="12" cy="15" r="1.6" fill="#fff"/></svg></div>
+      <div class="name">Harvest<span>.</span></div>
+    </div>
+    <nav class="nav">
+      <div class="nav-label">Workspace</div>
+      <div class="nav-item active" data-view="dashboard" onclick="go('dashboard')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+        Dashboard
+      </div>
+      <div class="nav-item" data-view="scrapers" onclick="go('scrapers')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 010 18M12 3a14 14 0 000 18"/></svg>
+        Scrapers <span class="nav-badge">18</span>
+      </div>
+      <div class="nav-item" data-view="data" onclick="go('data')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v6c0 1.66 3.58 3 8 3s8-1.34 8-3V5M4 11v6c0 1.66 3.58 3 8 3s8-1.34 8-3v-6"/></svg>
+        Datasets
+      </div>
+      <div class="nav-item" data-view="pipeline" onclick="go('pipeline')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="9" width="6" height="6" rx="1.5"/><rect x="16" y="9" width="6" height="6" rx="1.5"/><circle cx="12" cy="12" r="2.5"/><path d="M8 12h1.5M14.5 12H16"/></svg>
+        Pipeline
+      </div>
+      <div class="nav-item" data-view="reports" onclick="go('reports')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/></svg>
+        Reports
+      </div>
+      <div class="nav-label">Account</div>
+      <div class="nav-item" onclick="go('dashboard')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+        Settings
+      </div>
+    </nav>
+    <div class="side-foot">
+      <div class="side-card">
+        <div class="t">Proxy pool: 94% healthy</div>
+        <div class="d">12,400 requests left this hour across 38 rotating IPs.</div>
+        <button onclick="go('scrapers')">Manage scrapers</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <header class="topbar">
+      <button class="burger" onclick="toggleSide()" aria-label="Menu"><span></span><span></span><span></span></button>
+      <div>
+        <div class="page-title" id="pgTitle">Dashboard</div>
+        <div class="page-sub" id="pgSub">Live scraping & pipeline health</div>
+      </div>
+      <div class="search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        <input type="text" placeholder="Search scrapers, datasets, reports…">
+      </div>
+      <span class="chip-demo">Demo</span>
+      <div class="top-actions">
+        <button class="icon-btn" aria-label="Notifications"><span class="dot"></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 00-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 01-3.4 0"/></svg></button>
+        <div class="avatar-top"><img src="https://i.pravatar.cc/150?img=12" onerror="this.remove()" alt="">AC</div>
+      </div>
+    </header>
+
+    <div class="content">
+      <!-- ===== DASHBOARD ===== -->
+      <section class="view active" id="dashboard">
+        <div class="kpi-row" id="kpiRow"></div>
+        <div class="grid-2">
+          <div class="panel">
+            <div class="panel-head">
+              <div>
+                <div class="h">Records collected</div>
+                <div class="s">Volume across all active scrapers</div>
+              </div>
+              <div class="seg">
+                <button class="on" onclick="setVol(this,30)">30d</button>
+                <button onclick="setVol(this,14)">14d</button>
+                <button onclick="setVol(this,7)">7d</button>
+              </div>
+            </div>
+            <div class="panel-body" id="volChart"></div>
+          </div>
+          <div class="panel">
+            <div class="panel-head">
+              <div>
+                <div class="h">Recent runs</div>
+                <div class="s">Latest scraper executions</div>
+              </div>
+            </div>
+            <div class="panel-body" id="runsList" style="padding-top:4px"></div>
+          </div>
+        </div>
+        <div class="grid-2" style="grid-template-columns:1fr 1.55fr">
+          <div class="panel">
+            <div class="panel-head"><div><div class="h">Records by category</div><div class="s">Share of today's volume</div></div></div>
+            <div class="panel-body" id="donutWrap"></div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><div><div class="h">Success rate by source type</div><div class="s">Last 24 hours</div></div></div>
+            <div class="panel-body" id="barsWrap"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== SCRAPERS ===== -->
+      <section class="view" id="scrapers">
+        <div class="panel">
+          <div class="toolbar">
+            <div class="search-mini">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+              <input type="text" id="scraperSearch" placeholder="Filter scrapers…" oninput="renderScrapers()">
+            </div>
+            <button class="fbtn" onclick="cycleStatus()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M7 12h10M11 18h2"/></svg><span id="statusFilterLbl">All status</span></button>
+            <button class="fbtn primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>New scraper</button>
+          </div>
+          <div class="scrollx">
+            <table>
+              <thead><tr><th>Target site</th><th>Collects</th><th>Schedule</th><th>Status</th><th>Records</th><th>Success rate</th></tr></thead>
+              <tbody id="scrapersBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== DATA ===== -->
+      <section class="view" id="data">
+        <div class="panel">
+          <div class="toolbar">
+            <div class="search-mini">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+              <input type="text" id="priceSearch" placeholder="Search products…" oninput="renderPrices()">
+            </div>
+            <button class="fbtn" onclick="cyclePriceFilter()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 3H2l8 9.5V19l4 2v-8.5z"/></svg><span id="priceFilterLbl">All changes</span></button>
+            <button class="fbtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>Export CSV</button>
+            <div style="margin-left:auto;font-size:12.5px;color:var(--muted)" id="priceCount"></div>
+          </div>
+          <div class="scrollx">
+            <table>
+              <thead><tr><th>Product</th><th>Our price</th><th>Competitor A</th><th>Competitor B</th><th>Competitor C</th><th>Lowest</th><th>Change</th><th>Last seen</th></tr></thead>
+              <tbody id="pricesBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== PIPELINE ===== -->
+      <section class="view" id="pipeline">
+        <div class="panel" style="margin-bottom:18px">
+          <div class="panel-head">
+            <div><div class="h">Data pipeline</div><div class="s">competitor-prices · run #4,182 · streaming</div></div>
+            <span class="pill run-p"><span class="pd" style="background:var(--teal-d)"></span>Live</span>
+          </div>
+          <div class="pipe-wrap" id="pipeWrap"></div>
+          <div class="stage-stats" id="stageStats"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><div><div class="h">Throughput over last hour</div><div class="s">Records processed per minute</div></div></div>
+          <div class="panel-body" id="throughChart"></div>
+        </div>
+      </section>
+
+      <!-- ===== REPORTS ===== -->
+      <section class="view" id="reports">
+        <div class="rep-grid">
+          <div class="panel">
+            <div class="panel-head"><div><div class="h">Scheduled reports</div><div class="s">7 active schedules</div></div></div>
+            <div id="repList"></div>
+          </div>
+          <div id="reportPreview"></div>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
+
+<!-- DRAWER -->
+<div class="drawer-ov" id="drawerOv" onclick="closeDrawer()"></div>
+<aside class="drawer" id="drawer">
+  <div class="drawer-head" id="drawerHead"></div>
+  <div class="drawer-body" id="drawerBody"></div>
+</aside>
+
+<div class="sb-ov" id="sbov" onclick="toggleSide()"></div>
+
+<script>
+// ---------- DATA ----------
+const palette=['#0891B2','#22C7E0','#6366F1','#F59E0B','#10B981','#EC4899','#8B5CF6','#EF4444'];
+function mono(name){const w=name.replace(/^https?:\/\/|www\./g,'').split('.')[0];return w.slice(0,2).toUpperCase();}
+function color(i){return palette[i%palette.length];}
+
+const kpis=[
+  {lbl:'Records scraped today',val:'248,910',delta:'+12.4%',pos:true,icon:'<path d="M3 3v18h18"/><path d="M7 14l3-3 3 2 5-6"/>',bg:'var(--teal-l)',fg:'var(--teal-d)'},
+  {lbl:'Active scrapers',val:'18',delta:'+2',pos:true,icon:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 010 18"/>',bg:'#EEF2FF',fg:'#6366F1'},
+  {lbl:'Data freshness',val:'4.2m',delta:'-38s',pos:true,icon:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',bg:'#ECFDF5',fg:'#10B981'},
+  {lbl:'Reports sent',val:'1,284',delta:'+47',pos:true,icon:'<path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/>',bg:'#FEF3E2',fg:'#D98A0B'}
+];
+
+const scrapers=[
+  {id:1,dom:'amazon.com',sub:'Electronics dept.',collects:'Competitor prices',sched:'Every 6h',status:'running',records:48210,rate:99.2,c:0,sample:{Product:'Sony WH-1000XM5',Price:'$328.00',Rating:'4.7',Reviews:'18,402'}},
+  {id:2,dom:'indeed.com',sub:'SF Bay Area',collects:'Job postings',sched:'Every 12h',status:'ok',records:9840,rate:97.8,c:2,sample:{Title:'Senior Data Engineer',Company:'Stripe',Salary:'$190k–$240k',Posted:'2d ago'}},
+  {id:3,dom:'yelp.com',sub:'Restaurant cat.',collects:'Reviews',sched:'Daily 03:00',status:'ok',records:14302,rate:96.1,c:5,sample:{Business:'Tartine Bakery',Stars:'4.5',Review:'"Best croissant…"',Date:'Jun 13'}},
+  {id:4,dom:'bestbuy.com',sub:'Laptops & TVs',collects:'Competitor prices',sched:'Every 6h',status:'running',records:22140,rate:98.6,c:4,sample:{Product:'LG C3 65" OLED',Price:'$1,496.99',Stock:'In stock',SKU:'6533318'}},
+  {id:5,dom:'glassdoor.com',sub:'Tech companies',collects:'Salary data',sched:'Weekly Mon',status:'failed',records:0,rate:71.4,c:6,sample:{Role:'PM II',Base:'$165,000',Bonus:'$28,000',Source:'Self-reported'}},
+  {id:6,dom:'zillow.com',sub:'Austin, TX',collects:'Listing prices',sched:'Every 12h',status:'ok',records:6720,rate:94.3,c:1,sample:{Address:'1204 E 6th St',Price:'$725,000',Beds:'3',SqFt:'1,840'}},
+  {id:7,dom:'walmart.com',sub:'Grocery',collects:'Competitor prices',sched:'Every 8h',status:'ok',records:31280,rate:99.0,c:7,sample:{Product:'Tide Pods 81ct',Price:'$22.94',Unit:'$0.28/ct',Stock:'In stock'}},
+  {id:8,dom:'tripadvisor.com',sub:'Hotels EU',collects:'Reviews',sched:'Daily 04:00',status:'warn',records:8910,rate:88.7,c:3,sample:{Hotel:'Hotel Adlon',Rating:'4.6',Review:'"Impeccable…"',Lang:'EN'}},
+  {id:9,dom:'newegg.com',sub:'PC components',collects:'Competitor prices',sched:'Every 6h',status:'running',records:18650,rate:98.1,c:0,sample:{Product:'RTX 4070 Super',Price:'$589.99',Stock:'Limited',SKU:'N82E168'}},
+  {id:10,dom:'linkedin.com',sub:'Job board',collects:'Job postings',sched:'Every 12h',status:'ok',records:12440,rate:93.6,c:2,sample:{Title:'ML Engineer',Company:'Anthropic',Loc:'Remote',Posted:'1d ago'}},
+  {id:11,dom:'target.com',sub:'Home goods',collects:'Competitor prices',sched:'Every 8h',status:'ok',records:15730,rate:97.4,c:5,sample:{Product:'Dyson V15',Price:'$649.99',Stock:'In stock',TCIN:'89012345'}},
+  {id:12,dom:'booking.com',sub:'Hotels global',collects:'Room rates',sched:'Every 6h',status:'running',records:27410,rate:96.8,c:4,sample:{Hotel:'Citizen M NYC',Rate:'$249/night',Avail:'High',Date:'Jul 4'}}
+];
+
+const prices=[
+  {p:'Sony WH-1000XM5 Headphones',our:328.00,a:329.99,b:319.00,c:348.00,ch:-2.1},
+  {p:'Apple AirPods Pro (2nd gen)',our:189.00,a:199.00,b:189.99,c:179.99,ch:0},
+  {p:'Samsung 65" QN90C Neo QLED',our:1597.99,a:1699.99,b:1549.00,c:1649.00,ch:-3.4},
+  {p:'Dyson V15 Detect Vacuum',our:649.99,a:649.99,b:629.00,c:699.99,ch:1.8},
+  {p:'LG C3 65" OLED evo',our:1496.99,a:1599.00,b:1496.99,c:1546.00,ch:-4.2},
+  {p:'Nintendo Switch OLED',our:339.00,a:349.99,b:339.00,c:329.99,ch:0},
+  {p:'KitchenAid Stand Mixer',our:379.95,a:399.99,b:379.95,c:429.00,ch:2.6},
+  {p:'iPad Air 11" (M2)',our:579.00,a:599.00,b:569.00,c:599.99,ch:-1.2},
+  {p:'Bose QuietComfort Ultra',our:429.00,a:429.00,b:399.00,c:449.00,ch:3.5},
+  {p:'GoPro HERO12 Black',our:349.00,a:399.99,b:349.00,c:379.00,ch:-5.8},
+  {p:'Logitech MX Master 3S',our:99.99,a:99.99,b:94.99,c:109.99,ch:0},
+  {p:'Anker 737 Power Bank',our:109.99,a:119.99,b:109.99,c:99.99,ch:-1.0},
+  {p:'Sonos Era 300 Speaker',our:449.00,a:449.00,b:429.00,c:469.00,ch:2.2},
+  {p:'Garmin Fenix 7 Pro',our:799.99,a:849.99,b:799.99,c:799.99,ch:0}
+];
+
+const recentRuns=[
+  {dom:'amazon.com',what:'Competitor prices',rec:'+4,820',ago:'2m ago',status:'ok',c:0},
+  {dom:'booking.com',what:'Room rates',rec:'+2,940',ago:'6m ago',status:'running',c:4},
+  {dom:'glassdoor.com',what:'Salary data',rec:'0',ago:'14m ago',status:'failed',c:6},
+  {dom:'walmart.com',what:'Competitor prices',rec:'+3,110',ago:'21m ago',status:'ok',c:7},
+  {dom:'yelp.com',what:'Reviews',rec:'+1,204',ago:'33m ago',status:'ok',c:2},
+  {dom:'tripadvisor.com',what:'Reviews',rec:'+842',ago:'48m ago',status:'warn',c:3},
+  {dom:'newegg.com',what:'Competitor prices',rec:'+1,950',ago:'1h ago',status:'ok',c:0}
+];
+
+const reports=[
+  {id:1,name:'Weekly Price Intelligence',cad:'Every Mon · 08:00 PT',rec:'pricing@northgate.io +4',fmt:'PDF'},
+  {id:2,name:'Competitor Stock Alerts',cad:'Daily · 06:00 PT',rec:'ops@northgate.io',fmt:'Email'},
+  {id:3,name:'Job Market Digest',cad:'Every Fri · 09:00 PT',rec:'talent@northgate.io +2',fmt:'PDF'},
+  {id:4,name:'Review Sentiment Summary',cad:'Bi-weekly · Wed',rec:'cx@northgate.io',fmt:'Excel'},
+  {id:5,name:'Real Estate Trends — Austin',cad:'Monthly · 1st',rec:'invest@northgate.io +6',fmt:'PDF'},
+  {id:6,name:'Pipeline Health Report',cad:'Daily · 23:00 PT',rec:'data-eng@northgate.io',fmt:'Email'},
+  {id:7,name:'Hotel Rate Benchmark — EU',cad:'Weekly · Thu',rec:'revenue@northgate.io +3',fmt:'Excel'}
+];
+
+const stages=[
+  {n:'Source',sub:'12 sites',v:'248K',st:'ok'},
+  {n:'Extract',sub:'CSS / XPath',v:'247K',st:'ok'},
+  {n:'Clean',sub:'Normalize',v:'246K',st:'ok'},
+  {n:'Dedupe',sub:'Hash match',v:'231K',st:'ok'},
+  {n:'Enrich',sub:'FX + tax',v:'231K',st:'run'},
+  {n:'Store',sub:'Postgres',v:'231K',st:'ok'},
+  {n:'Report',sub:'Scheduled',v:'7 jobs',st:'ok'}
+];
+
+// ---------- HELPERS ----------
+function statusPill(s){
+  const m={running:['run-p','Running','var(--teal-d)'],ok:['ok-p','Healthy','var(--ok)'],failed:['fail-p','Failed','var(--bad)'],warn:['warn-p','Degraded','var(--warn)']};
+  const x=m[s]||m.ok;return `<span class="pill ${x[0]}"><span class="pd" style="background:${x[2]}"></span>${x[1]}</span>`;
+}
+function fmt(n){return '$'+n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
+
+// ---------- KPIs ----------
+function renderKpis(){
+  document.getElementById('kpiRow').innerHTML=kpis.map(k=>`
+    <div class="kpi">
+      <div class="ic" style="background:${k.bg};color:${k.fg}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${k.icon}</svg></div>
+      <div class="lbl">${k.lbl}</div>
+      <div class="val">${k.val}</div>
+      <div class="delta ${k.pos?'pos':'neg'}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">${k.pos?'<path d="M7 17L17 7M17 7H9M17 7v8"/>':'<path d="M17 7L7 17M7 17h8M7 17V9"/>'}</svg>
+        ${k.delta}
+      </div>
+    </div>`).join('');
+}
+
+// ---------- AREA CHART ----------
+function genVol(days){
+  const arr=[];let base=180;
+  for(let i=0;i<days;i++){base+=(Math.sin(i/3)*22)+(Math.random()*30-12);arr.push(Math.max(90,Math.round(base)));}
+  return arr;
+}
+let volData=genVol(30);
+function renderVol(){
+  const W=560,H=210,pad=30,n=volData.length;
+  const max=Math.max(...volData)*1.12,min=Math.min(...volData)*0.82;
+  const x=i=>pad+i*((W-pad*2)/(n-1));
+  const y=v=>H-24-((v-min)/(max-min))*(H-50);
+  let line='',area='';
+  volData.forEach((v,i)=>{line+=(i?'L':'M')+x(i).toFixed(1)+' '+y(v).toFixed(1)+' ';});
+  area=line+`L${x(n-1).toFixed(1)} ${H-24} L${x(0).toFixed(1)} ${H-24} Z`;
+  let grid='';
+  for(let g=0;g<=3;g++){const gy=24+g*((H-50)/3);grid+=`<line x1="${pad}" y1="${gy}" x2="${W-pad}" y2="${gy}" stroke="var(--line)" stroke-width="1"/>`;
+    grid+=`<text x="${pad-6}" y="${gy+4}" text-anchor="end" font-size="10" fill="var(--muted)">${Math.round((max-(g)*(max-min)/3)/1000)}K</text>`;}
+  const lastIdx=n-1;
+  document.getElementById('volChart').innerHTML=`
+    <svg viewBox="0 0 ${W} ${H}" width="100%" style="display:block" preserveAspectRatio="xMidYMid meet">
+      <defs><linearGradient id="va" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0891B2" stop-opacity=".24"/><stop offset="100%" stop-color="#0891B2" stop-opacity="0"/></linearGradient></defs>
+      ${grid}
+      <path d="${area}" fill="url(#va)"/>
+      <path d="${line}" fill="none" stroke="#0891B2" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="${x(lastIdx).toFixed(1)}" cy="${y(volData[lastIdx]).toFixed(1)}" r="4.5" fill="#0891B2" stroke="#fff" stroke-width="2"/>
+    </svg>
+    <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);padding:6px 30px 0">
+      <span>${n} days ago</span><span>Today</span>
+    </div>`;
+}
+function setVol(btn,days){
+  document.querySelectorAll('.seg button').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');volData=genVol(days);renderVol();
+}
+
+// ---------- DONUT ----------
+function renderDonut(){
+  const data=[{l:'Competitor prices',v:162},{l:'Reviews',v:24},{l:'Job postings',v:22},{l:'Listings',v:14},{l:'Room rates',v:27}];
+  const total=data.reduce((s,d)=>s+d.v,0);
+  const cx=72,cy=72,r=56,sw=22;let off=0;const C=2*Math.PI*r;
+  let segs='';
+  data.forEach((d,i)=>{const frac=d.v/total;const len=frac*C;
+    segs+=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${color(i)}" stroke-width="${sw}" stroke-dasharray="${len.toFixed(1)} ${(C-len).toFixed(1)}" stroke-dashoffset="${(-off).toFixed(1)}" transform="rotate(-90 ${cx} ${cy})" stroke-linecap="butt"/>`;
+    off+=len;});
+  const leg=data.map((d,i)=>`<div style="display:flex;align-items:center;gap:8px;font-size:12.5px;padding:5px 0">
+    <span style="width:10px;height:10px;border-radius:3px;background:${color(i)};flex-shrink:0"></span>
+    <span style="flex:1;color:var(--ink2)">${d.l}</span>
+    <span class="num">${d.v}K</span></div>`).join('');
+  document.getElementById('donutWrap').innerHTML=`
+    <div style="display:flex;align-items:center;gap:18px;flex-wrap:wrap">
+      <div style="position:relative;width:144px;height:144px;flex-shrink:0">
+        <svg viewBox="0 0 144 144" width="144" height="144">${segs}</svg>
+        <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">
+          <div class="num" style="font-size:24px;font-family:'Outfit';font-weight:700;letter-spacing:-1px">${total}K</div>
+          <div style="font-size:11px;color:var(--muted)">today</div>
+        </div>
+      </div>
+      <div style="flex:1;min-width:130px">${leg}</div>
+    </div>`;
+}
+
+// ---------- BARS ----------
+function renderBars(){
+  const data=[{l:'E-commerce',v:99.0},{l:'Job boards',v:94.6},{l:'Review sites',v:92.4},{l:'Real estate',v:94.3},{l:'Travel',v:96.8}];
+  document.getElementById('barsWrap').innerHTML=`<div style="display:flex;flex-direction:column;gap:13px;padding-top:6px">`+
+    data.map((d,i)=>`<div style="display:flex;align-items:center;gap:12px">
+      <div style="width:90px;font-size:12.5px;color:var(--ink2);font-weight:500">${d.l}</div>
+      <div style="flex:1;height:10px;background:var(--soft);border-radius:6px;overflow:hidden">
+        <div style="height:100%;width:${d.v}%;background:linear-gradient(90deg,#0891B2,#22C7E0);border-radius:6px"></div>
+      </div>
+      <div class="num" style="width:48px;text-align:right;font-size:13px">${d.v}%</div>
+    </div>`).join('')+`</div>`;
+}
+
+// ---------- RUNS ----------
+function renderRuns(){
+  const dotc={ok:'var(--ok)',running:'var(--teal-d)',failed:'var(--bad)',warn:'var(--warn)'};
+  document.getElementById('runsList').innerHTML=recentRuns.map(r=>`
+    <div class="run">
+      <span class="run-dot" style="background:${dotc[r.status]}"></span>
+      <div class="mono" style="background:${color(r.c)}">${mono(r.dom)}</div>
+      <div class="info"><div class="t">${r.dom}</div><div class="m">${r.what}</div></div>
+      <div class="meta"><div class="rec" style="color:${r.rec==='0'?'var(--bad)':'var(--ink)'}">${r.rec}</div><div class="ago">${r.ago}</div></div>
+    </div>`).join('');
+}
+
+// ---------- SCRAPERS TABLE ----------
+let statusFilter='all';
+const statusOrder=['all','running','ok','warn','failed'];
+const statusLabels={all:'All status',running:'Running',ok:'Healthy',warn:'Degraded',failed:'Failed'};
+function cycleStatus(){
+  const i=statusOrder.indexOf(statusFilter);statusFilter=statusOrder[(i+1)%statusOrder.length];
+  document.getElementById('statusFilterLbl').textContent=statusLabels[statusFilter];renderScrapers();
+}
+function renderScrapers(){
+  const q=(document.getElementById('scraperSearch').value||'').toLowerCase();
+  const rows=scrapers.filter(s=>{
+    const matchQ=s.dom.includes(q)||s.collects.toLowerCase().includes(q)||s.sub.toLowerCase().includes(q);
+    const matchS=statusFilter==='all'||s.status===statusFilter;
+    return matchQ&&matchS;});
+  const rc=v=>v>=98?'var(--ok)':v>=92?'var(--teal-d)':v>=80?'var(--warn)':'var(--bad)';
+  document.getElementById('scrapersBody').innerHTML=rows.map(s=>`
+    <tr onclick='openScraper(${s.id})'>
+      <td><div class="site-cell"><div class="fav" style="background:${color(s.c)}">${mono(s.dom)}</div>
+        <div><div class="dom">${s.dom}</div><div class="sub">${s.sub}</div></div></div></td>
+      <td>${s.collects}</td>
+      <td><span style="font-weight:500">${s.sched}</span></td>
+      <td>${statusPill(s.status)}</td>
+      <td class="num">${s.records.toLocaleString()}</td>
+      <td><div class="rate-bar"><div class="rate-track"><div class="rate-fill" style="width:${s.rate}%;background:${rc(s.rate)}"></div></div><span class="num" style="font-size:12.5px">${s.rate}%</span></div></td>
+    </tr>`).join('')||`<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:30px">No scrapers match your filter.</td></tr>`;
+}
+
+// ---------- DRAWER (scraper) ----------
+function openScraper(id){
+  const s=scrapers.find(x=>x.id===id);
+  const runs=[
+    {when:'Today 06:00',dur:'2m 14s',st:'ok',rec:'+'+(s.records?Math.round(s.records*0.21):0)},
+    {when:'Today 00:00',dur:'2m 31s',st:'ok',rec:'+'+(s.records?Math.round(s.records*0.19):0)},
+    {when:'Yesterday 18:00',dur:'3m 02s',st:s.status==='warn'?'warn':'ok',rec:'+'+(s.records?Math.round(s.records*0.20):0)},
+    {when:'Yesterday 12:00',dur:'2m 08s',st:'ok',rec:'+'+(s.records?Math.round(s.records*0.20):0)},
+    {when:'Yesterday 06:00',dur:'2m 44s',st:s.status==='failed'?'failed':'ok',rec:s.status==='failed'?'0':'+'+Math.round(s.records*0.18)}
+  ];
+  const dotc={ok:'var(--ok)',running:'var(--teal-d)',failed:'var(--bad)',warn:'var(--warn)'};
+  document.getElementById('drawerHead').innerHTML=`
+    <div class="fav" style="background:${color(s.c)};width:48px;height:48px;border-radius:13px;font-size:18px">${mono(s.dom)}</div>
+    <div style="flex:1;min-width:0">
+      <div class="display" style="font-size:19px;font-weight:700;letter-spacing:-.3px">${s.dom}</div>
+      <div style="font-size:13px;color:var(--muted);margin-top:2px">${s.collects} · ${s.sub}</div>
+      <div style="margin-top:9px">${statusPill(s.status)}</div>
+    </div>
+    <button class="x" onclick="closeDrawer()" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>`;
+  document.getElementById('drawerBody').innerHTML=`
+    <div class="dr-section">
+      <div class="lbl">Configuration</div>
+      <div class="cfg-row"><span class="k">Target URL</span><span class="v" style="color:var(--teal-d)">https://${s.dom}</span></div>
+      <div class="cfg-row"><span class="k">Schedule</span><span class="v">${s.sched}</span></div>
+      <div class="cfg-row"><span class="k">Extraction</span><span class="v">CSS selectors + XPath</span></div>
+      <div class="cfg-row"><span class="k">Proxy pool</span><span class="v">Residential · rotating</span></div>
+      <div class="cfg-row"><span class="k">Records collected</span><span class="v num">${s.records.toLocaleString()}</span></div>
+      <div class="cfg-row"><span class="k">Success rate</span><span class="v">${s.rate}%</span></div>
+    </div>
+    <div class="dr-section">
+      <div class="lbl">Last 5 runs</div>
+      ${runs.map(r=>`<div class="run-mini">
+        <span class="run-dot" style="width:8px;height:8px;border-radius:50%;background:${dotc[r.st]};flex-shrink:0"></span>
+        <span class="when">${r.when}</span>
+        <span class="dur">${r.dur}</span>
+        <span class="num" style="font-size:12.5px;width:64px;text-align:right;color:${r.rec==='0'?'var(--bad)':'var(--ok)'}">${r.rec}</span>
+      </div>`).join('')}
+    </div>
+    <div class="dr-section">
+      <div class="lbl">Sample extracted fields</div>
+      <div class="fields-grid">
+        ${Object.entries(s.sample).map(([k,v])=>`<div class="field-chip"><div class="fn">${k}</div><div class="fv">${v}</div></div>`).join('')}
+      </div>
+    </div>
+    <div class="dr-section">
+      <div style="display:flex;gap:10px">
+        <button class="fbtn primary" style="flex:1;justify-content:center"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 3l14 9-14 9z"/></svg>Run now</button>
+        <button class="fbtn" style="flex:1;justify-content:center"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/></svg>Edit config</button>
+      </div>
+    </div>`;
+  document.getElementById('drawer').classList.add('open');
+  document.getElementById('drawerOv').classList.add('open');
+}
+function closeDrawer(){
+  document.getElementById('drawer').classList.remove('open');
+  document.getElementById('drawerOv').classList.remove('open');
+}
+
+// ---------- PRICES ----------
+let priceFilter='all';
+const priceOrder=['all','down','up','same'];
+const priceLabels={all:'All changes',down:'Price drops',up:'Price rises',same:'Unchanged'};
+function cyclePriceFilter(){
+  const i=priceOrder.indexOf(priceFilter);priceFilter=priceOrder[(i+1)%priceOrder.length];
+  document.getElementById('priceFilterLbl').textContent=priceLabels[priceFilter];renderPrices();
+}
+function renderPrices(){
+  const q=(document.getElementById('priceSearch').value||'').toLowerCase();
+  const rows=prices.filter(p=>{
+    const mq=p.p.toLowerCase().includes(q);
+    let mf=true;
+    if(priceFilter==='down')mf=p.ch<0;else if(priceFilter==='up')mf=p.ch>0;else if(priceFilter==='same')mf=p.ch===0;
+    return mq&&mf;});
+  document.getElementById('priceCount').textContent=`${rows.length} of ${prices.length} products`;
+  document.getElementById('pricesBody').innerHTML=rows.map((p,i)=>{
+    const low=Math.min(p.our,p.a,p.b,p.c);
+    const cell=(v)=>`<td class="num" style="${v===low?'color:var(--ok);font-weight:700':''}">${fmt(v)}</td>`;
+    const chg=p.ch<0?`<span class="down">▼ ${Math.abs(p.ch).toFixed(1)}%</span>`:p.ch>0?`<span class="up">▲ ${p.ch.toFixed(1)}%</span>`:`<span style="color:var(--muted)">—</span>`;
+    return `<tr onclick='openPrice(${prices.indexOf(p)})'>
+      <td style="font-weight:600;max-width:200px">${p.p}</td>
+      <td class="num" style="color:var(--teal-d);font-weight:700">${fmt(p.our)}</td>
+      ${cell(p.a)}${cell(p.b)}${cell(p.c)}
+      <td class="num" style="color:var(--ok);font-weight:700">${fmt(low)}</td>
+      <td>${chg}</td>
+      <td style="color:var(--muted);font-size:12.5px">${['2m','8m','14m','22m','31m','44m'][i%6]} ago</td>
+    </tr>`;}).join('')||`<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:30px">No products match.</td></tr>`;
+}
+function openPrice(idx){
+  const p=prices[idx];const low=Math.min(p.our,p.a,p.b,p.c);
+  const beats=p.our<=low;
+  document.getElementById('drawerHead').innerHTML=`
+    <div class="rep-ic" style="width:48px;height:48px;border-radius:13px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><circle cx="7" cy="7" r="1.5"/></svg></div>
+    <div style="flex:1;min-width:0">
+      <div class="display" style="font-size:17px;font-weight:700;letter-spacing:-.3px;line-height:1.25">${p.p}</div>
+      <div style="font-size:13px;color:var(--muted);margin-top:4px">Competitor price tracking</div>
+      <div style="margin-top:9px">${beats?'<span class="pill ok-p"><span class="pd" style="background:var(--ok)"></span>We have the lowest</span>':'<span class="pill warn-p"><span class="pd" style="background:var(--warn)"></span>Beaten by '+fmt(low)+'</span>'}</div>
+    </div>
+    <button class="x" onclick="closeDrawer()" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>`;
+  document.getElementById('drawerBody').innerHTML=`
+    <div class="dr-section">
+      <div class="lbl">Price comparison</div>
+      <div class="cfg-row"><span class="k">Our price</span><span class="v num" style="color:var(--teal-d)">${fmt(p.our)}</span></div>
+      <div class="cfg-row"><span class="k">Competitor A — bestbuy.com</span><span class="v num">${fmt(p.a)}</span></div>
+      <div class="cfg-row"><span class="k">Competitor B — walmart.com</span><span class="v num">${fmt(p.b)}</span></div>
+      <div class="cfg-row"><span class="k">Competitor C — target.com</span><span class="v num">${fmt(p.c)}</span></div>
+      <div class="cfg-row"><span class="k">Lowest on market</span><span class="v num" style="color:var(--ok)">${fmt(low)}</span></div>
+      <div class="cfg-row"><span class="k">24h change</span><span class="v">${p.ch<0?'<span class="down">▼ '+Math.abs(p.ch).toFixed(1)+'%</span>':p.ch>0?'<span class="up">▲ '+p.ch.toFixed(1)+'%</span>':'—'}</span></div>
+    </div>
+    <div class="dr-section">
+      <div class="lbl">Suggested action</div>
+      <div style="background:var(--soft);border-radius:12px;padding:14px;font-size:13px;color:var(--ink2);line-height:1.55">
+        ${beats?'You currently hold the lowest price. Maintain to protect Buy Box position.':'Lower by <strong>'+fmt(p.our-low+0.01)+'</strong> to undercut the market and reclaim price leadership.'}
+      </div>
+    </div>
+    <div class="dr-section">
+      <button class="fbtn primary" style="width:100%;justify-content:center"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>Create price rule</button>
+    </div>`;
+  document.getElementById('drawer').classList.add('open');
+  document.getElementById('drawerOv').classList.add('open');
+}
+
+// ---------- PIPELINE ----------
+function renderPipeline(){
+  const bw=120,bh=78,gap=34,sx=14,sy=30;
+  const W=stages.length*bw+(stages.length-1)*gap+sx*2;const H=160;
+  const stc={ok:['#E3F7EF','#0F9D6E'],run:['#E0F7FB','#0E7490'],warn:['#FBF0DC','#D98A0B']};
+  let svg=`<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" style="display:block">
+    <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0L7 4L0 8z" fill="#9FB3BC"/></marker></defs>`;
+  stages.forEach((s,i)=>{
+    const x=sx+i*(bw+gap),y=sy;const c=stc[s.st];
+    if(i<stages.length-1){
+      const x1=x+bw,x2=x+bw+gap,yc=y+bh/2;
+      svg+=`<line x1="${x1}" y1="${yc}" x2="${x2-3}" y2="${yc}" stroke="#9FB3BC" stroke-width="2" marker-end="url(#arr)"/>`;
+      svg+=`<circle cx="${(x1+x2)/2}" cy="${yc}" r="2.6" fill="#0891B2"><animate attributeName="cx" from="${x1}" to="${x2-4}" dur="1.4s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;1;0" dur="1.4s" repeatCount="indefinite"/></circle>`;
+    }
+    svg+=`<g>
+      <rect x="${x}" y="${y}" width="${bw}" height="${bh}" rx="13" fill="#fff" stroke="var(--line)" stroke-width="1.5"/>
+      <rect x="${x}" y="${y}" width="5" height="${bh}" rx="2.5" fill="${c[1]}"/>
+      <circle cx="${x+bw-16}" cy="${y+16}" r="4" fill="${c[1]}">${s.st==='run'?'<animate attributeName="opacity" values="1;.3;1" dur="1s" repeatCount="indefinite"/>':''}</circle>
+      <text x="${x+16}" y="${y+25}" font-family="Outfit" font-weight="700" font-size="15" fill="#0F1B23">${s.n}</text>
+      <text x="${x+16}" y="${y+43}" font-size="11" fill="#6B7B85">${s.sub}</text>
+      <text x="${x+16}" y="${y+64}" font-family="Outfit" font-weight="700" font-size="16" fill="${c[1]}">${s.v}</text>
+    </g>`;
+  });
+  svg+=`</svg>`;
+  document.getElementById('pipeWrap').innerHTML=svg;
+  document.getElementById('stageStats').innerHTML=`
+    <div class="stat-mini"><div class="l">Total throughput</div><div class="v">3,820/min</div></div>
+    <div class="stat-mini"><div class="l">Dedupe ratio</div><div class="v">6.5%</div></div>
+    <div class="stat-mini"><div class="l">Avg stage latency</div><div class="v">142ms</div></div>
+    <div class="stat-mini"><div class="l">Pipeline uptime</div><div class="v">99.94%</div></div>`;
+}
+function renderThrough(){
+  const W=560,H=180,pad=28,n=30;
+  const data=[];let b=3400;for(let i=0;i<n;i++){b+=Math.sin(i/2)*180+(Math.random()*240-120);data.push(Math.max(2600,Math.round(b)));}
+  const max=Math.max(...data)*1.1,min=Math.min(...data)*0.85;
+  const bw=(W-pad*2)/n;
+  let bars='';
+  data.forEach((v,i)=>{const h=((v-min)/(max-min))*(H-46);const x=pad+i*bw+bw*0.18;const y=H-24-h;
+    bars+=`<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${(bw*0.64).toFixed(1)}" height="${h.toFixed(1)}" rx="2.5" fill="${i===n-1?'#0891B2':'#9FE1EC'}"/>`;});
+  document.getElementById('throughChart').innerHTML=`
+    <svg viewBox="0 0 ${W} ${H}" width="100%" style="display:block" preserveAspectRatio="xMidYMid meet">${bars}
+    <text x="${pad}" y="${H-6}" font-size="10" fill="var(--muted)">60 min ago</text>
+    <text x="${W-pad}" y="${H-6}" text-anchor="end" font-size="10" fill="var(--muted)">now</text></svg>`;
+}
+
+// ---------- REPORTS ----------
+let selReport=1;
+function renderReportList(){
+  document.getElementById('repList').innerHTML=reports.map(r=>`
+    <div class="rep-item ${r.id===selReport?'sel':''}" onclick="selectReport(${r.id})">
+      <div class="rep-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V9z"/><path d="M14 3v6h6"/></svg></div>
+      <div style="flex:1;min-width:0">
+        <div class="t">${r.name}</div>
+        <div class="m">${r.cad} · ${r.rec}</div>
+      </div>
+      <span class="pill ok-p" style="background:var(--soft);color:var(--ink2)">${r.fmt}</span>
+    </div>`).join('');
+}
+function selectReport(id){selReport=id;renderReportList();renderReportPreview();}
+function renderReportPreview(){
+  const r=reports.find(x=>x.id===selReport);
+  const top=[...prices].sort((a,b)=>a.ch-b.ch).slice(0,5);
+  document.getElementById('reportPreview').innerHTML=`
+    <div class="report-doc">
+      <div class="report-head">
+        <div class="meta">${r.fmt} report · ${r.cad}</div>
+        <h2>${r.name}</h2>
+        <div class="range">Jun 8 – Jun 15, 2026 · Northgate Retail Group</div>
+      </div>
+      <div class="report-body">
+        <div class="rep-tiles">
+          <div class="rep-tile"><div class="l">Products tracked</div><div class="v">1,420</div><div class="d" style="color:var(--ok)">+86 this week</div></div>
+          <div class="rep-tile"><div class="l">Price drops</div><div class="v">312</div><div class="d" style="color:var(--bad)">22% of catalog</div></div>
+          <div class="rep-tile"><div class="l">We're lowest on</div><div class="v">68%</div><div class="d" style="color:var(--ok)">+4 pts WoW</div></div>
+          <div class="rep-tile"><div class="l">Avg gap to market</div><div class="v">-1.8%</div><div class="d" style="color:var(--ok)">below rivals</div></div>
+        </div>
+        <div style="margin-bottom:24px">
+          <div class="sec-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 13l3-3 3 2 5-6"/></svg>Price competitiveness trend</div>
+          ${miniArea()}
+        </div>
+        <div>
+          <div class="sec-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>Largest price movements</div>
+          <div class="scrollx"><table>
+            <thead><tr><th>Product</th><th>Our price</th><th>Market low</th><th>Change</th></tr></thead>
+            <tbody>${top.map(p=>{const low=Math.min(p.our,p.a,p.b,p.c);
+              return `<tr style="cursor:default"><td style="font-weight:600">${p.p}</td><td class="num">${fmt(p.our)}</td><td class="num" style="color:var(--ok)">${fmt(low)}</td>
+              <td>${p.ch<0?'<span class="down">▼ '+Math.abs(p.ch).toFixed(1)+'%</span>':p.ch>0?'<span class="up">▲ '+p.ch.toFixed(1)+'%</span>':'—'}</td></tr>`;}).join('')}</tbody>
+          </table></div>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:22px;flex-wrap:wrap">
+          <button class="fbtn primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V9z"/><path d="M14 3v6h6"/></svg>Export PDF</button>
+          <button class="fbtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M3 9h18"/></svg>Export Excel</button>
+          <button class="fbtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg>Send now</button>
+        </div>
+      </div>
+    </div>`;
+}
+function miniArea(){
+  const W=620,H=150,pad=8;const data=[58,60,59,62,64,63,66,65,68,67,68,68];const n=data.length;
+  const max=72,min=54;const x=i=>pad+i*((W-pad*2)/(n-1));const y=v=>H-20-((v-min)/(max-min))*(H-36);
+  let line='',area='';data.forEach((v,i)=>{line+=(i?'L':'M')+x(i).toFixed(1)+' '+y(v).toFixed(1)+' ';});
+  area=line+`L${x(n-1).toFixed(1)} ${H-20} L${x(0).toFixed(1)} ${H-20} Z`;
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" style="display:block" preserveAspectRatio="xMidYMid meet">
+    <defs><linearGradient id="ra" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0891B2" stop-opacity=".2"/><stop offset="100%" stop-color="#0891B2" stop-opacity="0"/></linearGradient></defs>
+    <path d="${area}" fill="url(#ra)"/><path d="${line}" fill="none" stroke="#0891B2" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="${pad}" y="${H-4}" font-size="10" fill="#6B7B85">8 weeks ago</text>
+    <text x="${W-pad}" y="${H-4}" text-anchor="end" font-size="10" fill="#6B7B85">this week — 68% lowest</text></svg>`;
+}
+
+// ---------- NAV ----------
+const titles={dashboard:['Dashboard','Live scraping & pipeline health'],scrapers:['Scrapers','18 active across 12 target sites'],data:['Datasets','Competitor price intelligence'],pipeline:['Pipeline','Real-time processing flow'],reports:['Reports','Scheduled & automated delivery']};
+function go(view){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById(view).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active',n.dataset.view===view));
+  document.getElementById('pgTitle').textContent=titles[view][0];
+  document.getElementById('pgSub').textContent=titles[view][1];
+  document.getElementById('sb').classList.remove('open');
+  document.getElementById('sbov').classList.remove('open');
+  window.scrollTo(0,0);
+}
+function toggleSide(){
+  const s=document.getElementById('sb'),o=document.getElementById('sbov');
+  const op=s.classList.toggle('open');o.classList.toggle('open',op);
+}
+
+// ---------- RENDER ----------
+function render(){
+  renderKpis();renderVol();renderDonut();renderBars();renderRuns();
+  renderScrapers();renderPrices();renderPipeline();renderThrough();
+  renderReportList();renderReportPreview();
+}
+render();
+</script>
+</body>
+</html>

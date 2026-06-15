@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flowforge — Visual Workflow Automation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --indigo:#4F46E5; --indigo-d:#4338CA; --indigo-l:#EEF0FF;
+  --bg:#F6F7FB; --surface:#FFFFFF; --ink:#11131A; --ink2:#5A6072; --ink3:#8A90A2;
+  --line:#E7E9F2; --line2:#EFF0F6;
+  --green:#16A34A; --red:#DC2626; --amber:#D97706;
+  --shadow:0 1px 2px rgba(16,24,40,.04),0 8px 24px rgba(16,24,40,.06);
+  --shadow-lg:0 10px 40px rgba(16,24,40,.12);
+  --r:14px; --r-sm:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;line-height:1.45;overflow-x:hidden}
+.disp{font-family:Manrope,Inter,sans-serif}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+img{display:block}
+.app{display:flex;min-height:100vh}
+
+/* SIDEBAR */
+.sidebar{width:248px;flex:0 0 248px;background:var(--surface);border-right:1px solid var(--line);display:flex;flex-direction:column;padding:18px 14px;position:sticky;top:0;height:100vh}
+.brand{display:flex;align-items:center;gap:11px;padding:6px 8px 18px}
+.brand .mark{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#6366F1,#4F46E5);display:flex;align-items:center;justify-content:center;color:#fff;box-shadow:0 6px 16px rgba(79,70,229,.4)}
+.brand .mark svg{width:19px;height:19px}
+.brand .name{font-family:Manrope;font-weight:800;font-size:19px;letter-spacing:-.02em}
+.nav-label{font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--ink3);padding:14px 10px 7px}
+.nav-item{display:flex;align-items:center;gap:11px;padding:9px 11px;border-radius:10px;color:var(--ink2);font-weight:500;font-size:14px;transition:.15s;margin-bottom:2px}
+.nav-item svg{width:18px;height:18px;flex:0 0 18px;stroke-width:1.9}
+.nav-item:hover{background:var(--line2);color:var(--ink)}
+.nav-item.active{background:var(--indigo-l);color:var(--indigo-d);font-weight:600}
+.nav-item .badge{margin-left:auto;background:var(--indigo);color:#fff;font-size:10px;font-weight:700;border-radius:20px;padding:1px 7px}
+.side-foot{margin-top:auto;display:flex;align-items:center;gap:10px;padding:10px;border-radius:12px;background:var(--bg);border:1px solid var(--line)}
+.side-foot .av{width:34px;height:34px;border-radius:50%;overflow:hidden;flex:0 0 34px;background:var(--indigo-l);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--indigo-d);font-size:13px}
+.side-foot .av img{width:100%;height:100%;object-fit:cover}
+.side-foot .who{font-size:13px;font-weight:600;line-height:1.2}
+.side-foot .who small{display:block;color:var(--ink3);font-weight:500;font-size:11px}
+
+/* MAIN */
+.main{flex:1;min-width:0;display:flex;flex-direction:column}
+.topbar{height:64px;background:rgba(255,255,255,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:14px;padding:0 22px;position:sticky;top:0;z-index:40}
+.burger{display:none;width:38px;height:38px;border-radius:10px;border:1px solid var(--line);align-items:center;justify-content:center;flex-direction:column;gap:4px;background:var(--surface)}
+.burger span{width:17px;height:2px;background:var(--ink);border-radius:2px}
+.page-title{font-family:Manrope;font-weight:800;font-size:20px;letter-spacing:-.02em}
+.search{flex:0 0 auto;margin-left:8px;display:flex;align-items:center;gap:8px;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:8px 13px;width:280px;color:var(--ink3)}
+.search svg{width:16px;height:16px}
+.search input{border:none;background:none;outline:none;font-family:inherit;font-size:13.5px;color:var(--ink);width:100%}
+.topbar .spacer{flex:1}
+.chip-demo{background:#FEF3C7;color:#92400E;font-weight:700;font-size:11px;border-radius:20px;padding:5px 11px;letter-spacing:.02em}
+.tbtn{width:38px;height:38px;border-radius:10px;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;background:var(--surface);color:var(--ink2);position:relative}
+.tbtn svg{width:18px;height:18px}
+.tbtn .dot{position:absolute;top:8px;right:9px;width:7px;height:7px;border-radius:50%;background:var(--red);border:2px solid #fff}
+.btn-primary{background:var(--indigo);color:#fff;font-weight:600;font-size:13.5px;border-radius:10px;padding:9px 15px;display:flex;align-items:center;gap:7px;box-shadow:0 6px 16px rgba(79,70,229,.3);transition:.15s}
+.btn-primary:hover{background:var(--indigo-d);transform:translateY(-1px)}
+.btn-primary svg{width:16px;height:16px}
+
+.content{padding:24px 26px 60px;flex:1}
+.view{display:none;animation:fade .25s ease}
+.view.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+.head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:20px;flex-wrap:wrap}
+.head h1{font-family:Manrope;font-weight:800;font-size:25px;letter-spacing:-.025em}
+.head p{color:var(--ink2);font-size:13.5px;margin-top:3px}
+
+/* KPI */
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px 17px;box-shadow:var(--shadow);transition:.18s}
+.kpi:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg)}
+.kpi .kl{display:flex;align-items:center;gap:8px;color:var(--ink2);font-size:12.5px;font-weight:500}
+.kpi .ki{width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center}
+.kpi .ki svg{width:16px;height:16px}
+.kpi .kn{font-family:Manrope;font-weight:800;font-size:29px;letter-spacing:-.02em;margin-top:10px;line-height:1}
+.kpi .kd{font-size:12px;font-weight:600;margin-top:7px;display:flex;align-items:center;gap:5px}
+.kd.up{color:var(--green)} .kd.dn{color:var(--red)}
+.kd svg{width:13px;height:13px}
+.kd .muted{color:var(--ink3);font-weight:500}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow)}
+.card-h{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid var(--line2)}
+.card-h h3{font-family:Manrope;font-weight:700;font-size:15.5px}
+.card-h .sub{font-size:12px;color:var(--ink3);margin-top:2px}
+.link{color:var(--indigo);font-weight:600;font-size:12.5px;display:flex;align-items:center;gap:4px}
+.link svg{width:13px;height:13px}
+
+.grid2{display:grid;grid-template-columns:1.5fr 1fr;gap:16px;margin-bottom:18px}
+
+/* APP ICONS */
+.appico{border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-family:Manrope;flex:0 0 auto;box-shadow:0 2px 6px rgba(16,24,40,.18)}
+.icon-chips{display:flex;align-items:center}
+.icon-chips .appico{margin-left:-7px;border:2px solid #fff}
+.icon-chips .appico:first-child{margin-left:0}
+
+/* TABLE */
+.scrollx{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+thead th{text-align:left;font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--ink3);padding:11px 18px;border-bottom:1px solid var(--line2);white-space:nowrap}
+tbody td{padding:13px 18px;border-bottom:1px solid var(--line2);vertical-align:middle}
+tbody tr{transition:.12s}
+tbody tr:hover{background:var(--bg);cursor:pointer}
+tbody tr:last-child td{border-bottom:none}
+.tname{font-weight:600;color:var(--ink)}
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;border-radius:20px;padding:3px 9px}
+.pill.ok{background:#DCFCE7;color:#15803D} .pill.fail{background:#FEE2E2;color:#B91C1C}
+.pill.run{background:#DBEAFE;color:#1D4ED8} .pill.warn{background:#FEF3C7;color:#92400E}
+.pill .pd{width:6px;height:6px;border-radius:50%;background:currentColor}
+.mono{font-variant-numeric:tabular-nums;color:var(--ink2)}
+
+/* TOGGLE */
+.tg{width:38px;height:22px;border-radius:20px;background:#D5D8E3;position:relative;transition:.2s;flex:0 0 38px}
+.tg.on{background:var(--indigo)}
+.tg::after{content:"";position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#fff;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.25)}
+.tg.on::after{left:18px}
+
+/* SUCCESS BAR */
+.sbar{width:90px;height:6px;border-radius:6px;background:var(--line);overflow:hidden;display:inline-block;vertical-align:middle;margin-right:9px}
+.sbar i{display:block;height:100%;border-radius:6px;background:var(--green)}
+
+/* ===== BUILDER ===== */
+.builder{display:grid;grid-template-columns:228px 1fr;gap:16px}
+.palette{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:14px;align-self:start}
+.palette h4{font-family:Manrope;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--ink3);padding:4px 6px 10px}
+.psearch{display:flex;align-items:center;gap:7px;background:var(--bg);border:1px solid var(--line);border-radius:9px;padding:7px 10px;margin-bottom:10px;color:var(--ink3)}
+.psearch svg{width:14px;height:14px}
+.psearch input{border:none;background:none;outline:none;font-family:inherit;font-size:13px;color:var(--ink);width:100%}
+.papp{display:flex;align-items:center;gap:10px;padding:8px 8px;border-radius:9px;transition:.13s;cursor:grab}
+.papp:hover{background:var(--bg)}
+.papp .appico{width:30px;height:30px;font-size:14px}
+.papp .pn{font-size:13.5px;font-weight:600}
+.papp .pn small{display:block;color:var(--ink3);font-weight:500;font-size:11px}
+
+.canvas-wrap{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden}
+.canvas-bar{display:flex;align-items:center;gap:12px;padding:13px 18px;border-bottom:1px solid var(--line2)}
+.canvas-bar h3{font-family:Manrope;font-weight:700;font-size:15px}
+.canvas-bar .tag{font-size:11.5px;color:var(--ink3)}
+.cbtns{margin-left:auto;display:flex;gap:8px}
+.cbtn{border:1px solid var(--line);border-radius:9px;padding:7px 12px;font-size:12.5px;font-weight:600;color:var(--ink2);display:flex;align-items:center;gap:6px;background:var(--surface)}
+.cbtn:hover{background:var(--bg)}
+.cbtn svg{width:14px;height:14px}
+.cbtn.pri{background:var(--indigo);color:#fff;border-color:var(--indigo)}
+.cbtn.pri:hover{background:var(--indigo-d)}
+
+.canvas{position:relative;background:
+   radial-gradient(circle, #E3E6F2 1.2px, transparent 1.2px);
+   background-size:22px 22px;background-color:#FBFBFE;overflow:auto;min-height:540px;padding:8px}
+.flow{position:relative;width:760px;height:600px;margin:0 auto}
+.flow svg.wires{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1}
+.node{position:absolute;width:212px;background:var(--surface);border:1px solid var(--line);border-radius:13px;box-shadow:var(--shadow);z-index:2;cursor:pointer;transition:.16s}
+.node:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg);border-color:#C9CDF0}
+.node.sel{border-color:var(--indigo);box-shadow:0 0 0 3px var(--indigo-l),var(--shadow-lg)}
+.node .ntop{display:flex;align-items:center;gap:10px;padding:11px 12px 9px}
+.node .ntop .appico{width:34px;height:34px;font-size:15px}
+.node .nt{font-family:Manrope;font-weight:700;font-size:13.5px;line-height:1.15}
+.node .nk{font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--ink3)}
+.node .ncfg{padding:0 12px 12px;font-size:12px;color:var(--ink2);line-height:1.4}
+.node .ncfg code{background:var(--bg);border:1px solid var(--line);border-radius:5px;padding:1px 5px;font-size:11px;color:var(--indigo-d);font-weight:600}
+.ntag{position:absolute;top:-9px;left:12px;font-size:9.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#fff;border-radius:20px;padding:2px 8px}
+.ntag.trig{background:#635BFF} .ntag.filt{background:var(--amber)} .ntag.act{background:#16A34A}
+.node .nrun{position:absolute;bottom:-8px;right:10px;background:var(--surface);border:1px solid var(--line);border-radius:20px;font-size:10px;font-weight:700;color:var(--ink2);padding:2px 8px;display:flex;align-items:center;gap:4px}
+.node .nrun .dotx{width:5px;height:5px;border-radius:50%;background:var(--green)}
+.addbubble{position:absolute;width:26px;height:26px;border-radius:50%;background:var(--surface);border:1.5px dashed #B8BDD8;color:var(--indigo);display:flex;align-items:center;justify-content:center;z-index:2;font-size:16px;font-weight:700}
+
+/* TEMPLATES */
+.tpl-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.tpl{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:17px;transition:.18s;cursor:pointer}
+.tpl:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg);border-color:#C9CDF0}
+.tpl .tplicons{display:flex;align-items:center;gap:6px;margin-bottom:13px}
+.tpl .tplicons .appico{width:34px;height:34px;font-size:15px}
+.tpl .arr{color:var(--ink3);font-size:13px}
+.tpl h4{font-family:Manrope;font-weight:700;font-size:15px;letter-spacing:-.01em}
+.tpl p{font-size:12.5px;color:var(--ink2);margin-top:5px;line-height:1.45}
+.tpl .tplfoot{display:flex;align-items:center;justify-content:space-between;margin-top:13px;padding-top:12px;border-top:1px solid var(--line2)}
+.tpl .cat{font-size:11px;font-weight:600;color:var(--indigo-d);background:var(--indigo-l);border-radius:20px;padding:3px 9px}
+.tpl .use{font-size:12px;font-weight:600;color:var(--ink3)}
+
+/* DRAWER */
+.drawer-ov{position:fixed;inset:0;background:rgba(17,19,26,.4);z-index:70;opacity:0;pointer-events:none;transition:.22s}
+.drawer-ov.open{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;height:100%;width:420px;max-width:92vw;background:var(--surface);z-index:75;box-shadow:-12px 0 40px rgba(16,24,40,.18);transform:translateX(100%);transition:transform .28s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column}
+.drawer.open{transform:none}
+.drawer-h{padding:18px 20px;border-bottom:1px solid var(--line2);display:flex;align-items:center;gap:12px}
+.drawer-h .appico{width:42px;height:42px;font-size:18px}
+.drawer-h .dt{font-family:Manrope;font-weight:800;font-size:17px;letter-spacing:-.01em}
+.drawer-h .ds{font-size:12px;color:var(--ink3);margin-top:2px}
+.drawer-h .x{margin-left:auto;width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;color:var(--ink2)}
+.drawer-h .x:hover{background:var(--bg)}
+.drawer-h .x svg{width:18px;height:18px}
+.drawer-b{padding:18px 20px;overflow-y:auto;flex:1}
+.fld{margin-bottom:16px}
+.fld label{display:block;font-size:12px;font-weight:600;color:var(--ink2);margin-bottom:6px}
+.fld .inp{width:100%;border:1px solid var(--line);border-radius:9px;padding:10px 12px;font-family:inherit;font-size:13.5px;color:var(--ink);background:var(--bg)}
+.fld .inp.sel-look{display:flex;align-items:center;justify-content:space-between}
+.fld .inp.sel-look svg{width:14px;height:14px;color:var(--ink3)}
+.fld .hint{font-size:11px;color:var(--ink3);margin-top:5px}
+.sec-t{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--ink3);margin:20px 0 11px}
+.steplog{display:flex;flex-direction:column;gap:0}
+.slog{display:flex;align-items:flex-start;gap:12px;padding:11px 0;border-bottom:1px solid var(--line2);position:relative}
+.slog:last-child{border-bottom:none}
+.slog .si{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex:0 0 26px;font-size:13px;font-weight:800;color:#fff}
+.slog .si.ok{background:var(--green)} .slog .si.bad{background:var(--red)}
+.slog .si svg{width:14px;height:14px;stroke-width:3}
+.slog .stt{font-weight:600;font-size:13.5px;display:flex;align-items:center;gap:8px}
+.slog .stt .appico{width:18px;height:18px;font-size:10px;border-radius:5px}
+.slog .stm{font-size:11.5px;color:var(--ink3);margin-top:3px}
+.slog .sms{margin-left:auto;font-size:11.5px;font-weight:700;color:var(--ink2);font-variant-numeric:tabular-nums}
+.drawer-f{padding:14px 20px;border-top:1px solid var(--line2);display:flex;gap:10px}
+.drawer-f .btn-primary{flex:1;justify-content:center}
+.drawer-f .btn-ghost{border:1px solid var(--line);border-radius:10px;padding:9px 15px;font-weight:600;font-size:13.5px;color:var(--ink2);background:var(--surface)}
+.drawer-f .btn-ghost:hover{background:var(--bg)}
+.kv{display:flex;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px solid var(--line2)}
+.kv:last-child{border:none}.kv .k{color:var(--ink3)}.kv .v{font-weight:600}
+
+.chart-wrap{padding:16px 18px}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--ink2);margin-bottom:6px}
+.legend span{display:flex;align-items:center;gap:6px}
+.legend .sw{width:10px;height:10px;border-radius:3px}
+.donut-row{display:flex;align-items:center;gap:18px;padding:6px 18px 18px}
+.donut-leg{flex:1}
+.donut-leg .dl{display:flex;align-items:center;gap:9px;padding:7px 0;font-size:13px}
+.donut-leg .dl .sw{width:11px;height:11px;border-radius:3px}
+.donut-leg .dl .dv{margin-left:auto;font-weight:700;font-variant-numeric:tabular-nums}
+.sb-ov{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:55;opacity:0;pointer-events:none;transition:.2s}
+.sb-ov.open{opacity:1;pointer-events:auto}
+
+@media(max-width:1080px){
+  .kpis{grid-template-columns:repeat(2,1fr)}
+  .grid2{grid-template-columns:1fr}
+  .builder{grid-template-columns:1fr}
+  .tpl-grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:900px){
+  .burger{display:flex}
+  .sidebar{position:fixed;left:0;top:0;z-index:60;transform:translateX(-100%);transition:transform .25s;box-shadow:var(--shadow-lg)}
+  .sidebar.open{transform:none}
+  .search{display:none}
+  .canvas{overflow-x:auto}
+  table{min-width:560px}
+  .page-title{font-size:17px}
+}
+@media(max-width:560px){
+  .kpis{grid-template-columns:1fr 1fr;gap:10px}
+  .tpl-grid{grid-template-columns:1fr}
+  .content{padding:18px 14px 50px}
+  .head h1{font-size:21px}
+  .kpi .kn{font-size:24px}
+  .topbar{padding:0 14px}
+  .palette{order:2}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sb">
+    <div class="brand">
+      <div class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 10-12h-7z"/></svg></div>
+      <div class="name">Flowforge</div>
+    </div>
+    <div class="nav-label">Workspace</div>
+    <a class="nav-item active" data-view="builder" onclick="go('builder')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><path d="M10 6.5h4a2 2 0 0 1 2 2v5"/></svg>
+      Flow builder</a>
+    <a class="nav-item" data-view="workflows" onclick="go('workflows')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+      Workflows<span class="badge">12</span></a>
+    <a class="nav-item" data-view="runs" onclick="go('runs')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v4l3 2"/><circle cx="12" cy="12" r="9"/></svg>
+      Run history</a>
+    <a class="nav-item" data-view="templates" onclick="go('templates')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+      Templates</a>
+    <div class="nav-label">Account</div>
+    <a class="nav-item" onclick="go('builder')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 9h20"/></svg>
+      Connections</a>
+    <a class="nav-item" onclick="go('builder')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.1-1l2-1.5-2-3.4-2.3 1a7 7 0 0 0-1.7-1l-.3-2.6h-4l-.3 2.6a7 7 0 0 0-1.7 1l-2.3-1-2 3.4 2 1.5a7 7 0 0 0 0 2l-2 1.5 2 3.4 2.3-1a7 7 0 0 0 1.7 1l.3 2.6h4l.3-2.6a7 7 0 0 0 1.7-1l2.3 1 2-3.4-2-1.5a7 7 0 0 0 .1-1z"/></svg>
+      Settings</a>
+    <div class="side-foot">
+      <div class="av"><img src="https://i.pravatar.cc/150?img=12" alt="" onerror="this.remove()"></div>
+      <div class="who">Daniel Hart<small>Pro · Acme Labs</small></div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <header class="topbar">
+      <button class="burger" onclick="toggleSide()" aria-label="Menu"><span></span><span></span><span></span></button>
+      <div class="page-title" id="ptitle">Flow builder</div>
+      <div class="search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input placeholder="Search workflows, apps, runs…">
+      </div>
+      <div class="spacer"></div>
+      <span class="chip-demo">● Demo</span>
+      <button class="tbtn" aria-label="Notifications"><span class="dot"></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></button>
+      <button class="btn-primary" onclick="go('builder')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>New workflow</button>
+    </header>
+
+    <div class="content">
+
+      <!-- ============ BUILDER ============ -->
+      <section class="view active" id="builder">
+        <div class="head">
+          <div>
+            <h1>Stripe payment → multichannel notify</h1>
+            <p>Triggers when a new payment succeeds in Stripe · Last edited 4 minutes ago</p>
+          </div>
+          <button class="btn-primary" onclick="openConfig('trigger')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5L20 7"/></svg>Publish flow</button>
+        </div>
+
+        <div class="builder">
+          <!-- PALETTE -->
+          <div class="palette">
+            <div class="psearch">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+              <input placeholder="Search 600+ apps">
+            </div>
+            <h4>Apps</h4>
+            <div id="paletteList"></div>
+          </div>
+
+          <!-- CANVAS -->
+          <div class="canvas-wrap">
+            <div class="canvas-bar">
+              <h3>Flow canvas</h3>
+              <span class="tag">5 steps · auto-saved</span>
+              <div class="cbtns">
+                <button class="cbtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 12a9 9 0 1 0 9-9 9 9 0 0 0-6.5 2.8L3 8"/><path d="M3 4v4h4"/></svg>Undo</button>
+                <button class="cbtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5M11 8v6M8 11h6"/></svg>Zoom</button>
+                <button class="cbtn pri" onclick="runFlow()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 4 14 8-14 8z"/></svg>Test run</button>
+              </div>
+            </div>
+            <div class="canvas">
+              <div class="flow">
+                <svg class="wires" viewBox="0 0 760 600" preserveAspectRatio="none">
+                  <defs>
+                    <marker id="ar" markerWidth="8" markerHeight="8" refX="5" refY="4" orient="auto"><path d="M0 0 L6 4 L0 8 z" fill="#B0B5D6"/></marker>
+                  </defs>
+                  <!-- trigger -> filter -->
+                  <path d="M380 96 L380 150" stroke="#C3C7E6" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
+                  <!-- filter -> split to two actions -->
+                  <path d="M380 246 L380 280 Q380 296 364 296 L188 296 Q172 296 172 312 L172 346" stroke="#C3C7E6" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
+                  <path d="M380 246 L380 280 Q380 296 396 296 L588 296 Q604 296 604 312 L604 346" stroke="#C3C7E6" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
+                  <!-- two actions -> merge into gmail -->
+                  <path d="M172 456 L172 490 Q172 506 188 506 L364 506 Q380 506 380 522 L380 540" stroke="#C3C7E6" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
+                  <path d="M604 456 L604 490 Q604 506 588 506 L396 506 Q380 506 380 522 L380 540" stroke="#C3C7E6" stroke-width="2.5" fill="none"/>
+                </svg>
+
+                <!-- TRIGGER -->
+                <div class="node sel" id="node-trigger" style="left:274px;top:6px" onclick="openConfig('trigger')">
+                  <span class="ntag trig">Trigger</span>
+                  <div class="ntop"><div class="appico" style="background:#635BFF;width:34px;height:34px;font-size:15px">S</div>
+                    <div><div class="nk">Stripe</div><div class="nt">New payment</div></div></div>
+                  <div class="ncfg">When a payment <strong>succeeds</strong> on account <code>acct_acme</code></div>
+                  <div class="nrun"><span class="dotx"></span>1,284 runs</div>
+                </div>
+
+                <!-- FILTER -->
+                <div class="node" id="node-filter" style="left:274px;top:150px" onclick="openConfig('filter')">
+                  <span class="ntag filt">Filter</span>
+                  <div class="ntop"><div class="appico" style="background:#D97706;width:34px;height:34px;font-size:15px">⏚</div>
+                    <div><div class="nk">Filter</div><div class="nt">Only continue if…</div></div></div>
+                  <div class="ncfg">Amount <code>&gt; $100.00</code> and currency is <code>USD</code></div>
+                </div>
+
+                <!-- ACTION 1: SLACK -->
+                <div class="node" id="node-slack" style="left:66px;top:346px" onclick="openConfig('slack')">
+                  <span class="ntag act">Action</span>
+                  <div class="ntop"><div class="appico" style="background:#4A154B;width:34px;height:34px;font-size:15px">#</div>
+                    <div><div class="nk">Slack</div><div class="nt">Send message</div></div></div>
+                  <div class="ncfg">Post to <code>#revenue</code> · “New payment of {{amount}}”</div>
+                </div>
+
+                <!-- ACTION 2: SHEETS -->
+                <div class="node" id="node-sheets" style="left:498px;top:346px" onclick="openConfig('sheets')">
+                  <span class="ntag act">Action</span>
+                  <div class="ntop"><div class="appico" style="background:#0F9D58;width:34px;height:34px;font-size:15px">⊞</div>
+                    <div><div class="nk">Google Sheets</div><div class="nt">Add row</div></div></div>
+                  <div class="ncfg">Append to <code>Payments 2026</code> → tab <code>Q2</code></div>
+                </div>
+
+                <!-- ACTION 3: GMAIL -->
+                <div class="node" id="node-gmail" style="left:274px;top:540px" onclick="openConfig('gmail')">
+                  <span class="ntag act">Action</span>
+                  <div class="ntop"><div class="appico" style="background:#EA4335;width:34px;height:34px;font-size:15px">M</div>
+                    <div><div class="nk">Gmail</div><div class="nt">Send receipt</div></div></div>
+                  <div class="ncfg">Email <code>{{customer.email}}</code> · template “Receipt”</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ WORKFLOWS ============ -->
+      <section class="view" id="workflows">
+        <div class="head">
+          <div><h1>Workflows</h1><p>12 automations connecting your apps · 9 currently active</p></div>
+          <button class="btn-primary" onclick="go('builder')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>New workflow</button>
+        </div>
+
+        <div class="kpis">
+          <div class="kpi"><div class="kl"><span class="ki" style="background:#EEF0FF;color:#4F46E5"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg></span>Active workflows</div><div class="kn">9</div><div class="kd up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m6 15 6-6 6 6"/></svg>+2 <span class="muted">this month</span></div></div>
+          <div class="kpi"><div class="kl"><span class="ki" style="background:#DCFCE7;color:#16A34A"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5L20 7"/></svg></span>Tasks run (30d)</div><div class="kn">48,210</div><div class="kd up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m6 15 6-6 6 6"/></svg>+18.4% <span class="muted">vs prev.</span></div></div>
+          <div class="kpi"><div class="kl"><span class="ki" style="background:#E0F2FE;color:#0284C7"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v4l3 2"/><circle cx="12" cy="12" r="9"/></svg></span>Avg. run time</div><div class="kn">1.8s</div><div class="kd up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m18 9-6 6-6-6"/></svg>-0.3s <span class="muted">faster</span></div></div>
+          <div class="kpi"><div class="kl"><span class="ki" style="background:#FEF3C7;color:#D97706"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M3 12h18"/></svg></span>Success rate</div><div class="kn">99.2%</div><div class="kd dn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m18 9-6 6-6-6"/></svg>-0.1% <span class="muted">vs prev.</span></div></div>
+        </div>
+
+        <div class="grid2">
+          <div class="card">
+            <div class="card-h"><div><h3>Task volume</h3><div class="sub">Tasks executed per day · last 14 days</div></div><a class="link" onclick="go('runs')">View runs <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
+            <div class="chart-wrap">
+              <div class="legend"><span><span class="sw" style="background:#4F46E5"></span>Tasks run</span><span><span class="sw" style="background:#C7CBF5"></span>14-day avg</span></div>
+              <div id="areaChart"></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-h"><div><h3>Runs by app</h3><div class="sub">Share of executions</div></div></div>
+            <div class="donut-row">
+              <div id="donutChart"></div>
+              <div class="donut-leg" id="donutLeg"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-h"><div><h3>All workflows</h3><div class="sub">Click a workflow to inspect its steps</div></div><a class="link">Sort: Most active <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg></a></div>
+          <div class="scrollx">
+            <table>
+              <thead><tr><th>Workflow</th><th>Apps</th><th>Runs (30d)</th><th>Success</th><th>Status</th></tr></thead>
+              <tbody id="wfBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ RUNS ============ -->
+      <section class="view" id="runs">
+        <div class="head">
+          <div><h1>Run history</h1><p>Every execution across your workflows · click a run for the step log</p></div>
+          <button class="btn-primary" onclick="runFlow()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 4 14 8-14 8z"/></svg>Run a test</button>
+        </div>
+        <div class="kpis">
+          <div class="kpi"><div class="kl"><span class="ki" style="background:#DCFCE7;color:#16A34A"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5L20 7"/></svg></span>Succeeded today</div><div class="kn">1,902</div><div class="kd up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m6 15 6-6 6 6"/></svg>+6.2%</div></div>
+          <div class="kpi"><div class="kl"><span class="ki" style="background:#FEE2E2;color:#DC2626"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg></span>Failed today</div><div class="kn">14</div><div class="kd dn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m6 15 6-6 6 6"/></svg>+3</div></div>
+          <div class="kpi"><div class="kl"><span class="ki" style="background:#E0F2FE;color:#0284C7"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v4l3 2"/><circle cx="12" cy="12" r="9"/></svg></span>Median duration</div><div class="kn">1.4s</div><div class="kd up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m18 9-6 6-6-6"/></svg>-0.2s</div></div>
+          <div class="kpi"><div class="kl"><span class="ki" style="background:#FEF3C7;color:#D97706"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4"/></svg></span>Queued now</div><div class="kn">7</div><div class="kd up muted">processing</div></div>
+        </div>
+        <div class="card">
+          <div class="card-h"><div><h3>Recent executions</h3><div class="sub">Showing latest 9 runs</div></div><a class="link">Last 24 hours <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg></a></div>
+          <div class="scrollx">
+            <table>
+              <thead><tr><th>Run ID</th><th>Workflow</th><th>Status</th><th>Duration</th><th>Started</th></tr></thead>
+              <tbody id="runBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ TEMPLATES ============ -->
+      <section class="view" id="templates">
+        <div class="head">
+          <div><h1>Templates</h1><p>Prebuilt automations you can launch in one click</p></div>
+          <a class="link" onclick="go('builder')">Build from scratch <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        </div>
+        <div class="tpl-grid" id="tplGrid"></div>
+      </section>
+
+    </div>
+  </div>
+</div>
+
+<!-- DRAWER -->
+<div class="drawer-ov" id="drawerOv" onclick="closeDrawer()"></div>
+<aside class="drawer" id="drawer">
+  <div class="drawer-h" id="drawerHead"></div>
+  <div class="drawer-b" id="drawerBody"></div>
+  <div class="drawer-f" id="drawerFoot"></div>
+</aside>
+
+<div class="sb-ov" id="sbov" onclick="toggleSide()"></div>
+
+<script>
+/* ---------- APP DEFINITIONS ---------- */
+const APPS = {
+  stripe:{n:"Stripe",sub:"Payments",c:"#635BFF",l:"S"},
+  gmail:{n:"Gmail",sub:"Email",c:"#EA4335",l:"M"},
+  slack:{n:"Slack",sub:"Messaging",c:"#4A154B",l:"#"},
+  sheets:{n:"Google Sheets",sub:"Spreadsheet",c:"#0F9D58",l:"⊞"},
+  hubspot:{n:"HubSpot",sub:"CRM",c:"#FF7A59",l:"H"},
+  telegram:{n:"Telegram",sub:"Messaging",c:"#229ED9",l:"✈"},
+  notion:{n:"Notion",sub:"Docs",c:"#111111",l:"N"},
+  airtable:{n:"Airtable",sub:"Database",c:"#F2C94C",l:"A"},
+  filter:{n:"Filter",sub:"Logic",c:"#D97706",l:"⏚"}
+};
+function ico(k,size){const a=APPS[k];const s=size||30;
+  return `<div class="appico" style="background:${a.c};width:${s}px;height:${s}px;font-size:${Math.round(s*0.46)}px">${a.l}</div>`;}
+
+/* ---------- PALETTE ---------- */
+const PALETTE=["stripe","gmail","slack","sheets","hubspot","telegram","notion","airtable"];
+function renderPalette(){
+  document.getElementById("paletteList").innerHTML = PALETTE.map(k=>{
+    const a=APPS[k];
+    return `<div class="papp" onclick="openConfig('${k}')">${ico(k,30)}<div class="pn">${a.n}<small>${a.sub}</small></div></div>`;
+  }).join("");
+}
+
+/* ---------- WORKFLOWS DATA ---------- */
+const WORKFLOWS=[
+  {name:"Stripe payment → multichannel notify",apps:["stripe","slack","sheets","gmail"],runs:1284,succ:99.4,on:true},
+  {name:"New HubSpot lead → Slack alert",apps:["hubspot","slack"],runs:842,succ:100,on:true},
+  {name:"Form submission → Airtable + email",apps:["airtable","gmail"],runs:531,succ:98.1,on:true},
+  {name:"Daily revenue digest to Telegram",apps:["sheets","telegram"],runs:30,succ:100,on:true},
+  {name:"Notion task → Google Sheets backup",apps:["notion","sheets"],runs:417,succ:99.0,on:true},
+  {name:"Failed payment → HubSpot deal + email",apps:["stripe","hubspot","gmail"],runs:96,succ:96.8,on:true},
+  {name:"Slack reaction → Notion follow-up",apps:["slack","notion"],runs:208,succ:99.5,on:false},
+  {name:"New Airtable record → HubSpot contact",apps:["airtable","hubspot"],runs:163,succ:97.5,on:true},
+  {name:"Weekly churn report → Slack",apps:["sheets","slack"],runs:12,succ:100,on:false},
+  {name:"Telegram command → create Notion doc",apps:["telegram","notion"],runs:74,succ:98.6,on:true},
+  {name:"Stripe refund → notify finance",apps:["stripe","gmail","slack"],runs:58,succ:100,on:false},
+  {name:"HubSpot deal won → celebrate in Slack",apps:["hubspot","slack","telegram"],runs:139,succ:99.3,on:true}
+];
+function renderWorkflows(){
+  document.getElementById("wfBody").innerHTML = WORKFLOWS.map((w,i)=>{
+    const chips=`<span class="icon-chips">${w.apps.map(k=>ico(k,26)).join("")}</span>`;
+    return `<tr onclick="openWorkflow(${i})">
+      <td><div class="tname">${w.name}</div></td>
+      <td>${chips}</td>
+      <td class="mono">${w.runs.toLocaleString()}</td>
+      <td><span class="sbar"><i style="width:${w.succ}%"></i></span><span class="mono">${w.succ.toFixed(1)}%</span></td>
+      <td onclick="event.stopPropagation()"><div class="tg ${w.on?'on':''}" onclick="this.classList.toggle('on')"></div></td>
+    </tr>`;
+  }).join("");
+}
+
+/* ---------- RUNS DATA ---------- */
+const RUNS=[
+  {id:"run_9f2a4c",wf:0,status:"success",dur:1840,when:"2 min ago"},
+  {id:"run_9f2a3b",wf:1,status:"success",dur:920,when:"6 min ago"},
+  {id:"run_9f29e1",wf:5,status:"failed",dur:430,when:"11 min ago"},
+  {id:"run_9f29c8",wf:2,status:"success",dur:2110,when:"18 min ago"},
+  {id:"run_9f29a0",wf:0,status:"success",dur:1760,when:"24 min ago"},
+  {id:"run_9f2971",wf:4,status:"success",dur:1380,when:"33 min ago"},
+  {id:"run_9f2940",wf:3,status:"success",dur:760,when:"41 min ago"},
+  {id:"run_9f2918",wf:7,status:"failed",dur:510,when:"52 min ago"},
+  {id:"run_9f28e2",wf:0,status:"success",dur:1690,when:"1 hr ago"}
+];
+const STEPLOGS={
+  0:[{app:"stripe",t:"Trigger: New payment",m:"payment_intent pi_3Rx · $248.00 USD",ok:true,ms:120},
+     {app:"filter",t:"Filter: Amount > $100",m:"$248.00 passed condition",ok:true,ms:8},
+     {app:"slack",t:"Action: Send Slack message",m:"Posted to #revenue",ok:true,ms:640},
+     {app:"sheets",t:"Action: Add row to Sheets",m:"Appended to Payments 2026 · row 1,842",ok:true,ms:880},
+     {app:"gmail",t:"Action: Send receipt",m:"Sent to customer@acme.io",ok:true,ms:1192}],
+  1:[{app:"hubspot",t:"Trigger: New lead",m:"contact 88421 created",ok:true,ms:140},
+     {app:"slack",t:"Action: Send Slack message",m:"Posted to #sales",ok:true,ms:780}],
+  2:[{app:"airtable",t:"Trigger: Form submission",m:"record recXY2 created",ok:true,ms:160},
+     {app:"airtable",t:"Action: Add row",m:"Appended to Leads base",ok:true,ms:540},
+     {app:"gmail",t:"Action: Send confirmation",m:"Sent to lead@example.com",ok:true,ms:1410}],
+  3:[{app:"sheets",t:"Trigger: Schedule 9:00 AM",m:"Read range Revenue!A1:D30",ok:true,ms:260},
+     {app:"telegram",t:"Action: Send digest",m:"Sent to @revenue_team",ok:true,ms:500}],
+  4:[{app:"notion",t:"Trigger: New task",m:"page 7c21 created",ok:true,ms:180},
+     {app:"sheets",t:"Action: Backup row",m:"Appended to Tasks backup",ok:true,ms:1200}],
+  5:[{app:"stripe",t:"Trigger: Payment failed",m:"charge ch_9d2 declined",ok:true,ms:130},
+     {app:"hubspot",t:"Action: Create deal",m:"deal 5521 created",ok:true,ms:300},
+     {app:"gmail",t:"Action: Notify finance",m:"SMTP timeout after 3 retries",ok:false,ms:0}],
+  7:[{app:"airtable",t:"Trigger: New record",m:"record recPP9 created",ok:true,ms:150},
+     {app:"hubspot",t:"Action: Create contact",m:"Rate limit 429 from HubSpot API",ok:false,ms:0}]
+};
+function renderRuns(){
+  document.getElementById("runBody").innerHTML = RUNS.map((r,i)=>{
+    const w=WORKFLOWS[r.wf];
+    const st = r.status==="success"
+      ? `<span class="pill ok"><span class="pd"></span>Success</span>`
+      : `<span class="pill fail"><span class="pd"></span>Failed</span>`;
+    const dur = r.dur ? (r.dur/1000).toFixed(2)+"s" : "—";
+    return `<tr onclick="openRun(${i})">
+      <td><span class="mono" style="font-weight:600;color:var(--ink)">${r.id}</span></td>
+      <td><div class="tname" style="font-weight:500">${w.name}</div></td>
+      <td>${st}</td>
+      <td class="mono">${dur}</td>
+      <td class="mono">${r.when}</td>
+    </tr>`;
+  }).join("");
+}
+
+/* ---------- TEMPLATES DATA ---------- */
+const TEMPLATES=[
+  {apps:["stripe","slack"],title:"Post new sales to Slack",desc:"Celebrate every Stripe payment in a channel with the amount and customer.",cat:"Sales",use:"4.2k uses"},
+  {apps:["hubspot","gmail"],title:"Welcome email for new leads",desc:"Send a personalized welcome whenever a contact enters HubSpot.",cat:"Marketing",use:"3.8k uses"},
+  {apps:["airtable","slack","gmail"],title:"Route form submissions",desc:"Save submissions to Airtable, alert the team, and auto-reply.",cat:"Ops",use:"2.9k uses"},
+  {apps:["notion","sheets"],title:"Backup Notion to Sheets",desc:"Mirror your Notion database into Google Sheets every night.",cat:"Productivity",use:"1.6k uses"},
+  {apps:["telegram","sheets"],title:"Daily metrics to Telegram",desc:"Push a summary of yesterday's numbers to your team chat.",cat:"Analytics",use:"1.1k uses"},
+  {apps:["stripe","hubspot","gmail"],title:"Recover failed payments",desc:"Create a deal and dunning email when a charge fails.",cat:"Finance",use:"980 uses"},
+  {apps:["slack","notion"],title:"Turn reactions into tasks",desc:"React with 📌 in Slack to create a Notion follow-up.",cat:"Productivity",use:"760 uses"},
+  {apps:["hubspot","telegram"],title:"Deal won announcements",desc:"Broadcast closed-won deals to a Telegram channel instantly.",cat:"Sales",use:"540 uses"},
+  {apps:["airtable","hubspot"],title:"Sync records to CRM",desc:"Create or update HubSpot contacts from new Airtable rows.",cat:"Ops",use:"410 uses"}
+];
+function renderTemplates(){
+  document.getElementById("tplGrid").innerHTML = TEMPLATES.map((t,i)=>{
+    let icons="";
+    t.apps.forEach((k,idx)=>{ icons+=ico(k,34); if(idx<t.apps.length-1) icons+=`<span class="arr">→</span>`; });
+    return `<div class="tpl" onclick="openTemplate(${i})">
+      <div class="tplicons">${icons}</div>
+      <h4>${t.title}</h4>
+      <p>${t.desc}</p>
+      <div class="tplfoot"><span class="cat">${t.cat}</span><span class="use">${t.use}</span></div>
+    </div>`;
+  }).join("");
+}
+
+/* ---------- CHARTS (hand-computed SVG) ---------- */
+const TASKS=[2980,3140,2760,3320,3580,3210,2890,3640,3910,3450,3780,4120,3990,4310];
+function renderAreaChart(){
+  const W=560,H=190,pad=8,base=H-22;
+  const max=Math.max(...TASKS)*1.08, min=Math.min(...TASKS)*0.85;
+  const n=TASKS.length;
+  const x=i=>pad+(i*(W-pad*2)/(n-1));
+  const y=v=>22+(base-22)*(1-(v-min)/(max-min));
+  let line=TASKS.map((v,i)=>`${i?'L':'M'}${x(i).toFixed(1)} ${y(v).toFixed(1)}`).join(" ");
+  let area=line+` L${x(n-1).toFixed(1)} ${base} L${pad} ${base} Z`;
+  const avg=TASKS.reduce((a,b)=>a+b,0)/n;
+  let dots=TASKS.map((v,i)=>`<circle cx="${x(i).toFixed(1)}" cy="${y(v).toFixed(1)}" r="2.6" fill="#4F46E5"/>`).join("");
+  const last=TASKS[n-1];
+  document.getElementById("areaChart").innerHTML=`
+  <svg viewBox="0 0 ${W} ${H}" width="100%" style="display:block">
+    <defs><linearGradient id="ag" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#4F46E5" stop-opacity="0.22"/>
+      <stop offset="1" stop-color="#4F46E5" stop-opacity="0"/></linearGradient></defs>
+    ${[0,1,2,3].map(g=>`<line x1="${pad}" x2="${W-pad}" y1="${22+(base-22)*g/3}" y2="${22+(base-22)*g/3}" stroke="#EFF0F6" stroke-width="1"/>`).join("")}
+    <line x1="${pad}" x2="${W-pad}" y1="${y(avg).toFixed(1)}" y2="${y(avg).toFixed(1)}" stroke="#C7CBF5" stroke-width="1.5" stroke-dasharray="4 4"/>
+    <path d="${area}" fill="url(#ag)"/>
+    <path d="${line}" fill="none" stroke="#4F46E5" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>
+    ${dots}
+    <circle cx="${x(n-1).toFixed(1)}" cy="${y(last).toFixed(1)}" r="4.5" fill="#4F46E5" stroke="#fff" stroke-width="2"/>
+    ${["Jun 2","","","Jun 5","","","Jun 8","","","Jun 11","","","Jun 14",""].map((lab,i)=>lab?`<text x="${x(i).toFixed(1)}" y="${H-4}" font-size="9.5" fill="#8A90A2" text-anchor="middle" font-family="Inter">${lab}</text>`:"").join("")}
+  </svg>`;
+}
+const DONUT=[
+  {n:"Stripe",v:34,c:"#635BFF"},
+  {n:"Slack",v:26,c:"#4A154B"},
+  {n:"Google Sheets",v:18,c:"#0F9D58"},
+  {n:"Gmail",v:13,c:"#EA4335"},
+  {n:"Other",v:9,c:"#C3C7E6"}
+];
+function renderDonut(){
+  const cx=70,cy=70,r=54,sw=22,C=2*Math.PI*r;
+  let off=0; let segs="";
+  DONUT.forEach(d=>{
+    const len=C*d.v/100;
+    segs+=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${d.c}" stroke-width="${sw}" stroke-dasharray="${len.toFixed(2)} ${(C-len).toFixed(2)}" stroke-dashoffset="${(-off).toFixed(2)}" transform="rotate(-90 ${cx} ${cy})"/>`;
+    off+=len;
+  });
+  document.getElementById("donutChart").innerHTML=`
+  <svg viewBox="0 0 140 140" width="140" height="140">
+    ${segs}
+    <text x="${cx}" y="${cy-3}" text-anchor="middle" font-size="22" font-weight="800" fill="#11131A" font-family="Manrope">48k</text>
+    <text x="${cx}" y="${cy+15}" text-anchor="middle" font-size="10" fill="#8A90A2" font-family="Inter">tasks / 30d</text>
+  </svg>`;
+  document.getElementById("donutLeg").innerHTML=DONUT.map(d=>
+    `<div class="dl"><span class="sw" style="background:${d.c}"></span>${d.n}<span class="dv">${d.v}%</span></div>`).join("");
+}
+
+/* ---------- CONFIG DRAWER (per step) ---------- */
+const CONFIGS={
+  trigger:{app:"stripe",tag:"Trigger",title:"New payment",sub:"Stripe · runs when a payment succeeds",
+    fields:[
+      {l:"Stripe account",t:"Acme Labs (acct_acme1Qz4)",sel:true},
+      {l:"Trigger event",t:"payment_intent.succeeded",sel:true},
+      {l:"Pull sample data",t:"Last 3 successful payments",sel:true,hint:"We use a sample event to map fields downstream."}
+    ]},
+  filter:{app:"filter",tag:"Filter",title:"Only continue if…",sub:"Logic · stops the flow when conditions fail",
+    fields:[
+      {l:"Field",t:"{{trigger.amount}}",sel:true},
+      {l:"Condition",t:"greater than",sel:true},
+      {l:"Value",t:"100.00",hint:"Amount is in major units (USD)."},
+      {l:"And currency is",t:"USD",sel:true}
+    ]},
+  slack:{app:"slack",tag:"Action",title:"Send channel message",sub:"Slack · posts to a channel",
+    fields:[
+      {l:"Workspace",t:"Acme Labs",sel:true},
+      {l:"Channel",t:"#revenue",sel:true},
+      {l:"Message text",t:"💸 New payment of {{amount}} from {{customer.name}}"},
+      {l:"Send as",t:"Flowforge bot",sel:true}
+    ]},
+  sheets:{app:"sheets",tag:"Action",title:"Add a row",sub:"Google Sheets · appends to a sheet",
+    fields:[
+      {l:"Spreadsheet",t:"Payments 2026",sel:true},
+      {l:"Worksheet",t:"Q2",sel:true},
+      {l:"Date column",t:"{{created}}"},
+      {l:"Amount column",t:"{{amount}}"}
+    ]},
+  gmail:{app:"gmail",tag:"Action",title:"Send receipt email",sub:"Gmail · sends an email",
+    fields:[
+      {l:"From",t:"billing@acme.io",sel:true},
+      {l:"To",t:"{{customer.email}}"},
+      {l:"Subject",t:"Your receipt from Acme Labs"},
+      {l:"Template",t:"Receipt (HTML)",sel:true}
+    ]},
+  hubspot:{app:"hubspot",tag:"Action",title:"Create or update contact",sub:"HubSpot · CRM",
+    fields:[{l:"Portal",t:"Acme Labs (24891007)",sel:true},{l:"Email",t:"{{customer.email}}"},{l:"Lifecycle stage",t:"Customer",sel:true}]},
+  telegram:{app:"telegram",tag:"Action",title:"Send message",sub:"Telegram · messaging",
+    fields:[{l:"Bot",t:"@flowforge_bot",sel:true},{l:"Chat",t:"@revenue_team",sel:true},{l:"Text",t:"Daily revenue: {{total}}"}]},
+  notion:{app:"notion",tag:"Action",title:"Create database item",sub:"Notion · docs",
+    fields:[{l:"Database",t:"Follow-ups",sel:true},{l:"Title",t:"{{message.text}}"},{l:"Status",t:"To do",sel:true}]},
+  airtable:{app:"airtable",tag:"Action",title:"Create record",sub:"Airtable · database",
+    fields:[{l:"Base",t:"Leads",sel:true},{l:"Table",t:"Inbound",sel:true},{l:"Name field",t:"{{form.name}}"}]}
+};
+function openConfig(key){
+  const c=CONFIGS[key]; if(!c) return;
+  const a=APPS[c.app];
+  setSel(key);
+  document.getElementById("drawerHead").innerHTML=
+    `${ico(c.app,42)}<div><div class="dt">${c.title}</div><div class="ds">${c.sub}</div></div>
+     <button class="x" onclick="closeDrawer()" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>`;
+  document.getElementById("drawerBody").innerHTML=
+    `<div class="sec-t">Step configuration</div>`+
+    c.fields.map(f=>{
+      const inner = f.sel
+        ? `<div class="inp sel-look">${f.t}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg></div>`
+        : `<div class="inp">${f.t}</div>`;
+      return `<div class="fld"><label>${f.l}</label>${inner}${f.hint?`<div class="hint">${f.hint}</div>`:""}</div>`;
+    }).join("");
+  document.getElementById("drawerFoot").innerHTML=
+    `<button class="btn-ghost" onclick="closeDrawer()">Cancel</button>
+     <button class="btn-primary" onclick="closeDrawer()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5L20 7"/></svg>Save step</button>`;
+  showDrawer();
+}
+function setSel(key){
+  document.querySelectorAll(".node").forEach(n=>n.classList.remove("sel"));
+  const map={trigger:"node-trigger",filter:"node-filter",slack:"node-slack",sheets:"node-sheets",gmail:"node-gmail"};
+  const id=map[key]; if(id){const el=document.getElementById(id); if(el) el.classList.add("sel");}
+}
+
+/* ---------- RUN DRAWER (step log) ---------- */
+function openRun(i){
+  const r=RUNS[i]; const w=WORKFLOWS[r.wf]; const log=STEPLOGS[r.wf]||STEPLOGS[0];
+  const ok=r.status==="success";
+  const total=log.reduce((a,s)=>a+s.ms,0);
+  document.getElementById("drawerHead").innerHTML=
+    `<div class="appico" style="width:42px;height:42px;font-size:16px;background:${ok?'#16A34A':'#DC2626'}">${ok?'✓':'✕'}</div>
+     <div><div class="dt">${r.id}</div><div class="ds">${w.name}</div></div>
+     <button class="x" onclick="closeDrawer()" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>`;
+  const meta=`<div style="margin-bottom:6px">
+      <div class="kv"><span class="k">Status</span><span class="v">${ok?'<span class="pill ok"><span class="pd"></span>Success</span>':'<span class="pill fail"><span class="pd"></span>Failed</span>'}</span></div>
+      <div class="kv"><span class="k">Started</span><span class="v">${r.when}</span></div>
+      <div class="kv"><span class="k">Total duration</span><span class="v">${(total/1000).toFixed(2)}s</span></div>
+      <div class="kv"><span class="k">Steps</span><span class="v">${log.length}</span></div>
+    </div>`;
+  const steps=`<div class="sec-t">Step log</div><div class="steplog">`+
+    log.map(s=>{
+      const cls=s.ok?"ok":"bad";
+      const sym=s.ok?`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5L20 7"/></svg>`
+                    :`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>`;
+      return `<div class="slog"><div class="si ${cls}">${sym}</div>
+        <div style="flex:1"><div class="stt">${ico(s.app,18)}${s.t}</div><div class="stm">${s.m}</div></div>
+        <div class="sms">${s.ok?s.ms+"ms":"error"}</div></div>`;
+    }).join("")+`</div>`;
+  document.getElementById("drawerBody").innerHTML=meta+steps;
+  document.getElementById("drawerFoot").innerHTML=
+    `<button class="btn-ghost" onclick="closeDrawer()">Close</button>
+     <button class="btn-primary" onclick="closeDrawer()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 12a9 9 0 1 0 9-9 9 9 0 0 0-6.5 2.8L3 8"/><path d="M3 4v4h4"/></svg>Replay run</button>`;
+  showDrawer();
+}
+
+/* ---------- WORKFLOW DRAWER ---------- */
+function openWorkflow(i){
+  const w=WORKFLOWS[i];
+  document.getElementById("drawerHead").innerHTML=
+    `<div class="appico" style="width:42px;height:42px;font-size:16px;background:#4F46E5">⚡</div>
+     <div><div class="dt" style="font-size:15px;line-height:1.2">${w.name}</div><div class="ds">${w.apps.length} apps · ${w.on?'Active':'Paused'}</div></div>
+     <button class="x" onclick="closeDrawer()" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>`;
+  let chain="";
+  w.apps.forEach((k,idx)=>{ chain+=ico(k,30); if(idx<w.apps.length-1) chain+=`<span style="color:var(--ink3);margin:0 2px">→</span>`;});
+  document.getElementById("drawerBody").innerHTML=
+    `<div class="sec-t">Overview</div>
+     <div class="kv"><span class="k">Runs (30d)</span><span class="v">${w.runs.toLocaleString()}</span></div>
+     <div class="kv"><span class="k">Success rate</span><span class="v">${w.succ.toFixed(1)}%</span></div>
+     <div class="kv"><span class="k">Status</span><span class="v">${w.on?'<span class="pill ok"><span class="pd"></span>Active</span>':'<span class="pill warn"><span class="pd"></span>Paused</span>'}</span></div>
+     <div class="sec-t">App chain</div>
+     <div style="display:flex;align-items:center;flex-wrap:wrap;gap:2px">${chain}</div>
+     <div class="sec-t">Recent activity</div>
+     <div class="steplog">
+       <div class="slog"><div class="si ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5L20 7"/></svg></div><div style="flex:1"><div class="stt">Completed successfully</div><div class="stm">2 minutes ago</div></div><div class="sms">1.84s</div></div>
+       <div class="slog"><div class="si ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5L20 7"/></svg></div><div style="flex:1"><div class="stt">Completed successfully</div><div class="stm">24 minutes ago</div></div><div class="sms">1.69s</div></div>
+     </div>`;
+  document.getElementById("drawerFoot").innerHTML=
+    `<button class="btn-ghost" onclick="closeDrawer()">Close</button>
+     <button class="btn-primary" onclick="closeDrawer();go('builder')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>Edit flow</button>`;
+  showDrawer();
+}
+
+/* ---------- TEMPLATE DRAWER ---------- */
+function openTemplate(i){
+  const t=TEMPLATES[i];
+  let chain="";
+  t.apps.forEach((k,idx)=>{ chain+=ico(k,34); if(idx<t.apps.length-1) chain+=`<span style="color:var(--ink3);margin:0 3px">→</span>`;});
+  document.getElementById("drawerHead").innerHTML=
+    `<div class="appico" style="width:42px;height:42px;font-size:16px;background:#4F46E5">★</div>
+     <div><div class="dt" style="font-size:16px">${t.title}</div><div class="ds">${t.cat} template · ${t.use}</div></div>
+     <button class="x" onclick="closeDrawer()" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>`;
+  document.getElementById("drawerBody").innerHTML=
+    `<div class="sec-t">What it does</div>
+     <p style="font-size:13.5px;color:var(--ink2);line-height:1.55">${t.desc}</p>
+     <div class="sec-t">Apps used</div>
+     <div style="display:flex;align-items:center;flex-wrap:wrap;gap:2px">${chain}</div>
+     <div class="sec-t">Setup</div>
+     <div class="kv"><span class="k">Estimated time</span><span class="v">~2 min</span></div>
+     <div class="kv"><span class="k">Connections needed</span><span class="v">${t.apps.length}</span></div>
+     <div class="kv"><span class="k">Tasks / run</span><span class="v">${t.apps.length}</span></div>`;
+  document.getElementById("drawerFoot").innerHTML=
+    `<button class="btn-ghost" onclick="closeDrawer()">Preview</button>
+     <button class="btn-primary" onclick="closeDrawer();go('builder')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Use this template</button>`;
+  showDrawer();
+}
+
+/* ---------- TEST RUN (visual feedback) ---------- */
+function runFlow(){
+  go('builder');
+  const order=["node-trigger","node-filter","node-slack","node-sheets","node-gmail"];
+  document.querySelectorAll(".node").forEach(n=>n.classList.remove("sel"));
+  order.forEach((id,k)=>{
+    setTimeout(()=>{
+      const el=document.getElementById(id); if(!el) return;
+      el.classList.add("sel");
+      if(k>0){const prev=document.getElementById(order[k-1]); if(prev) prev.classList.remove("sel");}
+    }, k*260);
+  });
+}
+
+/* ---------- DRAWER + NAV PLUMBING ---------- */
+function showDrawer(){document.getElementById("drawer").classList.add("open");document.getElementById("drawerOv").classList.add("open");}
+function closeDrawer(){document.getElementById("drawer").classList.remove("open");document.getElementById("drawerOv").classList.remove("open");}
+
+const TITLES={builder:"Flow builder",workflows:"Workflows",runs:"Run history",templates:"Templates"};
+function go(view){
+  document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));
+  const el=document.getElementById(view); if(el) el.classList.add("active");
+  document.querySelectorAll(".nav-item").forEach(n=>n.classList.toggle("active", n.getAttribute("data-view")===view));
+  const t=document.getElementById("ptitle"); if(t&&TITLES[view]) t.textContent=TITLES[view];
+  document.getElementById("sb").classList.remove("open");
+  document.getElementById("sbov").classList.remove("open");
+  window.scrollTo(0,0);
+}
+function toggleSide(){
+  const s=document.getElementById("sb"), o=document.getElementById("sbov");
+  const op=s.classList.toggle("open"); o.classList.toggle("open",op);
+}
+
+function render(){
+  renderPalette();
+  renderWorkflows();
+  renderRuns();
+  renderTemplates();
+  renderAreaChart();
+  renderDonut();
+}
+render();
+</script>
+</body>
+</html>

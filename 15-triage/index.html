@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Triage — Site Rescue & Performance Audit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F4F5F7; --surface:#FFFFFF; --ink:#1B1F23; --ink2:#5A636E; --ink3:#8A929C;
+  --line:#E7E9EE; --line2:#EFF1F4;
+  --brand:#16A34A; --brand-d:#0F7A37; --graphite:#1B2430;
+  --red:#DC2626; --redbg:#FEF1F1; --amber:#D97706; --amberbg:#FEF6E9;
+  --green:#16A34A; --greenbg:#ECFAF0; --blue:#2563EB; --bluebg:#EEF3FE;
+  --shadow:0 1px 2px rgba(16,24,40,.04),0 4px 16px rgba(16,24,40,.06);
+  --shadow-lg:0 8px 30px rgba(16,24,40,.12);
+  --r:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;font-size:14px;line-height:1.5}
+.disp{font-family:'Space Grotesk','Inter',sans-serif;letter-spacing:-.02em}
+a{color:inherit;text-decoration:none}
+::-webkit-scrollbar{width:9px;height:9px}::-webkit-scrollbar-thumb{background:#D2D6DD;border-radius:8px}
+
+.app{display:flex;min-height:100vh}
+
+/* SIDEBAR */
+.sidebar{width:248px;flex-shrink:0;background:var(--graphite);color:#C9D1DB;display:flex;flex-direction:column;padding:18px 14px}
+.brand{display:flex;align-items:center;gap:10px;padding:6px 8px 18px}
+.brand .logo{width:34px;height:34px;border-radius:9px;background:var(--brand);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:18px;flex-shrink:0}
+.brand .name{font-family:'Space Grotesk';font-weight:700;font-size:19px;color:#fff;letter-spacing:-.02em}
+.brand .name span{color:var(--brand)}
+.navsec{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#6B7685;padding:14px 10px 6px;font-weight:600}
+.nav{display:flex;align-items:center;gap:11px;padding:9px 11px;border-radius:9px;color:#AEB7C2;cursor:pointer;font-weight:500;font-size:13.5px;transition:.15s;margin-bottom:1px}
+.nav svg{width:18px;height:18px;flex-shrink:0;stroke-width:1.9}
+.nav:hover{background:rgba(255,255,255,.06);color:#fff}
+.nav.active{background:var(--brand);color:#fff;box-shadow:0 2px 10px rgba(22,163,74,.4)}
+.sidefoot{margin-top:auto;padding:14px 10px 4px;border-top:1px solid rgba(255,255,255,.08)}
+.client{display:flex;align-items:center;gap:10px}
+.client .av{width:36px;height:36px;border-radius:9px;background:#2B3645;overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-weight:600;color:#fff;font-size:13px}
+.client .av img{width:100%;height:100%;object-fit:cover}
+.client .meta{font-size:12.5px;line-height:1.3}
+.client .meta b{color:#fff;font-weight:600;display:block;font-size:13px}
+.client .meta span{color:#7C8492}
+
+/* MAIN */
+.main{flex:1;min-width:0;display:flex;flex-direction:column}
+.topbar{height:64px;background:rgba(255,255,255,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:14px;padding:0 22px;position:sticky;top:0;z-index:40}
+.burger{display:none;width:40px;height:40px;border:1px solid var(--line);background:#fff;border-radius:10px;cursor:pointer;align-items:center;justify-content:center;flex-direction:column;gap:4px}
+.burger span{width:18px;height:2px;background:var(--ink);border-radius:2px}
+.crumb{font-size:13px;color:var(--ink3)}
+.crumb b{color:var(--ink);font-weight:600}
+.search{margin-left:auto;display:flex;align-items:center;gap:9px;background:#F1F2F5;border:1px solid var(--line);border-radius:10px;padding:8px 13px;width:280px;color:var(--ink3)}
+.search svg{width:16px;height:16px;flex-shrink:0}
+.search input{border:0;background:none;outline:0;font-family:inherit;font-size:13px;color:var(--ink);width:100%}
+.chip-demo{display:flex;align-items:center;gap:6px;background:var(--greenbg);color:var(--brand-d);font-weight:600;font-size:12px;padding:6px 11px;border-radius:8px;border:1px solid #C9EFD4}
+.chip-demo .dot{width:7px;height:7px;border-radius:50%;background:var(--brand);box-shadow:0 0 0 3px rgba(22,163,74,.18)}
+.tb-ic{width:40px;height:40px;border-radius:10px;border:1px solid var(--line);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--ink2);flex-shrink:0}
+.tb-ic svg{width:18px;height:18px}
+
+.content{padding:26px;max-width:1280px;width:100%;margin:0 auto}
+.view{display:none;animation:fade .35s ease}
+.view.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* PAGE HEAD */
+.phead{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin-bottom:22px;flex-wrap:wrap}
+.phead h1{font-size:27px;font-weight:700;letter-spacing:-.025em;color:var(--graphite)}
+.phead .sub{color:var(--ink2);font-size:14px;margin-top:5px}
+.btn{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);background:#fff;border-radius:10px;padding:10px 15px;font-family:inherit;font-weight:600;font-size:13px;color:var(--ink);cursor:pointer;transition:.15s;box-shadow:var(--shadow)}
+.btn:hover{transform:translateY(-1px);box-shadow:var(--shadow-lg)}
+.btn.primary{background:var(--brand);color:#fff;border-color:var(--brand)}
+.btn.primary:hover{background:var(--brand-d)}
+.btn svg{width:16px;height:16px}
+
+/* CARDS / GRID */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow)}
+.grid{display:grid;gap:16px}
+.g4{grid-template-columns:repeat(4,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g2{grid-template-columns:repeat(2,1fr)}
+
+/* KPI */
+.kpi{padding:18px 18px 16px}
+.kpi .lab{font-size:12.5px;color:var(--ink2);font-weight:500;display:flex;align-items:center;gap:7px}
+.kpi .lab .i{width:26px;height:26px;border-radius:8px;display:flex;align-items:center;justify-content:center}
+.kpi .i svg{width:15px;height:15px}
+.kpi .num{font-family:'Space Grotesk';font-size:32px;font-weight:700;letter-spacing:-.03em;margin-top:11px;color:var(--graphite);line-height:1}
+.kpi .delta{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:600;margin-top:9px;padding:3px 8px;border-radius:7px}
+.delta.up{background:var(--greenbg);color:var(--brand-d)}
+.delta.down{background:var(--redbg);color:var(--red)}
+.delta svg{width:12px;height:12px}
+
+/* SECTION TITLES */
+.sect{display:flex;align-items:center;justify-content:space-between;margin:30px 0 14px}
+.sect h2{font-size:17px;font-weight:700;color:var(--graphite);letter-spacing:-.01em}
+.sect .hint{font-size:12.5px;color:var(--ink3)}
+
+/* GAUGES */
+.gauges{padding:22px}
+.gauge-head{display:flex;align-items:center;gap:10px;margin-bottom:4px}
+.gauge-head .tag{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:4px 9px;border-radius:7px}
+.gauge-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:8px}
+.gcard{border:1px solid var(--line);border-radius:12px;padding:16px 14px;text-align:center;transition:.18s}
+.gcard:hover{box-shadow:var(--shadow-lg);transform:translateY(-2px)}
+.gcard .gname{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:12px}
+.pair{display:flex;align-items:center;justify-content:center;gap:8px}
+.pair .arrow{color:var(--ink3);display:flex;align-items:center}
+.pair .arrow svg{width:20px;height:20px}
+.ring-wrap{position:relative;display:flex;align-items:center;justify-content:center}
+.ring-wrap .rv{position:absolute;font-family:'Space Grotesk';font-weight:700;letter-spacing:-.02em}
+.gcard .jump{margin-top:11px;font-size:12px;font-weight:600;color:var(--brand-d);background:var(--greenbg);display:inline-block;padding:3px 9px;border-radius:7px}
+
+/* CHART */
+.chart-card{padding:20px 20px 14px}
+.chart-card .ct{font-size:15px;font-weight:700;color:var(--graphite)}
+.chart-card .cs{font-size:12.5px;color:var(--ink3);margin-top:3px}
+.legend{display:flex;gap:16px;margin:12px 0 4px;font-size:12.5px;color:var(--ink2);flex-wrap:wrap}
+.legend i{width:11px;height:11px;border-radius:3px;display:inline-block;margin-right:6px;vertical-align:-1px}
+
+/* WINS */
+.win{padding:16px;border:1px solid var(--line);border-radius:12px;background:#fff;display:flex;gap:13px;align-items:flex-start;transition:.15s}
+.win:hover{box-shadow:var(--shadow);transform:translateY(-2px)}
+.win .wi{width:38px;height:38px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.win .wi svg{width:19px;height:19px}
+.win .wt{font-weight:700;font-size:14px;color:var(--graphite)}
+.win .wd{font-size:12.5px;color:var(--ink2);margin-top:3px;line-height:1.45}
+
+/* TABLE */
+.scrollx{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+thead th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink3);font-weight:600;padding:13px 16px;border-bottom:1px solid var(--line);background:#FAFBFC}
+tbody td{padding:14px 16px;border-bottom:1px solid var(--line2);vertical-align:middle}
+tbody tr{cursor:pointer;transition:.12s}
+tbody tr:hover{background:#FAFBFC}
+tbody tr:last-child td{border-bottom:0}
+.badge{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;padding:4px 9px;border-radius:7px;white-space:nowrap}
+.b-crit{background:var(--redbg);color:var(--red)}
+.b-high{background:#FFF1E8;color:#C2410C}
+.b-med{background:var(--amberbg);color:var(--amber)}
+.b-low{background:var(--bluebg);color:var(--blue)}
+.b-fixed{background:var(--greenbg);color:var(--brand-d)}
+.cat{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ink2);font-weight:500}
+.cat .cd{width:8px;height:8px;border-radius:50%}
+.itit{font-weight:600;color:var(--graphite)}
+.inote{font-size:12px;color:var(--ink3);margin-top:2px}
+
+/* FILTER CHIPS */
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.fchip{padding:7px 13px;border-radius:9px;border:1px solid var(--line);background:#fff;font-size:12.5px;font-weight:600;color:var(--ink2);cursor:pointer;transition:.14s}
+.fchip:hover{border-color:#CBD2DB}
+.fchip.on{background:var(--graphite);color:#fff;border-color:var(--graphite)}
+
+/* CWV BARS */
+.cwv{padding:18px}
+.cwv .cwv-name{font-weight:700;font-size:14px;color:var(--graphite);display:flex;justify-content:space-between;align-items:baseline}
+.cwv .cwv-name small{font-weight:500;color:var(--ink3);font-size:11.5px}
+.barrow{margin-top:14px}
+.barlab{display:flex;justify-content:space-between;font-size:12px;color:var(--ink2);margin-bottom:5px;font-weight:500}
+.bartrack{height:12px;background:#F0F2F5;border-radius:7px;overflow:hidden}
+.barfill{height:100%;border-radius:7px;transition:width 1s cubic-bezier(.2,.7,.3,1)}
+
+/* SECURITY */
+.seclist .secitem{display:flex;align-items:center;gap:14px;padding:15px 18px;border-bottom:1px solid var(--line2)}
+.seclist .secitem:last-child{border-bottom:0}
+.secitem .sic{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.secitem .sic svg{width:17px;height:17px}
+.secitem .sbody{flex:1;min-width:0}
+.secitem .sbody b{font-size:13.5px;color:var(--graphite);font-weight:600}
+.secitem .sbody p{font-size:12.5px;color:var(--ink2);margin-top:2px}
+.secitem .sstat{font-size:11.5px;font-weight:700;padding:4px 10px;border-radius:7px;white-space:nowrap}
+
+/* TIMELINE */
+.tl{position:relative;padding-left:32px}
+.tl::before{content:"";position:absolute;left:11px;top:6px;bottom:6px;width:2px;background:var(--line)}
+.tlitem{position:relative;padding-bottom:24px}
+.tlitem:last-child{padding-bottom:0}
+.tldot{position:absolute;left:-26px;top:2px;width:22px;height:22px;border-radius:50%;background:#fff;border:2px solid var(--brand);display:flex;align-items:center;justify-content:center}
+.tldot svg{width:11px;height:11px;color:var(--brand)}
+.tlitem .tldate{font-size:11.5px;font-weight:600;color:var(--brand-d);text-transform:uppercase;letter-spacing:.04em}
+.tlitem .tltit{font-weight:700;font-size:14.5px;color:var(--graphite);margin-top:3px}
+.tlitem .tldesc{font-size:13px;color:var(--ink2);margin-top:4px;line-height:1.5;max-width:640px}
+.tlitem .tlmeta{display:flex;gap:8px;margin-top:9px;flex-wrap:wrap}
+.tlmeta .tm{font-size:11px;font-weight:600;color:var(--ink2);background:#F2F4F7;padding:3px 9px;border-radius:7px}
+
+/* DRAWER */
+.drawer-ov{position:fixed;inset:0;background:rgba(15,20,28,.42);z-index:70;opacity:0;pointer-events:none;transition:.22s}
+.drawer-ov.open{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;height:100%;width:480px;max-width:92vw;background:#fff;z-index:71;box-shadow:-12px 0 40px rgba(16,24,40,.18);transform:translateX(100%);transition:transform .28s cubic-bezier(.2,.7,.3,1);display:flex;flex-direction:column}
+.drawer.open{transform:none}
+.dr-head{padding:22px 24px 18px;border-bottom:1px solid var(--line)}
+.dr-head .dr-close{position:absolute;top:18px;right:20px;width:34px;height:34px;border-radius:9px;border:1px solid var(--line);background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--ink2)}
+.dr-head .dr-close svg{width:17px;height:17px}
+.dr-body{padding:22px 24px;overflow-y:auto;flex:1}
+.dr-sec{margin-bottom:22px}
+.dr-sec h4{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--ink3);font-weight:700;margin-bottom:8px}
+.dr-sec p{font-size:13.5px;color:var(--ink);line-height:1.6}
+.codeblk{background:#171C24;color:#D6E2D9;font-family:'SF Mono',ui-monospace,Menlo,monospace;font-size:12px;line-height:1.65;padding:14px 16px;border-radius:10px;margin-top:8px;overflow-x:auto}
+.codeblk .rm{color:#FCA5A5}.codeblk .ad{color:#86EFAC}.codeblk .cm{color:#6B7685}
+.metricpill{display:inline-flex;align-items:center;gap:8px;background:var(--greenbg);color:var(--brand-d);font-weight:600;font-size:12.5px;padding:7px 12px;border-radius:9px;margin-top:8px}
+
+/* SIDEBAR OVERLAY */
+.sb-ov{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:55;opacity:0;pointer-events:none;transition:.2s}
+.sb-ov.open{opacity:1;pointer-events:auto}
+
+/* RESPONSIVE */
+@media(max-width:1080px){
+  .g4{grid-template-columns:repeat(2,1fr)}
+  .g3{grid-template-columns:1fr}
+  .g2{grid-template-columns:1fr}
+  .gauge-row{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:900px){
+  .burger{display:flex}
+  .sidebar{position:fixed;left:0;top:0;z-index:60;transform:translateX(-100%);transition:transform .25s;height:100%}
+  .sidebar.open{transform:none}
+  .search{display:none}
+  .content{padding:18px 16px}
+  .phead h1{font-size:22px}
+  table{min-width:560px}
+}
+@media(max-width:560px){
+  .g4{grid-template-columns:1fr}
+  .gauge-row{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sb">
+    <div class="brand">
+      <div class="logo">T</div>
+      <div class="name">Tri<span>age</span></div>
+    </div>
+    <div class="navsec">Audit report</div>
+    <div class="nav active" data-view="overview" onclick="go('overview')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>Overview
+    </div>
+    <div class="nav" data-view="issues" onclick="go('issues')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 9v4m0 4h.01M10.3 3.86l-8.5 14.7A2 2 0 003.5 21h17a2 2 0 001.7-2.44l-8.5-14.7a2 2 0 00-3.4 0z"/></svg>Issues
+    </div>
+    <div class="nav" data-view="performance" onclick="go('performance')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 3v18h18M7 14l4-5 3 3 5-7"/></svg>Performance
+    </div>
+    <div class="nav" data-view="security" onclick="go('security')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Security
+    </div>
+    <div class="nav" data-view="timeline" onclick="go('timeline')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 8v4l3 2m6-2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>Timeline
+    </div>
+    <div class="sidefoot">
+      <div class="client">
+        <div class="av"><img src="https://i.pravatar.cc/150?img=12" onerror="this.remove()" alt=""></div>
+        <div class="meta"><b>Brightford Co.</b><span>brightford.com</span></div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <header class="topbar">
+      <button class="burger" onclick="toggleSide()" aria-label="Menu"><span></span><span></span><span></span></button>
+      <div class="crumb" id="crumb">Audit report · <b>Overview</b></div>
+      <div class="search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>
+        <input placeholder="Search issues, fixes, files…">
+      </div>
+      <div class="chip-demo"><span class="dot"></span>Demo</div>
+      <div class="tb-ic" title="Download report">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+      </div>
+    </header>
+
+    <div class="content">
+
+      <!-- ============ OVERVIEW ============ -->
+      <section class="view active" id="v-overview">
+        <div class="phead">
+          <div>
+            <h1>Site rescue report</h1>
+            <div class="sub">brightford.com · Completed Jun 12, 2026 · Audited by <b style="color:var(--ink)">Alex Buryanov</b></div>
+          </div>
+          <div style="display:flex;gap:10px">
+            <button class="btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 4h16v12H5.2L4 17.2V4z"/></svg>Share</button>
+            <button class="btn primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>Export PDF</button>
+          </div>
+        </div>
+
+        <!-- KPI -->
+        <div class="grid g4">
+          <div class="card kpi">
+            <div class="lab"><span class="i" style="background:var(--greenbg)"><svg viewBox="0 0 24 24" fill="none" stroke="var(--brand)"><path d="M20 6L9 17l-5-5"/></svg></span>Issues fixed</div>
+            <div class="num">23</div>
+            <div class="delta up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6L9 17l-5-5"/></svg>0 remaining</div>
+          </div>
+          <div class="card kpi">
+            <div class="lab"><span class="i" style="background:var(--bluebg)"><svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)"><path d="M12 8v4l3 2m6-2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></span>Load time</div>
+            <div class="num">1.4s</div>
+            <div class="delta up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 19V5M5 12l7-7 7 7"/></svg>71% faster</div>
+          </div>
+          <div class="card kpi">
+            <div class="lab"><span class="i" style="background:var(--amberbg)"><svg viewBox="0 0 24 24" fill="none" stroke="var(--amber)"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg></span>Bundle size</div>
+            <div class="num">312<small style="font-size:16px;color:var(--ink3)">kB</small></div>
+            <div class="delta up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 19V5M5 12l7-7 7 7"/></svg>−64%</div>
+          </div>
+          <div class="card kpi">
+            <div class="lab"><span class="i" style="background:var(--redbg)"><svg viewBox="0 0 24 24" fill="none" stroke="var(--red)"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span>Security score</div>
+            <div class="num">A+</div>
+            <div class="delta up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 19V5M5 12l7-7 7 7"/></svg>from D</div>
+          </div>
+        </div>
+
+        <!-- GAUGES -->
+        <div class="sect"><h2>Lighthouse scores · before → after</h2><span class="hint">Mobile, simulated 4G · Jun 2 vs Jun 12</span></div>
+        <div class="card gauges">
+          <div class="gauge-row" id="gaugeRow"></div>
+          <div style="margin-top:18px;padding:14px 16px;background:var(--greenbg);border-radius:11px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--brand-d)" style="width:22px;height:22px;flex-shrink:0"><path d="M22 11.08V12a10 10 0 11-5.93-9.14M22 4L12 14.01l-3-3"/></svg>
+            <span style="font-weight:600;color:var(--brand-d);font-size:14px">23 issues fixed · load time −71% · all four scores now in the green</span>
+          </div>
+        </div>
+
+        <!-- PERF CHART -->
+        <div class="sect"><h2>Page load time across the rescue</h2><span class="hint">Largest Contentful Paint, seconds</span></div>
+        <div class="card chart-card">
+          <div class="legend">
+            <span><i style="background:var(--red)"></i>LCP (s)</span>
+            <span><i style="background:var(--brand)"></i>Target ≤ 2.5s</span>
+          </div>
+          <div id="perfChart"></div>
+        </div>
+
+        <!-- KEY WINS -->
+        <div class="sect"><h2>Key wins</h2></div>
+        <div class="grid g3" id="winGrid"></div>
+      </section>
+
+      <!-- ============ ISSUES ============ -->
+      <section class="view" id="v-issues">
+        <div class="phead">
+          <div><h1>Issues found &amp; fixed</h1><div class="sub">Every problem uncovered during the audit, with root cause and the fix applied.</div></div>
+        </div>
+        <div class="filters" id="sevFilters"></div>
+        <div class="card">
+          <div class="scrollx">
+            <table>
+              <thead><tr><th>Severity</th><th>Category</th><th>Issue</th><th>Status</th><th style="width:40px"></th></tr></thead>
+              <tbody id="issueBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ PERFORMANCE ============ -->
+      <section class="view" id="v-performance">
+        <div class="phead">
+          <div><h1>Core Web Vitals</h1><div class="sub">Field &amp; lab metrics before and after the optimization pass.</div></div>
+        </div>
+        <div class="grid g3" id="cwvGrid"></div>
+
+        <div class="sect"><h2>Bundle size breakdown</h2><span class="hint">JavaScript shipped to the browser, before → after</span></div>
+        <div class="grid g2">
+          <div class="card chart-card">
+            <div class="ct">Before</div><div class="cs">866 kB total · 4 render-blocking</div>
+            <div class="legend">
+              <span><i style="background:#94A3B8"></i>Vendor</span>
+              <span><i style="background:#CBD5E1"></i>App</span>
+              <span><i style="background:var(--red)"></i>Unused</span>
+            </div>
+            <div id="donutBefore" style="display:flex;justify-content:center"></div>
+          </div>
+          <div class="card chart-card">
+            <div class="ct">After</div><div class="cs">312 kB total · 0 render-blocking · code-split</div>
+            <div class="legend">
+              <span><i style="background:var(--brand)"></i>Vendor</span>
+              <span><i style="background:#86EFAC"></i>App</span>
+              <span><i style="background:#D1FAE5"></i>Lazy</span>
+            </div>
+            <div id="donutAfter" style="display:flex;justify-content:center"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ SECURITY ============ -->
+      <section class="view" id="v-security">
+        <div class="phead">
+          <div><h1>Security checklist</h1><div class="sub">Hardening applied across transport, headers, dependencies and auth.</div></div>
+        </div>
+        <div class="grid g4" style="margin-bottom:6px">
+          <div class="card kpi"><div class="lab">Checks passed</div><div class="num" style="color:var(--brand)">14<small style="font-size:18px;color:var(--ink3)">/15</small></div></div>
+          <div class="card kpi"><div class="lab">Critical resolved</div><div class="num">5</div></div>
+          <div class="card kpi"><div class="lab">Headers added</div><div class="num">7</div></div>
+          <div class="card kpi"><div class="lab">Vulnerable deps</div><div class="num" style="color:var(--brand)">0</div></div>
+        </div>
+        <div class="sect"><h2>Items reviewed</h2></div>
+        <div class="card seclist" id="secList"></div>
+      </section>
+
+      <!-- ============ TIMELINE ============ -->
+      <section class="view" id="v-timeline">
+        <div class="phead">
+          <div><h1>What we did</h1><div class="sub">A chronological log of the 8-day rescue engagement.</div></div>
+        </div>
+        <div class="card" style="padding:26px 24px">
+          <div class="tl" id="timeline"></div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</div>
+
+<!-- DRAWER -->
+<div class="drawer-ov" id="drov" onclick="closeDrawer()"></div>
+<aside class="drawer" id="drawer">
+  <div class="dr-head">
+    <button class="dr-close" onclick="closeDrawer()" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+    <div id="drHeadIn"></div>
+  </div>
+  <div class="dr-body" id="drBody"></div>
+</aside>
+
+<!-- SIDEBAR OVERLAY -->
+<div class="sb-ov" id="sbov" onclick="toggleSide()"></div>
+
+<script>
+/* ---------- DATA ---------- */
+var GAUGES=[
+  {name:'Performance',before:38,after:96},
+  {name:'Accessibility',before:71,after:100},
+  {name:'Best Practices',before:75,after:100},
+  {name:'SEO',before:64,after:98}
+];
+
+var LCP_SERIES=[
+  {d:'Jun 2',v:4.9},{d:'Jun 4',v:4.2},{d:'Jun 6',v:3.1},
+  {d:'Jun 8',v:2.3},{d:'Jun 10',v:1.7},{d:'Jun 12',v:1.4}
+];
+
+var WINS=[
+  {ic:'<path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/>',c:'amber',t:'Images now lazy + WebP',d:'Converted 41 PNGs to WebP and added responsive srcset. Hero now 89% smaller.'},
+  {ic:'<path d="M4 4h16v12H5.2L4 17.2V4z"/>',c:'green',t:'Render-blocking removed',d:'Critical CSS inlined, the rest deferred. First paint cut from 3.8s to 0.9s.'},
+  {ic:'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',c:'red',t:'HTTPS + HSTS enforced',d:'Forced TLS, added HSTS preload and a strict CSP. Mixed-content warnings gone.'},
+  {ic:'<path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/>',c:'blue',t:'Bundle split & cached',d:'Route-based code splitting + long-term caching. JS shipped on first load down 64%.'},
+  {ic:'<path d="M12 20h9M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4 12.5-12.5z"/>',c:'green',t:'Layout shift eliminated',d:'Reserved space for ads & images. CLS dropped from 0.34 to 0.01 — visually stable.'},
+  {ic:'<path d="M3 3v18h18M7 14l4-5 3 3 5-7"/>',c:'amber',t:'DB query N+1 fixed',d:'Collapsed 1,200 queries on the product page into 3. Server response now under 180ms.'}
+];
+
+var ISSUES=[
+  {sev:'crit',cat:'Performance',catc:'#D97706',t:'Unoptimized hero image (4.2 MB PNG)',note:'Single largest asset, blocked LCP',
+    cause:'The homepage hero shipped a 4.2 MB uncompressed PNG with no responsive sizing. On mobile it alone accounted for 58% of total page weight and pushed LCP past 4.9s.',
+    fix:'Converted to WebP with an AVIF fallback, generated a responsive <code>srcset</code> (5 widths), and added <code>fetchpriority="high"</code>. Final hero is 142 kB.',
+    metric:'LCP 4.9s → 1.4s',
+    code:'<span class="rm">- &lt;img src="hero.png"&gt;</span>\n<span class="ad">+ &lt;img src="hero.webp" srcset="..."\n+   sizes="100vw" fetchpriority="high"&gt;</span>'},
+  {sev:'crit',cat:'Security',catc:'#DC2626',t:'Site served over plain HTTP',note:'No TLS, mixed content',
+    cause:'The origin accepted unencrypted HTTP and several assets were hardcoded to <code>http://</code>, triggering mixed-content blocking and leaving traffic in the clear.',
+    fix:'Provisioned a managed TLS cert, added a permanent HTTP→HTTPS redirect, enabled HSTS with preload, and rewrote all asset URLs to protocol-relative.',
+    metric:'A+ on SSL Labs',
+    code:'<span class="cm"># nginx</span>\n<span class="ad">+ return 301 https://$host$request_uri;\n+ add_header Strict-Transport-Security\n+   "max-age=63072000; preload";</span>'},
+  {sev:'crit',cat:'Bug',catc:'#7C3AED',t:'Checkout crashed on empty coupon field',note:'JS TypeError, 0 conversions on mobile',
+    cause:'A null reference: <code>coupon.trim()</code> ran before checking the field existed, throwing on every mobile checkout where the input was unmounted.',
+    fix:'Added a guard and optional chaining, plus a regression test. Mobile checkout completion recovered the same day.',
+    metric:'Checkout errors → 0',
+    code:'<span class="rm">- if (coupon.trim().length)</span>\n<span class="ad">+ if (coupon?.trim().length)</span>'},
+  {sev:'high',cat:'Performance',catc:'#D97706',t:'1,200 database queries on product page',note:'Classic N+1 in the reviews loop',
+    cause:'Each product review fetched its author in a separate query. A page with 40 reviews fired 1,200+ queries and frequently timed out under load.',
+    fix:'Eager-loaded authors with a single join and added an index on <code>reviews.product_id</code>. Server response fell from 2.1s to 178ms.',
+    metric:'TTFB 2.1s → 178ms'},
+  {sev:'high',cat:'Performance',catc:'#D97706',t:'866 kB of render-blocking JavaScript',note:'No code splitting or caching',
+    cause:'The entire app bundle — including the admin panel and a charting library used on one page — loaded on every route, render-blocking and uncached.',
+    fix:'Introduced route-based code splitting, tree-shaking, and immutable long-term caching with content hashes. First-load JS is now 312 kB.',
+    metric:'JS −64%'},
+  {sev:'high',cat:'Security',catc:'#DC2626',t:'Missing security headers',note:'No CSP, X-Frame-Options, etc.',
+    cause:'Responses lacked Content-Security-Policy, X-Frame-Options, X-Content-Type-Options and Referrer-Policy, leaving the site open to clickjacking and XSS.',
+    fix:'Added a tuned CSP, frame-ancestors lockdown, nosniff and a strict referrer policy at the edge. Verified with securityheaders.com.',
+    metric:'7 headers added · grade A'},
+  {sev:'high',cat:'Accessibility',catc:'#0891B2',t:'Form inputs without labels',note:'Screen readers announced nothing',
+    cause:'Newsletter and checkout inputs used placeholder-only labelling, so assistive tech announced unlabeled fields and failed WCAG 1.3.1.',
+    fix:'Added associated <code>&lt;label&gt;</code> elements, ARIA descriptions for errors, and visible focus styles throughout.',
+    metric:'Accessibility 71 → 100'},
+  {sev:'med',cat:'Performance',catc:'#D97706',t:'No browser caching on static assets',note:'Everything re-downloaded each visit',
+    cause:'Static assets were served with <code>Cache-Control: no-store</code>, so returning visitors re-fetched all CSS, JS and images on every page view.',
+    fix:'Set a 1-year immutable cache on hashed assets and a short revalidation window on HTML.',
+    metric:'Repeat-visit load −82%'},
+  {sev:'med',cat:'SEO',catc:'#16A34A',t:'Duplicate & missing meta descriptions',note:'18 pages, no canonical tags',
+    cause:'Most templates shared one boilerplate meta description and lacked canonical URLs, causing duplicate-content dilution in search.',
+    fix:'Generated unique titles & descriptions per template and added canonical tags plus an XML sitemap.',
+    metric:'SEO 64 → 98'},
+  {sev:'med',cat:'Bug',catc:'#7C3AED',t:'Cart total off by a cent on discounts',note:'Floating-point rounding',
+    cause:'Discounts were applied with native float math, occasionally producing totals like $19.999999 that displayed as $20.00 but charged $19.99.',
+    fix:'Moved all monetary math to integer cents and rounded only at display time.',
+    metric:'Billing accuracy 100%'},
+  {sev:'med',cat:'Accessibility',catc:'#0891B2',t:'Insufficient color contrast on CTAs',note:'2.9:1, fails AA',
+    cause:'The primary button used light-gray text on green at 2.9:1, below the 4.5:1 WCAG AA threshold for normal text.',
+    fix:'Darkened the button surface and switched to white text, reaching 5.8:1 across all interactive elements.',
+    metric:'Contrast 2.9 → 5.8:1'},
+  {sev:'low',cat:'SEO',catc:'#16A34A',t:'No structured data for products',note:'Missing rich-result eligibility',
+    cause:'Product pages had no schema.org markup, so they were ineligible for price/rating rich results in search.',
+    fix:'Added Product + Offer + AggregateRating JSON-LD, validated in the Rich Results Test.',
+    metric:'Rich results eligible'},
+  {sev:'low',cat:'Bug',catc:'#7C3AED',t:'Console flooded with 404s for fonts',note:'Wrong font path after deploy',
+    cause:'A build path change left three @font-face URLs pointing at a moved directory, throwing 404s on every page.',
+    fix:'Corrected the font paths and added a preload hint for the primary face.',
+    metric:'0 console errors'}
+];
+
+var CWV=[
+  {name:'LCP',full:'Largest Contentful Paint',before:4.9,after:1.4,unit:'s',good:2.5,max:5},
+  {name:'CLS',full:'Cumulative Layout Shift',before:0.34,after:0.01,unit:'',good:0.1,max:0.4},
+  {name:'TBT',full:'Total Blocking Time',before:820,after:90,unit:'ms',good:200,max:900}
+];
+
+var SECURITY=[
+  {t:'HTTPS / TLS 1.3',d:'Valid managed certificate, HTTP redirects to HTTPS',pass:true,fix:'Provisioned + auto-renew'},
+  {t:'HSTS preload',d:'Strict-Transport-Security with 2-year max-age',pass:true,fix:'Added + submitted to preload list'},
+  {t:'Content-Security-Policy',d:'Tuned CSP blocking inline & third-party scripts',pass:true,fix:'Added strict policy'},
+  {t:'X-Frame-Options',d:'Clickjacking protection via frame-ancestors',pass:true,fix:'Set to DENY'},
+  {t:'X-Content-Type-Options',d:'MIME-sniffing disabled',pass:true,fix:'nosniff added'},
+  {t:'Dependency vulnerabilities',d:'3 critical, 11 high CVEs in npm tree',pass:true,fix:'All patched · 0 remaining'},
+  {t:'Secrets in source',d:'API key was committed to the public repo',pass:true,fix:'Rotated + moved to env vars'},
+  {t:'Authentication rate-limiting',d:'Login endpoint had no brute-force protection',pass:true,fix:'Added rate limit + lockout'},
+  {t:'SQL injection on search',d:'Unparameterized query in the search handler',pass:true,fix:'Switched to prepared statements'},
+  {t:'CSRF protection',d:'State-changing forms lacked CSRF tokens',pass:true,fix:'Added per-session tokens'},
+  {t:'Cookie flags',d:'Session cookie missing Secure/HttpOnly/SameSite',pass:true,fix:'All flags set'},
+  {t:'Admin panel exposure',d:'/admin reachable without auth gate',pass:true,fix:'IP-allowlist + auth required'},
+  {t:'Verbose error pages',d:'Stack traces leaked in production',pass:true,fix:'Generic 500 page enabled'},
+  {t:'Outdated server software',d:'nginx 1.18, several CVEs',pass:true,fix:'Upgraded to 1.27 LTS'},
+  {t:'Subresource Integrity',d:'CDN scripts loaded without SRI hashes',pass:false,fix:'Recommended — pending client CDN migration'}
+];
+
+var TIMELINE=[
+  {d:'Jun 2',t:'Kickoff & full audit',desc:'Ran Lighthouse, WebPageTest, securityheaders.com and a dependency scan. Catalogued 23 issues across performance, security, accessibility, SEO and functional bugs.',tags:['Discovery','23 issues logged']},
+  {d:'Jun 3',t:'Stopped the bleeding',desc:'Fixed the checkout crash and the SQL-injection vector first — both were actively costing revenue and exposing data.',tags:['2 critical fixed','Hotfix deployed']},
+  {d:'Jun 5',t:'Transport & headers hardened',desc:'Enforced HTTPS, added HSTS, CSP and the full set of security headers. Rotated the leaked API key.',tags:['Security','SSL A+']},
+  {d:'Jun 7',t:'Asset & image pipeline',desc:'Converted images to WebP/AVIF, added responsive srcset, lazy-loading below the fold and a 1-year cache on hashed assets.',tags:['Performance','−71% weight']},
+  {d:'Jun 9',t:'JavaScript diet',desc:'Introduced route-based code splitting, tree-shaking and deferred non-critical scripts. First-load JS dropped from 866 kB to 312 kB.',tags:['Bundle','−64% JS']},
+  {d:'Jun 10',t:'Backend N+1 & layout shift',desc:'Collapsed the 1,200-query product page into 3 queries and reserved space for media to kill cumulative layout shift.',tags:['TTFB 178ms','CLS 0.01']},
+  {d:'Jun 11',t:'Accessibility & SEO sweep',desc:'Labelled every form control, fixed contrast, added canonical tags, structured data and a sitemap.',tags:['A11y 100','SEO 98']},
+  {d:'Jun 12',t:'Verification & handoff',desc:'Re-ran every tool, confirmed all four Lighthouse scores in the green, and delivered this report plus a maintenance checklist.',tags:['All green','Delivered']}
+];
+
+/* ---------- RENDER HELPERS ---------- */
+function ringSVG(score,size,color,track){
+  var r=(size/2)-6, c=2*Math.PI*r, off=c*(1-score/100);
+  return '<svg width="'+size+'" height="'+size+'" viewBox="0 0 '+size+' '+size+'">'+
+    '<circle cx="'+size/2+'" cy="'+size/2+'" r="'+r+'" fill="none" stroke="'+track+'" stroke-width="6"/>'+
+    '<circle cx="'+size/2+'" cy="'+size/2+'" r="'+r+'" fill="none" stroke="'+color+'" stroke-width="6" stroke-linecap="round" '+
+    'stroke-dasharray="'+c.toFixed(1)+'" stroke-dashoffset="'+off.toFixed(1)+'" transform="rotate(-90 '+size/2+' '+size/2+')"/></svg>';
+}
+
+function renderGauges(){
+  var html='';
+  GAUGES.forEach(function(g){
+    html+='<div class="gcard">'+
+      '<div class="gname">'+g.name+'</div>'+
+      '<div class="pair">'+
+        '<div class="ring-wrap">'+ringSVG(g.before,58,'#DC2626','#FCE4E4')+
+          '<span class="rv" style="font-size:16px;color:#DC2626">'+g.before+'</span></div>'+
+        '<div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>'+
+        '<div class="ring-wrap">'+ringSVG(g.after,82,'#16A34A','#E3F6E9')+
+          '<span class="rv" style="font-size:26px;color:#16A34A">'+g.after+'</span></div>'+
+      '</div>'+
+      '<div class="jump">+'+(g.after-g.before)+' pts</div>'+
+    '</div>';
+  });
+  document.getElementById('gaugeRow').innerHTML=html;
+}
+
+function renderPerfChart(){
+  var W=860,H=240,pl=44,pr=20,pt=18,pb=30;
+  var iw=W-pl-pr, ih=H-pt-pb;
+  var maxV=5, n=LCP_SERIES.length;
+  var xf=function(i){return pl+(iw*i/(n-1));};
+  var yf=function(v){return pt+ih-(ih*v/maxV);};
+  var pts=LCP_SERIES.map(function(p,i){return xf(i)+','+yf(p.v);});
+  var area='M'+pl+','+yf(0)+' L'+pts.join(' L')+' L'+xf(n-1)+','+yf(0)+' Z';
+  var line='M'+pts.join(' L');
+  var grid='',gl='';
+  for(var v=0;v<=5;v++){var y=yf(v);grid+='<line x1="'+pl+'" y1="'+y+'" x2="'+(W-pr)+'" y2="'+y+'" stroke="#EFF1F4"/>';gl+='<text x="'+(pl-8)+'" y="'+(y+4)+'" font-size="11" fill="#8A929C" text-anchor="end">'+v+'s</text>';}
+  var ty=yf(2.5);
+  var dots='',xl='';
+  LCP_SERIES.forEach(function(p,i){
+    dots+='<circle cx="'+xf(i)+'" cy="'+yf(p.v)+'" r="4.5" fill="#fff" stroke="#DC2626" stroke-width="2.5"/>';
+    dots+='<text x="'+xf(i)+'" y="'+(yf(p.v)-11)+'" font-size="11" font-weight="600" fill="#1B2430" text-anchor="middle">'+p.v+'</text>';
+    xl+='<text x="'+xf(i)+'" y="'+(H-9)+'" font-size="11" fill="#8A929C" text-anchor="middle">'+p.d+'</text>';
+  });
+  document.getElementById('perfChart').innerHTML=
+    '<svg viewBox="0 0 '+W+' '+H+'" width="100%" preserveAspectRatio="xMidYMid meet" role="img" aria-label="LCP dropping from 4.9s to 1.4s">'+
+    '<defs><linearGradient id="lcpg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#DC2626" stop-opacity=".18"/><stop offset="1" stop-color="#DC2626" stop-opacity="0"/></linearGradient></defs>'+
+    grid+gl+
+    '<line x1="'+pl+'" y1="'+ty+'" x2="'+(W-pr)+'" y2="'+ty+'" stroke="#16A34A" stroke-width="1.5" stroke-dasharray="5 4"/>'+
+    '<text x="'+(W-pr)+'" y="'+(ty-7)+'" font-size="11" font-weight="600" fill="#16A34A" text-anchor="end">Target 2.5s</text>'+
+    '<path d="'+area+'" fill="url(#lcpg)"/>'+
+    '<path d="'+line+'" fill="none" stroke="#DC2626" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"/>'+
+    dots+xl+'</svg>';
+}
+
+function renderWins(){
+  var cmap={amber:['var(--amberbg)','var(--amber)'],green:['var(--greenbg)','var(--brand)'],red:['var(--redbg)','var(--red)'],blue:['var(--bluebg)','var(--blue)']};
+  var html='';
+  WINS.forEach(function(w){
+    var c=cmap[w.c];
+    html+='<div class="win">'+
+      '<div class="wi" style="background:'+c[0]+'"><svg viewBox="0 0 24 24" fill="none" stroke="'+c[1]+'">'+w.ic+'</svg></div>'+
+      '<div><div class="wt">'+w.t+'</div><div class="wd">'+w.d+'</div></div></div>';
+  });
+  document.getElementById('winGrid').innerHTML=html;
+}
+
+var SEV_META={crit:['Critical','b-crit'],high:['High','b-high'],med:['Medium','b-med'],low:['Low','b-low']};
+var curFilter='all';
+
+function renderFilters(){
+  var opts=[['all','All issues'],['crit','Critical'],['high','High'],['med','Medium'],['low','Low']];
+  var html='';
+  opts.forEach(function(o){
+    var n = o[0]==='all'?ISSUES.length:ISSUES.filter(function(i){return i.sev===o[0];}).length;
+    html+='<div class="fchip'+(curFilter===o[0]?' on':'')+'" onclick="setFilter(\''+o[0]+'\')">'+o[1]+' · '+n+'</div>';
+  });
+  document.getElementById('sevFilters').innerHTML=html;
+}
+function setFilter(f){curFilter=f;renderFilters();renderIssues();}
+
+function renderIssues(){
+  var html='';
+  ISSUES.forEach(function(it,idx){
+    if(curFilter!=='all'&&it.sev!==curFilter)return;
+    var sm=SEV_META[it.sev];
+    html+='<tr onclick="openIssue('+idx+')">'+
+      '<td><span class="badge '+sm[1]+'">'+sm[0]+'</span></td>'+
+      '<td><span class="cat"><span class="cd" style="background:'+it.catc+'"></span>'+it.cat+'</span></td>'+
+      '<td><div class="itit">'+it.t+'</div><div class="inote">'+it.note+'</div></td>'+
+      '<td><span class="badge b-fixed"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:12px;height:12px"><path d="M20 6L9 17l-5-5"/></svg>Fixed</span></td>'+
+      '<td style="color:var(--ink3)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:16px;height:16px"><path d="M9 18l6-6-6-6"/></svg></td></tr>';
+  });
+  document.getElementById('issueBody').innerHTML=html;
+}
+
+function openIssue(idx){
+  var it=ISSUES[idx], sm=SEV_META[it.sev];
+  document.getElementById('drHeadIn').innerHTML=
+    '<div style="display:flex;gap:8px;margin-bottom:12px"><span class="badge '+sm[1]+'">'+sm[0]+'</span>'+
+    '<span class="cat"><span class="cd" style="background:'+it.catc+'"></span>'+it.cat+'</span></div>'+
+    '<div class="disp" style="font-size:19px;font-weight:700;color:var(--graphite);line-height:1.3;max-width:380px">'+it.t+'</div>'+
+    '<div style="margin-top:10px"><span class="badge b-fixed"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:12px;height:12px"><path d="M20 6L9 17l-5-5"/></svg>Fixed</span></div>';
+  var body=
+    '<div class="dr-sec"><h4>Root cause</h4><p>'+it.cause+'</p></div>'+
+    '<div class="dr-sec"><h4>The fix</h4><p>'+it.fix+'</p>'+
+      (it.code?'<div class="codeblk">'+it.code+'</div>':'')+
+      '<div class="metricpill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:15px;height:15px"><path d="M12 19V5M5 12l7-7 7 7"/></svg>'+it.metric+'</div></div>'+
+    '<div class="dr-sec"><h4>Verification</h4><p>Re-tested after deploy on Jun 12 — confirmed resolved in production and added to the regression suite.</p></div>';
+  document.getElementById('drBody').innerHTML=body;
+  document.getElementById('drawer').classList.add('open');
+  document.getElementById('drov').classList.add('open');
+}
+function closeDrawer(){document.getElementById('drawer').classList.remove('open');document.getElementById('drov').classList.remove('open');}
+
+function renderCWV(){
+  var html='';
+  CWV.forEach(function(m){
+    var bp=Math.min(100,(m.before/m.max)*100), ap=Math.min(100,(m.after/m.max)*100);
+    var fmt=function(x){return m.unit==='ms'?x+'ms':(m.unit==='s'?x+'s':x);};
+    html+='<div class="card cwv">'+
+      '<div class="cwv-name">'+m.name+'<small>'+m.full+'</small></div>'+
+      '<div class="barrow"><div class="barlab"><span>Before</span><span style="color:var(--red);font-weight:700">'+fmt(m.before)+'</span></div>'+
+        '<div class="bartrack"><div class="barfill" style="width:'+bp.toFixed(0)+'%;background:var(--red)"></div></div></div>'+
+      '<div class="barrow"><div class="barlab"><span>After</span><span style="color:var(--brand);font-weight:700">'+fmt(m.after)+'</span></div>'+
+        '<div class="bartrack"><div class="barfill" style="width:'+ap.toFixed(0)+'%;background:var(--brand)"></div></div></div>'+
+      '<div style="margin-top:12px;font-size:12px;color:var(--ink2)">Good ≤ '+fmt(m.good)+' · <span style="color:var(--brand-d);font-weight:600">now passing</span></div>'+
+    '</div>';
+  });
+  document.getElementById('cwvGrid').innerHTML=html;
+}
+
+function donutSVG(segments,size){
+  var r=size/2-12, c=2*Math.PI*r, cx=size/2, cy=size/2, acc=0, total=0;
+  segments.forEach(function(s){total+=s.v;});
+  var html='<svg width="'+size+'" height="'+size+'" viewBox="0 0 '+size+' '+size+'">';
+  segments.forEach(function(s){
+    var frac=s.v/total, dash=c*frac, gap=c-dash, off=-acc*c;
+    html+='<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="none" stroke="'+s.col+'" stroke-width="20" '+
+      'stroke-dasharray="'+dash.toFixed(1)+' '+gap.toFixed(1)+'" stroke-dashoffset="'+off.toFixed(1)+'" transform="rotate(-90 '+cx+' '+cy+')"/>';
+    acc+=frac;
+  });
+  html+='<text x="'+cx+'" y="'+(cy-3)+'" text-anchor="middle" font-family="Space Grotesk" font-size="26" font-weight="700" fill="#1B2430">'+total+'</text>';
+  html+='<text x="'+cx+'" y="'+(cy+16)+'" text-anchor="middle" font-size="11" fill="#8A929C">kB</text>';
+  html+='</svg>';
+  return html;
+}
+function renderDonuts(){
+  document.getElementById('donutBefore').innerHTML=donutSVG([
+    {v:520,col:'#94A3B8'},{v:208,col:'#CBD5E1'},{v:138,col:'#DC2626'}],190);
+  document.getElementById('donutAfter').innerHTML=donutSVG([
+    {v:168,col:'#16A34A'},{v:96,col:'#86EFAC'},{v:48,col:'#D1FAE5'}],190);
+}
+
+function renderSecurity(){
+  var html='';
+  SECURITY.forEach(function(s){
+    var pass=s.pass;
+    html+='<div class="secitem">'+
+      '<div class="sic" style="background:'+(pass?'var(--greenbg)':'var(--amberbg)')+'">'+
+        (pass?'<svg viewBox="0 0 24 24" fill="none" stroke="var(--brand)"><path d="M20 6L9 17l-5-5"/></svg>'
+             :'<svg viewBox="0 0 24 24" fill="none" stroke="var(--amber)"><path d="M12 9v4m0 4h.01M10.3 3.86l-8.5 14.7A2 2 0 003.5 21h17a2 2 0 001.7-2.44l-8.5-14.7a2 2 0 00-3.4 0z"/></svg>')+
+      '</div>'+
+      '<div class="sbody"><b>'+s.t+'</b><p>'+s.d+'</p></div>'+
+      '<span class="sstat" style="background:'+(pass?'var(--greenbg)':'var(--amberbg)')+';color:'+(pass?'var(--brand-d)':'var(--amber)')+'">'+(pass?'Fixed':'Advisory')+'</span>'+
+    '</div>';
+  });
+  document.getElementById('secList').innerHTML=html;
+}
+
+function renderTimeline(){
+  var html='';
+  TIMELINE.forEach(function(e){
+    var tags=e.tags.map(function(t){return '<span class="tm">'+t+'</span>';}).join('');
+    html+='<div class="tlitem">'+
+      '<div class="tldot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div>'+
+      '<div class="tldate">'+e.d+'</div>'+
+      '<div class="tltit">'+e.t+'</div>'+
+      '<div class="tldesc">'+e.desc+'</div>'+
+      '<div class="tlmeta">'+tags+'</div></div>';
+  });
+  document.getElementById('timeline').innerHTML=html;
+}
+
+/* ---------- NAV ---------- */
+var CRUMBS={overview:'Overview',issues:'Issues',performance:'Performance',security:'Security',timeline:'Timeline'};
+function go(view){
+  document.querySelectorAll('.view').forEach(function(v){v.classList.remove('active');});
+  document.getElementById('v-'+view).classList.add('active');
+  document.querySelectorAll('.nav').forEach(function(n){n.classList.toggle('active',n.getAttribute('data-view')===view);});
+  document.getElementById('crumb').innerHTML='Audit report · <b>'+CRUMBS[view]+'</b>';
+  document.getElementById('sb').classList.remove('open');
+  document.getElementById('sbov').classList.remove('open');
+  window.scrollTo(0,0);
+}
+function toggleSide(){
+  var s=document.getElementById('sb'),o=document.getElementById('sbov');
+  var op=s.classList.toggle('open');
+  o.classList.toggle('open',op);
+}
+
+/* ---------- INIT ---------- */
+function render(){
+  renderGauges();
+  renderPerfChart();
+  renderWins();
+  renderFilters();
+  renderIssues();
+  renderCWV();
+  renderDonuts();
+  renderSecurity();
+  renderTimeline();
+}
+render();
+</script>
+</body>
+</html>

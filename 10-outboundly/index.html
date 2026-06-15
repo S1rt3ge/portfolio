@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Outboundly — AI Sales Outreach</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F5F7FB; --panel:#FFFFFF; --panel-2:#FBFCFE; --ink:#111827; --muted:#6B7280;
+  --muted-2:#9CA3AF; --line:#E6EAF0; --line-2:#EEF1F6;
+  --brand:#2563EB; --brand-2:#06B6D4; --grad:linear-gradient(135deg,#2563EB,#06B6D4);
+  --grad-soft:linear-gradient(135deg,rgba(37,99,235,.10),rgba(6,182,212,.10));
+  --green:#10B981; --green-bg:#E7F8F1; --amber:#F59E0B; --amber-bg:#FEF3E2;
+  --red:#EF4444; --red-bg:#FDECEC; --violet:#8B5CF6;
+  --radius:16px; --shadow:0 1px 2px rgba(16,24,40,.04),0 8px 24px rgba(16,24,40,.06);
+  --shadow-lg:0 12px 40px rgba(16,24,40,.14);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--ink);
+  font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+::selection{background:rgba(37,99,235,.18)}
+h1,h2,h3,.disp{font-family:'Outfit',sans-serif;letter-spacing:-.02em}
+button{font-family:inherit;cursor:pointer}
+a{color:inherit;text-decoration:none}
+.shell{display:flex;min-height:100vh}
+
+/* SIDEBAR */
+.sidebar{
+  width:248px;flex:none;background:var(--panel);border-right:1px solid var(--line);
+  display:flex;flex-direction:column;padding:18px 14px;gap:6px;position:sticky;top:0;height:100vh;
+}
+.brand{display:flex;align-items:center;gap:11px;padding:6px 8px 18px}
+.brand .mark{width:36px;height:36px;border-radius:10px;background:var(--grad);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-family:'Outfit';font-size:18px;box-shadow:0 6px 16px rgba(37,99,235,.35)}
+.brand .name{font-family:'Outfit';font-weight:700;font-size:18px}
+.brand .name span{background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.nav-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--muted-2);padding:14px 10px 6px}
+.nav-item{
+  display:flex;align-items:center;gap:11px;padding:9px 11px;border-radius:11px;color:var(--muted);
+  font-weight:500;font-size:13.5px;transition:.16s;border:1px solid transparent;
+}
+.nav-item svg{width:18px;height:18px;flex:none}
+.nav-item:hover{background:var(--panel-2);color:var(--ink)}
+.nav-item.active{background:var(--grad-soft);color:var(--brand);font-weight:600;border-color:rgba(37,99,235,.14)}
+.nav-item.active svg{stroke:var(--brand)}
+.nav-item .badge{margin-left:auto;background:var(--grad);color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px}
+.side-foot{margin-top:auto;border-top:1px solid var(--line-2);padding-top:12px}
+.up-card{background:linear-gradient(135deg,rgba(37,99,235,.06),rgba(6,182,212,.08));border:1px solid rgba(37,99,235,.16);border-radius:13px;padding:13px}
+.up-card .t{font-weight:700;font-size:13px;display:flex;align-items:center;gap:6px}
+.up-card .d{font-size:11.5px;color:var(--muted);margin:4px 0 10px}
+.up-card button{width:100%;background:var(--grad);color:#fff;border:0;padding:8px;border-radius:9px;font-weight:600;font-size:12.5px}
+
+/* MAIN */
+.main{flex:1;min-width:0;display:flex;flex-direction:column}
+.topbar{
+  height:64px;flex:none;background:rgba(255,255,255,.85);backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);display:flex;align-items:center;gap:14px;padding:0 22px;
+  position:sticky;top:0;z-index:40;
+}
+.burger{display:none;width:38px;height:38px;border-radius:9px;border:1px solid var(--line);background:var(--panel);align-items:center;justify-content:center;cursor:pointer;flex:none}
+.burger svg{width:18px;height:18px}
+.page-title{font-family:'Outfit';font-weight:700;font-size:19px}
+.search{
+  margin-left:8px;flex:1;max-width:380px;display:flex;align-items:center;gap:9px;background:var(--panel-2);
+  border:1px solid var(--line);border-radius:11px;padding:9px 13px;color:var(--muted);
+}
+.search input{border:0;background:transparent;outline:none;flex:1;font-size:13px;color:var(--ink)}
+.search svg{width:16px;height:16px}
+.search kbd{font-family:inherit;font-size:11px;background:var(--panel);border:1px solid var(--line);border-radius:5px;padding:1px 6px;color:var(--muted-2)}
+.top-actions{margin-left:auto;display:flex;align-items:center;gap:10px}
+.chip-demo{background:var(--grad);color:#fff;font-size:11px;font-weight:700;padding:5px 11px;border-radius:20px;letter-spacing:.02em}
+.icon-btn{width:38px;height:38px;border-radius:10px;border:1px solid var(--line);background:var(--panel);display:flex;align-items:center;justify-content:center;color:var(--muted);transition:.16s;position:relative}
+.icon-btn:hover{color:var(--ink);border-color:var(--muted-2)}
+.icon-btn svg{width:18px;height:18px}
+.icon-btn .dot{position:absolute;top:8px;right:9px;width:7px;height:7px;border-radius:50%;background:var(--red);border:2px solid var(--panel)}
+.me{display:flex;align-items:center;gap:9px;padding:5px 10px 5px 5px;border-radius:30px;border:1px solid var(--line);background:var(--panel)}
+.me .av{width:30px;height:30px;border-radius:50%;overflow:hidden;background:var(--grad);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:12px}
+.me .av img{width:100%;height:100%;object-fit:cover}
+.me .nm{font-size:13px;font-weight:600;line-height:1.1}
+.me .rl{font-size:11px;color:var(--muted-2)}
+
+.content{padding:24px 26px 40px;max-width:1320px;width:100%}
+.view{display:none;animation:fade .35s ease}
+.view.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+.view-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:20px;flex-wrap:wrap}
+.view-head .h{font-family:'Outfit';font-size:23px;font-weight:700}
+.view-head .sub{color:var(--muted);font-size:13.5px;margin-top:3px}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:9px 15px;border-radius:10px;font-weight:600;font-size:13px;border:1px solid var(--line);background:var(--panel);color:var(--ink);transition:.16s}
+.btn:hover{border-color:var(--muted-2)}
+.btn svg{width:16px;height:16px}
+.btn.primary{background:var(--grad);color:#fff;border:0;box-shadow:0 6px 16px rgba(37,99,235,.28)}
+.btn.primary:hover{filter:brightness(1.05)}
+.btn.ghost{background:transparent;border-color:transparent}
+
+/* KPI */
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:18px}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);transition:.18s}
+.kpi:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg)}
+.kpi .top{display:flex;align-items:center;justify-content:space-between}
+.kpi .lbl{font-size:12.5px;color:var(--muted);font-weight:500}
+.kpi .ic{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center}
+.kpi .ic svg{width:17px;height:17px}
+.kpi .val{font-family:'Outfit';font-size:30px;font-weight:700;margin:10px 0 4px;letter-spacing:-.02em}
+.kpi .delta{font-size:12.5px;font-weight:600;display:inline-flex;align-items:center;gap:4px}
+.kpi .delta.up{color:var(--green)}.kpi .delta.down{color:var(--red)}
+.kpi .delta svg{width:13px;height:13px}
+.kpi .delta .vs{color:var(--muted-2);font-weight:500;margin-left:3px}
+
+.grid-2{display:grid;grid-template-columns:1.6fr 1fr;gap:16px}
+.grid-2b{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+.card .ch{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid var(--line-2)}
+.card .ch .t{font-family:'Outfit';font-weight:600;font-size:15.5px}
+.card .ch .s{font-size:12px;color:var(--muted-2);margin-top:2px}
+.card .cb{padding:18px}
+.seg{display:flex;gap:2px;background:var(--panel-2);border:1px solid var(--line);border-radius:9px;padding:3px}
+.seg button{border:0;background:transparent;padding:5px 11px;border-radius:6px;font-size:12px;font-weight:600;color:var(--muted)}
+.seg button.on{background:var(--panel);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+
+/* chart */
+.chart-wrap{position:relative}
+.chart-wrap svg{width:100%;height:auto;display:block}
+.legend{display:flex;gap:16px;flex-wrap:wrap;margin-top:12px}
+.legend .it{display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--muted)}
+.legend .sw{width:11px;height:11px;border-radius:3px}
+
+/* pipeline */
+.pipe{display:flex;flex-direction:column;gap:12px}
+.pipe .row{display:flex;align-items:center;gap:12px}
+.pipe .row .nm{width:110px;font-size:12.5px;font-weight:500;flex:none}
+.pipe .bar{flex:1;height:10px;background:var(--line-2);border-radius:20px;overflow:hidden}
+.pipe .bar i{display:block;height:100%;border-radius:20px;background:var(--grad)}
+.pipe .row .n{width:42px;text-align:right;font-weight:700;font-family:'Outfit';font-size:13.5px;flex:none}
+
+/* replies feed */
+.feed{display:flex;flex-direction:column}
+.feed .it{display:flex;gap:12px;padding:13px 0;border-bottom:1px solid var(--line-2);cursor:pointer;transition:.14s}
+.feed .it:last-child{border-bottom:0}
+.feed .it:hover{background:var(--panel-2);margin:0 -10px;padding-left:10px;padding-right:10px;border-radius:10px}
+.av-c{width:38px;height:38px;border-radius:50%;flex:none;overflow:hidden;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:13px}
+.av-c img{width:100%;height:100%;object-fit:cover}
+.feed .it .bd{flex:1;min-width:0}
+.feed .it .nm{font-weight:600;font-size:13.5px;display:flex;align-items:center;gap:7px}
+.feed .it .co{font-size:11.5px;color:var(--muted-2);font-weight:500}
+.feed .it .pv{font-size:12.5px;color:var(--muted);margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.feed .it .tm{font-size:11px;color:var(--muted-2);flex:none}
+.tag{font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:20px}
+.tag.pos{background:var(--green-bg);color:#047857}
+.tag.neu{background:var(--amber-bg);color:#B45309}
+.tag.oot{background:var(--red-bg);color:#B91C1C}
+
+/* sequences */
+.seq{background:var(--panel);border:1px solid var(--line);border-radius:14px;margin-bottom:14px;box-shadow:var(--shadow);overflow:hidden;transition:.18s}
+.seq:hover{box-shadow:var(--shadow-lg)}
+.seq .hd{display:flex;align-items:center;gap:14px;padding:16px 18px;cursor:pointer}
+.seq .hd .ic{width:42px;height:42px;border-radius:11px;background:var(--grad-soft);display:flex;align-items:center;justify-content:center;color:var(--brand);flex:none}
+.seq .hd .ic svg{width:20px;height:20px}
+.seq .hd .meta{flex:1;min-width:0}
+.seq .hd .nm{font-family:'Outfit';font-weight:600;font-size:15.5px}
+.seq .hd .dd{font-size:12px;color:var(--muted-2);margin-top:2px}
+.seq .hd .stats{display:flex;gap:22px;flex:none}
+.seq .hd .stats .st{text-align:center}
+.seq .hd .stats .st .v{font-family:'Outfit';font-weight:700;font-size:16px}
+.seq .hd .stats .st .l{font-size:10.5px;color:var(--muted-2);text-transform:uppercase;letter-spacing:.04em}
+.seq .hd .chev{transition:.2s;color:var(--muted-2)}
+.seq.open .hd .chev{transform:rotate(180deg)}
+.seq .steps{display:none;padding:0 18px 8px;border-top:1px solid var(--line-2)}
+.seq.open .steps{display:block;animation:fade .3s}
+.step{display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px dashed var(--line-2)}
+.step:last-child{border-bottom:0}
+.step .day{width:54px;flex:none;text-align:center}
+.step .day .d{font-family:'Outfit';font-weight:700;font-size:13px;color:var(--brand)}
+.step .day .l{font-size:10px;color:var(--muted-2);text-transform:uppercase}
+.step .line{flex:1;min-width:0}
+.step .line .t{font-weight:600;font-size:13.5px}
+.step .line .p{font-size:12px;color:var(--muted);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.step .sst{display:flex;gap:16px;flex:none}
+.step .sst .x{text-align:right}
+.step .sst .x .v{font-weight:700;font-size:13px}
+.step .sst .x .l{font-size:10px;color:var(--muted-2)}
+
+/* toggle */
+.tg{width:38px;height:22px;border-radius:20px;background:var(--line);position:relative;border:0;flex:none;transition:.2s;padding:0}
+.tg::after{content:'';position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:.2s}
+.tg.on{background:var(--grad)}.tg.on::after{left:18px}
+
+/* table */
+.scrollx{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted-2);font-weight:600;padding:11px 16px;border-bottom:1px solid var(--line);background:var(--panel-2)}
+tbody td{padding:13px 16px;border-bottom:1px solid var(--line-2);vertical-align:middle}
+tbody tr{cursor:pointer;transition:.13s}
+tbody tr:hover{background:var(--panel-2)}
+.cell-co{display:flex;align-items:center;gap:11px}
+.co-logo{width:34px;height:34px;border-radius:9px;flex:none;display:flex;align-items:center;justify-content:center;font-weight:800;font-family:'Outfit';color:#fff;font-size:13px}
+.cell-ct{display:flex;align-items:center;gap:10px}
+.score{font-weight:700;font-family:'Outfit';font-size:12.5px;padding:3px 10px;border-radius:20px;display:inline-block;min-width:38px;text-align:center}
+.score.hi{background:var(--green-bg);color:#047857}
+.score.md{background:var(--amber-bg);color:#B45309}
+.score.lo{background:var(--red-bg);color:#B91C1C}
+.status{font-size:11.5px;font-weight:600;padding:4px 10px;border-radius:20px;display:inline-flex;align-items:center;gap:6px}
+.status::before{content:'';width:6px;height:6px;border-radius:50%}
+.status.new{background:#EEF2FF;color:#4F46E5}.status.new::before{background:#4F46E5}
+.status.contacted{background:#FEF3E2;color:#B45309}.status.contacted::before{background:#F59E0B}
+.status.replied{background:var(--green-bg);color:#047857}.status.replied::before{background:#10B981}
+.status.meeting{background:#ECFEFF;color:#0E7490}.status.meeting::before{background:#06B6D4}
+.muted{color:var(--muted)}
+.sub-cell{font-size:11.5px;color:var(--muted-2)}
+
+/* drawer */
+.drawer-ov{position:fixed;inset:0;background:rgba(16,24,40,.45);z-index:70;opacity:0;pointer-events:none;transition:.22s;backdrop-filter:blur(2px)}
+.drawer-ov.open{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;height:100vh;width:480px;max-width:92vw;background:var(--panel);z-index:71;
+  box-shadow:-12px 0 40px rgba(16,24,40,.18);transform:translateX(102%);transition:transform .3s cubic-bezier(.3,.8,.3,1);display:flex;flex-direction:column}
+.drawer.open{transform:none}
+.drawer .dh{padding:20px 22px;border-bottom:1px solid var(--line);display:flex;align-items:flex-start;gap:14px}
+.drawer .dh .close{margin-left:auto;width:34px;height:34px;border-radius:9px;border:1px solid var(--line);background:var(--panel);display:flex;align-items:center;justify-content:center;color:var(--muted)}
+.drawer .db{padding:20px 22px;overflow-y:auto;flex:1}
+.dk{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:16px 0}
+.dk .k{font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted-2);font-weight:600}
+.dk .v{font-weight:600;font-size:13.5px;margin-top:3px}
+.sec-t{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted-2);font-weight:700;margin:20px 0 10px;display:flex;align-items:center;gap:8px}
+
+/* AI badge */
+.ai-badge{display:inline-flex;align-items:center;gap:6px;background:var(--grad);color:#fff;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;box-shadow:0 4px 12px rgba(37,99,235,.3)}
+.ai-badge svg{width:13px;height:13px}
+.ai-badge.soft{background:var(--grad-soft);color:var(--brand);box-shadow:none;border:1px solid rgba(37,99,235,.2)}
+
+/* email render */
+.email{background:var(--panel-2);border:1px solid var(--line);border-radius:13px;overflow:hidden}
+.email .eh{padding:14px 16px;border-bottom:1px solid var(--line-2);background:var(--panel)}
+.email .eh .r{display:flex;gap:8px;font-size:12.5px;margin-bottom:4px}
+.email .eh .r:last-child{margin-bottom:0}
+.email .eh .lab{color:var(--muted-2);width:54px;flex:none;font-weight:500}
+.email .eh .sub{font-weight:600}
+.email .body{padding:18px 18px;font-size:13.5px;line-height:1.7;color:#1F2937}
+.email .body p{margin-bottom:13px}
+.tok{background:linear-gradient(135deg,rgba(37,99,235,.14),rgba(6,182,212,.14));color:var(--brand);font-weight:600;padding:1px 5px;border-radius:5px;border-bottom:1.5px solid rgba(37,99,235,.4)}
+
+/* composer */
+.composer{display:grid;grid-template-columns:340px 1fr;gap:18px;align-items:start}
+.cmp-left .lead-pick{display:flex;flex-direction:column;gap:8px;max-height:none}
+.pick{display:flex;align-items:center;gap:11px;padding:11px;border:1px solid var(--line);border-radius:12px;cursor:pointer;transition:.15s;background:var(--panel)}
+.pick:hover{border-color:var(--brand);background:var(--panel-2)}
+.pick.sel{border-color:var(--brand);background:var(--grad-soft);box-shadow:0 4px 14px rgba(37,99,235,.12)}
+.pick .bd{flex:1;min-width:0}
+.pick .nm{font-weight:600;font-size:13px}
+.pick .co{font-size:11.5px;color:var(--muted-2)}
+.cmp-right{position:relative}
+.gen-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.meter{margin:16px 0}
+.meter .lbl{display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px}
+.meter .lbl b{font-family:'Outfit';color:var(--brand)}
+.meter .track{height:9px;background:var(--line-2);border-radius:20px;overflow:hidden}
+.meter .track i{display:block;height:100%;background:var(--grad);border-radius:20px;transition:width .8s cubic-bezier(.3,.9,.3,1)}
+.cmp-actions{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+.gen-skel{padding:30px;text-align:center;color:var(--muted)}
+.spinner{width:34px;height:34px;border:3px solid var(--line);border-top-color:var(--brand);border-radius:50%;margin:0 auto 14px;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.token-chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.token-chips .tc{font-size:11.5px;background:var(--panel-2);border:1px solid var(--line);border-radius:8px;padding:5px 10px;display:flex;align-items:center;gap:6px}
+.token-chips .tc b{color:var(--brand)}
+
+/* analytics donut legend rows */
+.donut-rows{display:flex;flex-direction:column;gap:11px;margin-top:6px}
+.donut-rows .r{display:flex;align-items:center;gap:10px;font-size:13px}
+.donut-rows .r .sw{width:11px;height:11px;border-radius:3px;flex:none}
+.donut-rows .r .nm{flex:1}
+.donut-rows .r .v{font-weight:700;font-family:'Outfit'}
+
+.notice{display:none}
+
+/* MOBILE */
+.sb-ov{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:55;opacity:0;pointer-events:none;transition:.2s}
+.sb-ov.open{opacity:1;pointer-events:auto}
+@media(max-width:1080px){
+  .kpis{grid-template-columns:repeat(2,1fr)}
+  .grid-2,.grid-2b{grid-template-columns:1fr}
+  .composer{grid-template-columns:1fr}
+  .seq .hd .stats{display:none}
+}
+@media(max-width:900px){
+  .burger{display:flex}
+  .sidebar{position:fixed;left:0;top:0;z-index:60;transform:translateX(-100%);transition:transform .25s}
+  .sidebar.open{transform:none}
+  .topbar .search{display:none}
+  .content{padding:18px 16px 36px}
+}
+@media(max-width:560px){
+  .kpis{grid-template-columns:1fr}
+  .me .info{display:none}
+  .view-head .h{font-size:20px}
+}
+</style>
+</head>
+<body>
+<div class="shell">
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sb">
+    <div class="brand">
+      <div class="mark">O</div>
+      <div class="name">Outbound<span>ly</span></div>
+    </div>
+    <div class="nav-label">Workspace</div>
+    <a class="nav-item active" data-view="dashboard" onclick="go('dashboard')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+      Dashboard
+    </a>
+    <a class="nav-item" data-view="sequences" onclick="go('sequences')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h10"/><circle cx="19" cy="18" r="2"/></svg>
+      Sequences
+    </a>
+    <a class="nav-item" data-view="leads" onclick="go('leads')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Leads
+    </a>
+    <a class="nav-item" data-view="composer" onclick="go('composer')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l1.6 4.4L18 9l-4.4 1.6L12 15l-1.6-4.4L6 9l4.4-1.6L12 3z"/><path d="M5 17l.8 2L8 20l-2.2.8L5 23l-.8-2.2L2 20l2.2-.8L5 17z"/></svg>
+      AI Composer
+      <span class="badge">AI</span>
+    </a>
+    <a class="nav-item" data-view="analytics" onclick="go('analytics')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 14l3-4 3 3 5-7"/></svg>
+      Analytics
+    </a>
+    <div class="nav-label">Account</div>
+    <a class="nav-item" onclick="go('dashboard')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-2.92.94V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 14H4.5a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 6 8.6"/></svg>
+      Settings
+    </a>
+    <div class="side-foot">
+      <div class="up-card">
+        <div class="t">⚡ Pro plan</div>
+        <div class="d">2,840 / 5,000 AI credits used this month.</div>
+        <button onclick="go('composer')">Upgrade plan</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <header class="topbar">
+      <button class="burger" onclick="toggleSide()" aria-label="Menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+      <div class="page-title" id="pageTitle">Dashboard</div>
+      <div class="search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.3-4.3"/></svg>
+        <input placeholder="Search leads, sequences, companies…">
+        <kbd>⌘K</kbd>
+      </div>
+      <div class="top-actions">
+        <span class="chip-demo">Demo</span>
+        <button class="icon-btn" aria-label="Notifications"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg><span class="dot"></span></button>
+        <div class="me">
+          <div class="av"><img src="https://i.pravatar.cc/150?img=12" onerror="this.remove()" alt=""></div>
+          <div class="info">
+            <div class="nm">Jordan Avery</div>
+            <div class="rl">Head of Sales</div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="content">
+
+      <!-- ============ DASHBOARD ============ -->
+      <section class="view active" id="view-dashboard">
+        <div class="view-head">
+          <div>
+            <div class="h">Good afternoon, Jordan 👋</div>
+            <div class="sub">Here's how your outreach is performing this week.</div>
+          </div>
+          <div style="display:flex;gap:10px">
+            <button class="btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5M12 15V3"/></svg>Export</button>
+            <button class="btn primary" onclick="go('composer')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l1.6 4.4L18 9l-4.4 1.6L12 15l-1.6-4.4L6 9l4.4-1.6L12 3z"/></svg>Compose with AI</button>
+          </div>
+        </div>
+
+        <div class="kpis" id="kpis"></div>
+
+        <div class="grid-2" style="margin-bottom:16px">
+          <div class="card chart-wrap">
+            <div class="ch">
+              <div>
+                <div class="t">Reply rate trend</div>
+                <div class="s">Last 14 days · all sequences</div>
+              </div>
+              <div class="seg">
+                <button class="on">14d</button><button>30d</button><button>QTD</button>
+              </div>
+            </div>
+            <div class="cb" id="areaChart"></div>
+          </div>
+          <div class="card">
+            <div class="ch"><div><div class="t">Pipeline</div><div class="s">Generated from replies</div></div></div>
+            <div class="cb"><div class="pipe" id="pipe"></div></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="ch">
+            <div><div class="t">Recent replies</div><div class="s">AI-classified sentiment</div></div>
+            <button class="btn ghost" onclick="go('leads')">View all →</button>
+          </div>
+          <div class="cb" style="padding-top:4px"><div class="feed" id="feed"></div></div>
+        </div>
+      </section>
+
+      <!-- ============ SEQUENCES ============ -->
+      <section class="view" id="view-sequences">
+        <div class="view-head">
+          <div>
+            <div class="h">Sequences</div>
+            <div class="sub">Multi-step automated outreach. Expand a sequence to view its steps.</div>
+          </div>
+          <button class="btn primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>New sequence</button>
+        </div>
+        <div id="seqList"></div>
+      </section>
+
+      <!-- ============ LEADS ============ -->
+      <section class="view" id="view-leads">
+        <div class="view-head">
+          <div>
+            <div class="h">Leads</div>
+            <div class="sub">Prospects scored by AI. Click a lead to view its personalized email.</div>
+          </div>
+          <div style="display:flex;gap:10px">
+            <button class="btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 4h18l-7 9v6l-4 2v-8z"/></svg>Filter</button>
+            <button class="btn primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>Import leads</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="scrollx">
+            <table>
+              <thead><tr>
+                <th>Company</th><th>Contact</th><th>Title</th><th>AI score</th><th>Sequence</th><th>Status</th>
+              </tr></thead>
+              <tbody id="leadRows"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ COMPOSER ============ -->
+      <section class="view" id="view-composer">
+        <div class="view-head">
+          <div>
+            <div class="h">AI Composer</div>
+            <div class="sub">Pick a lead and let Outboundly draft a personalized cold email in seconds.</div>
+          </div>
+          <span class="ai-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l1.6 4.4L18 9l-4.4 1.6L12 15l-1.6-4.4L6 9l4.4-1.6L12 3z"/></svg>Powered by Outbound AI</span>
+        </div>
+        <div class="composer">
+          <div class="cmp-left">
+            <div class="card">
+              <div class="ch"><div><div class="t">Select a lead</div><div class="s">From your active pipeline</div></div></div>
+              <div class="cb"><div class="lead-pick" id="leadPick"></div></div>
+            </div>
+          </div>
+          <div class="cmp-right">
+            <div class="card">
+              <div class="ch">
+                <div><div class="t" id="cmpTitle">Personalized draft</div><div class="s" id="cmpSub">AI tailors tone, hook and CTA per prospect</div></div>
+                <span class="ai-badge soft" id="cmpVariant"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l1.6 4.4L18 9l-4.4 1.6L12 15l-1.6-4.4L6 9l4.4-1.6L12 3z"/></svg>Variant A</span>
+              </div>
+              <div class="cb" id="cmpBody"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ ANALYTICS ============ -->
+      <section class="view" id="view-analytics">
+        <div class="view-head">
+          <div>
+            <div class="h">Analytics</div>
+            <div class="sub">Outreach performance across sequences and industries.</div>
+          </div>
+          <div class="seg">
+            <button class="on">This quarter</button><button>Year</button>
+          </div>
+        </div>
+        <div class="grid-2b" style="margin-bottom:16px">
+          <div class="card chart-wrap">
+            <div class="ch"><div><div class="t">Reply rate over time</div><div class="s">Monthly, last 8 months</div></div></div>
+            <div class="cb" id="barChart"></div>
+          </div>
+          <div class="card chart-wrap">
+            <div class="ch"><div><div class="t">Replies by industry</div><div class="s">Share of positive replies</div></div></div>
+            <div class="cb" id="donut"></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="ch"><div><div class="t">Performance by sequence</div><div class="s">Open & reply rate</div></div></div>
+          <div class="cb"><div class="scrollx"><table>
+            <thead><tr><th>Sequence</th><th>Active</th><th>Sent</th><th>Open rate</th><th>Reply rate</th><th>Meetings</th></tr></thead>
+            <tbody id="seqPerfRows"></tbody>
+          </table></div></div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</div>
+
+<!-- DRAWER -->
+<div class="drawer-ov" id="drawerOv" onclick="closeDrawer()"></div>
+<aside class="drawer" id="drawer">
+  <div class="dh" id="drawerHead"></div>
+  <div class="db" id="drawerBody"></div>
+</aside>
+
+<!-- SIDEBAR OVERLAY -->
+<div class="sb-ov" id="sbov" onclick="toggleSide()"></div>
+
+<script>
+/* ============ SEED DATA ============ */
+const PALETTE=['#2563EB','#06B6D4','#8B5CF6','#10B981','#F59E0B','#EF4444','#EC4899','#0EA5E9'];
+
+const leads=[
+  {id:1,co:'Northwind Logistics',ind:'Logistics',color:'#2563EB',name:'Sarah Chen',img:5,title:'VP of Operations',score:92,seq:'SaaS Q3 Outbound',status:'replied',
+   loc:'Chicago, IL · 320 employees',rev:'$48M ARR',funding:'Series B, raised $22M (Mar 2026)',tokens:{first:'Sarah',company:'Northwind Logistics',hook:'your recent Series B',pain:'fleet routing at scale'}},
+  {id:2,co:'Brightwave Health',ind:'Healthcare',color:'#06B6D4',name:'Marcus Bell',img:13,title:'Director of Growth',score:78,seq:'SaaS Q3 Outbound',status:'contacted',
+   loc:'Boston, MA · 540 employees',rev:'$71M ARR',funding:'Series C, raised $40M (Jan 2026)',tokens:{first:'Marcus',company:'Brightwave Health',hook:'your expansion into telehealth',pain:'patient onboarding drop-off'}},
+  {id:3,co:'Vertex Analytics',ind:'SaaS',color:'#8B5CF6',name:'Elena Rossi',img:9,title:'Chief Revenue Officer',score:88,seq:'Enterprise Expansion',status:'meeting',
+   loc:'Austin, TX · 180 employees',rev:'$26M ARR',funding:'Series A, raised $12M (Nov 2025)',tokens:{first:'Elena',company:'Vertex Analytics',hook:'the new AI dashboard you launched',pain:'long sales cycles'}},
+  {id:4,co:'Atlas Manufacturing',ind:'Manufacturing',color:'#F59E0B',name:'David Park',img:33,title:'Head of Procurement',score:64,seq:'Mid-Market Q2',status:'contacted',
+   loc:'Detroit, MI · 1,200 employees',rev:'$210M revenue',funding:'Private, founded 1998',tokens:{first:'David',company:'Atlas Manufacturing',hook:'your new plant in Ohio',pain:'supplier onboarding delays'}},
+  {id:5,co:'Coastal Fintech',ind:'Fintech',color:'#10B981',name:'Priya Nair',img:25,title:'VP Marketing',score:81,seq:'SaaS Q3 Outbound',status:'new',
+   loc:'Miami, FL · 95 employees',rev:'$14M ARR',funding:'Seed, raised $6M (Feb 2026)',tokens:{first:'Priya',company:'Coastal Fintech',hook:'your seed round',pain:'compliance onboarding cost'}},
+  {id:6,co:'Summit Retail Group',ind:'Retail',color:'#EC4899',name:'Tom Becker',img:52,title:'COO',score:57,seq:'Mid-Market Q2',status:'new',
+   loc:'Denver, CO · 760 employees',rev:'$130M revenue',funding:'Public (NASDAQ: SMRT)',tokens:{first:'Tom',company:'Summit Retail Group',hook:'your omnichannel rollout',pain:'fragmented store data'}},
+  {id:7,co:'Helix Biotech',ind:'Healthcare',color:'#0EA5E9',name:'Anna Kowalski',img:47,title:'Director of IT',score:73,seq:'Enterprise Expansion',status:'replied',
+   loc:'San Diego, CA · 410 employees',rev:'$60M revenue',funding:'Series C, raised $55M (Dec 2025)',tokens:{first:'Anna',company:'Helix Biotech',hook:'your FDA approval news',pain:'siloed research data'}},
+  {id:8,co:'Orbit Media',ind:'SaaS',color:'#2563EB',name:'James Wright',img:60,title:'Founder & CEO',score:69,seq:'SaaS Q3 Outbound',status:'contacted',
+   loc:'Seattle, WA · 64 employees',rev:'$9M ARR',funding:'Bootstrapped, profitable',tokens:{first:'James',company:'Orbit Media',hook:'your content automation product',pain:'manual ad ops'}},
+];
+
+const sequences=[
+  {id:1,name:'SaaS Q3 Outbound',desc:'Cold outreach to mid-market SaaS RevOps leaders',leads:412,open:64,reply:18,meet:31,active:true,
+   steps:[
+    {day:'Day 1',type:'Intro email',prev:'Hi {first}, noticed {company} just {hook} — congrats! Quick idea on {pain}…',open:71,reply:9},
+    {day:'Day 3',type:'Follow-up',prev:'Following up — happy to share how teams like yours cut reply latency by 40%…',open:58,reply:6},
+    {day:'Day 6',type:'Break-up email',prev:'Last note from me — should I close the loop, or is {pain} still on your radar?',open:49,reply:3},
+   ]},
+  {id:2,name:'Enterprise Expansion',desc:'Multi-threaded outreach into existing enterprise accounts',leads:128,open:58,reply:14,meet:19,active:true,
+   steps:[
+    {day:'Day 1',type:'Intro email',prev:'Hi {first}, your team at {company} has been scaling fast — wanted to reach out about {pain}…',open:66,reply:8},
+    {day:'Day 4',type:'Value follow-up',prev:'Sharing a 2-min case study on how a peer in {company}\'s space drove 3x pipeline…',open:54,reply:5},
+    {day:'Day 8',type:'Break-up email',prev:'Closing the loop — worth a quick 15 min next week?',open:44,reply:3},
+   ]},
+  {id:3,name:'Mid-Market Q2',desc:'Vertical-specific outreach for retail & manufacturing',leads:267,open:51,reply:11,meet:12,active:false,
+   steps:[
+    {day:'Day 1',type:'Intro email',prev:'Hi {first}, saw {company} {hook}. Most {pain} comes down to one thing…',open:55,reply:6},
+    {day:'Day 5',type:'Follow-up',prev:'Bumping this up — curious if {pain} is a priority this quarter?',open:48,reply:4},
+    {day:'Day 9',type:'Break-up email',prev:'I\'ll stop here — feel free to reach out when timing is better.',open:41,reply:2},
+   ]},
+];
+
+const kpis=[
+  {lbl:'Emails sent',val:'18,420',delta:'+12.4%',up:true,ic:'mail',c:'#2563EB',bg:'rgba(37,99,235,.12)'},
+  {lbl:'Open rate',val:'62.8%',delta:'+4.1%',up:true,ic:'eye',c:'#06B6D4',bg:'rgba(6,182,212,.12)'},
+  {lbl:'Reply rate',val:'16.3%',delta:'+2.7%',up:true,ic:'reply',c:'#8B5CF6',bg:'rgba(139,92,246,.12)'},
+  {lbl:'Meetings booked',val:'94',delta:'-3.2%',up:false,ic:'cal',c:'#10B981',bg:'rgba(16,185,129,.12)'},
+];
+const KIC={
+  mail:'<path d="M4 4h16v16H4z"/><path d="M4 6l8 6 8-6"/>',
+  eye:'<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/>',
+  reply:'<path d="M9 17l-5-5 5-5"/><path d="M4 12h11a5 5 0 0 1 5 5v2"/>',
+  cal:'<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>',
+};
+
+const feed=[
+  {name:'Sarah Chen',co:'Northwind Logistics',img:5,pv:'This is timely — we\'re actually reviewing routing vendors now. Can you do Thursday?',tm:'12m',s:'pos',sl:'Interested'},
+  {name:'Anna Kowalski',co:'Helix Biotech',img:47,pv:'Thanks for reaching out. Send over the case study and I\'ll loop in our IT lead.',tm:'48m',s:'pos',sl:'Interested'},
+  {name:'David Park',co:'Atlas Manufacturing',img:33,pv:'Not the right time, but check back next quarter when budgets reset.',tm:'2h',s:'neu',sl:'Later'},
+  {name:'James Wright',co:'Orbit Media',img:60,pv:'Please remove me from this list.',tm:'3h',s:'oot',sl:'Opt-out'},
+  {name:'Elena Rossi',co:'Vertex Analytics',img:9,pv:'Booked a slot on your calendar for Tuesday 10am PT. Looking forward to it!',tm:'5h',s:'pos',sl:'Meeting'},
+];
+
+const areaData=[9,11,10,13,12,14,16,15,17,16,18,17,19,18]; // reply rate %
+const barData=[8,9,11,10,12,14,15,16]; // monthly reply rate %
+const barLabels=['Nov','Dec','Jan','Feb','Mar','Apr','May','Jun'];
+const donutData=[
+  {nm:'SaaS',v:34,c:'#2563EB'},{nm:'Healthcare',v:24,c:'#06B6D4'},
+  {nm:'Fintech',v:18,c:'#8B5CF6'},{nm:'Manufacturing',v:14,c:'#F59E0B'},{nm:'Retail',v:10,c:'#10B981'},
+];
+
+/* Email variants for composer (per lead, 2 variants) */
+function emailVariants(l){
+  const t=l.tokens;
+  return [
+    {subject:`${t.company} + a quick idea on ${t.pain}`,
+     paras:[
+       `Hi <span class="tok">${t.first}</span>,`,
+       `Congrats on <span class="tok">${t.hook}</span> — saw the news and it caught my eye. As <span class="tok">${t.company}</span> scales, <span class="tok">${t.pain}</span> tends to become the quiet bottleneck.`,
+       `We help RevOps teams ship personalized outreach at scale — one customer in your space lifted reply rates 2.4x in six weeks.`,
+       `Worth a quick 15 minutes next week to see if it maps to your goals?`,
+       `Best,<br>Jordan`,
+     ]},
+    {subject:`Re: ${t.company} — the ${t.pain} angle`,
+     paras:[
+       `Hey <span class="tok">${t.first}</span>,`,
+       `I'll keep this short. Most teams hitting <span class="tok">${t.hook}</span> end up wrestling with <span class="tok">${t.pain}</span> right after — it's predictable, and fixable.`,
+       `Outboundly drafts and runs personalized sequences so your reps spend time in conversations, not in a CRM. Peers at <span class="tok">${t.company}</span>'s stage typically book 30+ extra meetings a quarter.`,
+       `Open to a short call Thursday or Friday?`,
+       `Cheers,<br>Jordan`,
+     ]},
+  ];
+}
+
+/* ============ STATE ============ */
+let composerLead=leads[0];
+let composerVariant=0;
+
+/* ============ NAV ============ */
+function go(view){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-'+view).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active',n.dataset.view===view));
+  const titles={dashboard:'Dashboard',sequences:'Sequences',leads:'Leads',composer:'AI Composer',analytics:'Analytics'};
+  document.getElementById('pageTitle').textContent=titles[view]||'Dashboard';
+  // close sidebar on mobile
+  document.getElementById('sb').classList.remove('open');
+  document.getElementById('sbov').classList.remove('open');
+  window.scrollTo({top:0});
+}
+function toggleSide(){
+  const s=document.getElementById('sb'),o=document.getElementById('sbov');
+  const op=s.classList.toggle('open');
+  o.classList.toggle('open',op);
+}
+
+/* ============ HELPERS ============ */
+function initials(n){return n.split(' ').map(x=>x[0]).join('').slice(0,2).toUpperCase();}
+function avatar(img,name,cls){
+  return `<div class="${cls}" style="background:${PALETTE[(img||1)%PALETTE.length]}">`+
+    (img?`<img src="https://i.pravatar.cc/150?img=${img}" onerror="this.remove()" alt="">`:'')+
+    `<span style="position:absolute;font-size:.85em">${initials(name)}</span></div>`;
+}
+function scoreCls(s){return s>=80?'hi':s>=65?'md':'lo';}
+
+/* ============ RENDER: KPIs ============ */
+function renderKPIs(){
+  document.getElementById('kpis').innerHTML=kpis.map(k=>`
+    <div class="kpi">
+      <div class="top">
+        <div class="lbl">${k.lbl}</div>
+        <div class="ic" style="background:${k.bg};color:${k.c}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${KIC[k.ic]}</svg></div>
+      </div>
+      <div class="val">${k.val}</div>
+      <div class="delta ${k.up?'up':'down'}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">${k.up?'<path d="M7 17L17 7M17 7H8M17 7v9"/>':'<path d="M7 7l10 10M17 17H8M17 17V8"/>'}</svg>
+        ${k.delta}<span class="vs">vs last week</span>
+      </div>
+    </div>`).join('');
+}
+
+/* ============ RENDER: AREA CHART ============ */
+function renderArea(){
+  const W=620,H=220,pad=28,bottom=H-26;
+  const max=22,min=6;
+  const xs=i=>pad+(i*(W-pad*2)/(areaData.length-1));
+  const ys=v=>bottom-((v-min)/(max-min))*(bottom-20);
+  let line='',area='';
+  areaData.forEach((v,i)=>{line+=(i?'L':'M')+xs(i).toFixed(1)+' '+ys(v).toFixed(1)+' ';});
+  area=line+`L${xs(areaData.length-1)} ${bottom} L${xs(0)} ${bottom} Z`;
+  let grid='';
+  for(let g=min;g<=max;g+=4){const y=ys(g);grid+=`<line x1="${pad}" y1="${y}" x2="${W-pad}" y2="${y}" stroke="#EEF1F6"/><text x="6" y="${y+3}" font-size="9" fill="#9CA3AF">${g}%</text>`;}
+  let dots='';
+  areaData.forEach((v,i)=>{if(i%2===1)dots+=`<circle cx="${xs(i)}" cy="${ys(v)}" r="3" fill="#fff" stroke="#2563EB" stroke-width="2"/>`;});
+  const last=areaData.length-1;
+  document.getElementById('areaChart').innerHTML=`
+    <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" style="overflow:visible">
+      <defs>
+        <linearGradient id="aGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#2563EB" stop-opacity="0.28"/>
+          <stop offset="100%" stop-color="#06B6D4" stop-opacity="0.02"/>
+        </linearGradient>
+        <linearGradient id="aLine" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stop-color="#2563EB"/><stop offset="100%" stop-color="#06B6D4"/>
+        </linearGradient>
+      </defs>
+      ${grid}
+      <path d="${area}" fill="url(#aGrad)"/>
+      <path d="${line}" fill="none" stroke="url(#aLine)" stroke-width="2.6" stroke-linecap="round"/>
+      ${dots}
+      <circle cx="${xs(last)}" cy="${ys(areaData[last])}" r="5" fill="#06B6D4" stroke="#fff" stroke-width="2.5"/>
+    </svg>
+    <div class="legend"><div class="it"><span class="sw" style="background:var(--grad)"></span>Reply rate · trending up to 18%</div></div>`;
+}
+
+/* ============ RENDER: PIPELINE ============ */
+function renderPipe(){
+  const stages=[
+    {nm:'Contacted',n:412,p:100},{nm:'Opened',n:259,p:63},
+    {nm:'Replied',n:67,p:24},{nm:'Meeting',n:31,p:14},{nm:'Won',n:9,p:6},
+  ];
+  document.getElementById('pipe').innerHTML=stages.map(s=>`
+    <div class="row">
+      <div class="nm">${s.nm}</div>
+      <div class="bar"><i style="width:${s.p}%"></i></div>
+      <div class="n">${s.n}</div>
+    </div>`).join('');
+}
+
+/* ============ RENDER: FEED ============ */
+function renderFeed(){
+  document.getElementById('feed').innerHTML=feed.map((f,i)=>`
+    <div class="it" onclick="openLeadByName('${f.co}')">
+      ${avatar(f.img,f.name,'av-c')}
+      <div class="bd">
+        <div class="nm">${f.name} <span class="tag ${f.s}">${f.sl}</span></div>
+        <div class="co">${f.co}</div>
+        <div class="pv">${f.pv}</div>
+      </div>
+      <div class="tm">${f.tm}</div>
+    </div>`).join('');
+}
+
+/* ============ RENDER: SEQUENCES ============ */
+function renderSeq(){
+  document.getElementById('seqList').innerHTML=sequences.map(s=>`
+    <div class="seq" id="seq-${s.id}">
+      <div class="hd" onclick="toggleSeq(${s.id})">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h10"/></svg></div>
+        <div class="meta">
+          <div class="nm">${s.name}</div>
+          <div class="dd">${s.desc} · ${s.leads} leads · 3 steps</div>
+        </div>
+        <div class="stats">
+          <div class="st"><div class="v">${s.open}%</div><div class="l">Open</div></div>
+          <div class="st"><div class="v">${s.reply}%</div><div class="l">Reply</div></div>
+          <div class="st"><div class="v">${s.meet}</div><div class="l">Meetings</div></div>
+        </div>
+        <button class="tg ${s.active?'on':''}" onclick="event.stopPropagation();this.classList.toggle('on')" title="Active"></button>
+        <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M6 9l6 6 6-6"/></svg>
+      </div>
+      <div class="steps">
+        ${s.steps.map((st,i)=>`
+          <div class="step">
+            <div class="day"><div class="d">${st.day}</div><div class="l">Step ${i+1}</div></div>
+            <div class="line"><div class="t">${st.type}</div><div class="p">${st.prev}</div></div>
+            <div class="sst">
+              <div class="x"><div class="v">${st.open}%</div><div class="l">Open</div></div>
+              <div class="x"><div class="v">${st.reply}%</div><div class="l">Reply</div></div>
+              <button class="tg on" onclick="this.classList.toggle('on')"></button>
+            </div>
+          </div>`).join('')}
+      </div>
+    </div>`).join('');
+}
+function toggleSeq(id){document.getElementById('seq-'+id).classList.toggle('open');}
+
+/* ============ RENDER: LEADS TABLE ============ */
+function renderLeads(){
+  document.getElementById('leadRows').innerHTML=leads.map(l=>`
+    <tr onclick="openLead(${l.id})">
+      <td><div class="cell-co"><div class="co-logo" style="background:${l.color}">${l.co[0]}</div><div><div style="font-weight:600">${l.co}</div><div class="sub-cell">${l.ind}</div></div></div></td>
+      <td><div class="cell-ct">${avatar(l.img,l.name,'av-c')}<span style="font-weight:600">${l.name}</span></div></td>
+      <td class="muted">${l.title}</td>
+      <td><span class="score ${scoreCls(l.score)}">${l.score}</span></td>
+      <td class="muted">${l.seq}</td>
+      <td><span class="status ${l.status}">${l.status[0].toUpperCase()+l.status.slice(1)}</span></td>
+    </tr>`).join('');
+}
+
+/* ============ DRAWER ============ */
+function openLeadByName(co){const l=leads.find(x=>x.co===co);if(l)openLead(l.id);}
+function openLead(id){
+  const l=leads.find(x=>x.id===id);if(!l)return;
+  const v=emailVariants(l)[0];
+  document.getElementById('drawerHead').innerHTML=`
+    ${avatar(l.img,l.name,'av-c')}
+    <div style="margin-left:2px">
+      <div style="font-family:'Outfit';font-weight:700;font-size:17px">${l.name}</div>
+      <div class="muted" style="font-size:13px">${l.title} · ${l.co}</div>
+      <div style="margin-top:8px"><span class="status ${l.status}">${l.status[0].toUpperCase()+l.status.slice(1)}</span> <span class="score ${scoreCls(l.score)}" style="margin-left:4px">AI score ${l.score}</span></div>
+    </div>
+    <button class="close" onclick="closeDrawer()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M18 6L6 18M6 6l12 12"/></svg></button>`;
+  document.getElementById('drawerBody').innerHTML=`
+    <div class="sec-t">Company</div>
+    <div class="dk">
+      <div><div class="k">Industry</div><div class="v">${l.ind}</div></div>
+      <div><div class="k">Location & size</div><div class="v">${l.loc}</div></div>
+      <div><div class="k">Revenue</div><div class="v">${l.rev}</div></div>
+      <div><div class="k">Funding</div><div class="v">${l.funding}</div></div>
+    </div>
+    <div class="sec-t"><span class="ai-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l1.6 4.4L18 9l-4.4 1.6L12 15l-1.6-4.4L6 9l4.4-1.6L12 3z"/></svg>AI personalized email</span></div>
+    <div class="email">
+      <div class="eh">
+        <div class="r"><span class="lab">To</span><span>${l.name.split(' ')[0].toLowerCase()}@${l.co.toLowerCase().replace(/[^a-z]/g,'')}.com</span></div>
+        <div class="r"><span class="lab">Subject</span><span class="sub">${v.subject}</span></div>
+      </div>
+      <div class="body">${v.paras.map(p=>`<p>${p}</p>`).join('')}</div>
+    </div>
+    <div class="sec-t" style="margin-top:18px">Personalization tokens</div>
+    <div class="token-chips">
+      <div class="tc">first <b>${l.tokens.first}</b></div>
+      <div class="tc">company <b>${l.tokens.company}</b></div>
+      <div class="tc">hook <b>${l.tokens.hook}</b></div>
+      <div class="tc">pain <b>${l.tokens.pain}</b></div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:22px">
+      <button class="btn primary" style="flex:1" onclick="composerLead=leads.find(x=>x.id===${l.id});composerVariant=0;renderComposer();closeDrawer();go('composer')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l1.6 4.4L18 9l-4.4 1.6L12 15l-1.6-4.4L6 9l4.4-1.6L12 3z"/></svg>Open in Composer</button>
+      <button class="btn" onclick="closeDrawer()">Close</button>
+    </div>`;
+  document.getElementById('drawer').classList.add('open');
+  document.getElementById('drawerOv').classList.add('open');
+}
+function closeDrawer(){
+  document.getElementById('drawer').classList.remove('open');
+  document.getElementById('drawerOv').classList.remove('open');
+}
+
+/* ============ COMPOSER ============ */
+function renderLeadPick(){
+  document.getElementById('leadPick').innerHTML=leads.slice(0,6).map(l=>`
+    <div class="pick ${l.id===composerLead.id?'sel':''}" onclick="pickLead(${l.id})">
+      ${avatar(l.img,l.name,'av-c')}
+      <div class="bd"><div class="nm">${l.name}</div><div class="co">${l.co} · score ${l.score}</div></div>
+      <span class="score ${scoreCls(l.score)}">${l.score}</span>
+    </div>`).join('');
+}
+function pickLead(id){composerLead=leads.find(x=>x.id===id);composerVariant=0;renderLeadPick();generateEmail();}
+
+function renderComposer(){renderLeadPick();renderEmailDraft();}
+
+function renderEmailDraft(){
+  const l=composerLead;
+  const v=emailVariants(l)[composerVariant];
+  const conf=composerVariant===0?94:89;
+  document.getElementById('cmpTitle').textContent='Draft for '+l.name;
+  document.getElementById('cmpSub').textContent=l.co+' · '+l.title;
+  document.getElementById('cmpVariant').innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l1.6 4.4L18 9l-4.4 1.6L12 15l-1.6-4.4L6 9l4.4-1.6L12 3z"/></svg>Variant ${composerVariant===0?'A':'B'}`;
+  document.getElementById('cmpBody').innerHTML=`
+    <div class="gen-bar">
+      <span class="ai-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l1.6 4.4L18 9l-4.4 1.6L12 15l-1.6-4.4L6 9l4.4-1.6L12 3z"/></svg>AI generated</span>
+      <span class="muted" style="font-size:12.5px">Tailored to ${l.co}'s context in 1.2s</span>
+    </div>
+    <div class="email">
+      <div class="eh">
+        <div class="r"><span class="lab">To</span><span>${l.tokens.first.toLowerCase()}@${l.co.toLowerCase().replace(/[^a-z]/g,'')}.com</span></div>
+        <div class="r"><span class="lab">Subject</span><span class="sub">${v.subject}</span></div>
+      </div>
+      <div class="body">${v.paras.map(p=>`<p>${p}</p>`).join('')}</div>
+    </div>
+    <div class="meter">
+      <div class="lbl"><span>AI quality score</span><b>${conf}/100 · ${conf>=92?'Excellent':'Strong'}</b></div>
+      <div class="track"><i style="width:0%" id="meterFill"></i></div>
+    </div>
+    <div class="token-chips">
+      <div class="tc">{first_name} <b>${l.tokens.first}</b></div>
+      <div class="tc">{company} <b>${l.tokens.company}</b></div>
+      <div class="tc">{hook} <b>${l.tokens.hook}</b></div>
+      <div class="tc">{pain_point} <b>${l.tokens.pain}</b></div>
+    </div>
+    <div class="cmp-actions">
+      <button class="btn primary" onclick="useDraft()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Use this draft</button>
+      <button class="btn" onclick="regenerate()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.5 9a9 9 0 0 1 14.8-3.4L23 10M1 14l4.7 4.4A9 9 0 0 0 20.5 15"/></svg>Regenerate</button>
+      <button class="btn" onclick="alert('Inline editor — demo')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4v16h16v-7"/><path d="M18.5 2.5a2.1 2.1 0 0 1 3 3L12 15l-4 1 1-4z"/></svg>Edit</button>
+    </div>`;
+  // animate meter
+  requestAnimationFrame(()=>{const m=document.getElementById('meterFill');if(m)m.style.width=conf+'%';});
+}
+
+function generateEmail(){
+  // simulate AI generation with a brief skeleton
+  document.getElementById('cmpVariant').innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l1.6 4.4L18 9l-4.4 1.6L12 15l-1.6-4.4L6 9l4.4-1.6L12 3z"/></svg>Generating…`;
+  document.getElementById('cmpBody').innerHTML=`<div class="gen-skel"><div class="spinner"></div>Outbound AI is researching ${composerLead.co} and drafting a personalized email…</div>`;
+  clearTimeout(window._genT);
+  window._genT=setTimeout(renderEmailDraft,900);
+}
+function regenerate(){composerVariant=composerVariant===0?1:0;generateEmail();}
+function useDraft(){alert('Draft queued to '+composerLead.name+' in sequence "'+composerLead.seq+'". (Demo)');}
+
+/* ============ ANALYTICS: BARS ============ */
+function renderBars(){
+  const W=620,H=240,pad=30,bottom=H-30;
+  const max=18;
+  const bw=(W-pad*2)/barData.length;
+  let grid='';
+  for(let g=0;g<=max;g+=6){const y=bottom-(g/max)*(bottom-16);grid+=`<line x1="${pad}" y1="${y}" x2="${W-pad}" y2="${y}" stroke="#EEF1F6"/><text x="6" y="${y+3}" font-size="9" fill="#9CA3AF">${g}%</text>`;}
+  let bars='';
+  barData.forEach((v,i)=>{
+    const h=(v/max)*(bottom-16);const x=pad+i*bw+bw*0.22;const w=bw*0.56;const y=bottom-h;
+    bars+=`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="5" fill="url(#bGrad)"/>`;
+    bars+=`<text x="${x+w/2}" y="${y-6}" font-size="9.5" font-weight="700" fill="#2563EB" text-anchor="middle">${v}%</text>`;
+    bars+=`<text x="${x+w/2}" y="${bottom+16}" font-size="9.5" fill="#9CA3AF" text-anchor="middle">${barLabels[i]}</text>`;
+  });
+  document.getElementById('barChart').innerHTML=`
+    <svg viewBox="0 0 ${W} ${H}">
+      <defs><linearGradient id="bGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#2563EB"/><stop offset="100%" stop-color="#06B6D4"/></linearGradient></defs>
+      ${grid}${bars}
+    </svg>`;
+}
+
+/* ============ ANALYTICS: DONUT ============ */
+function renderDonut(){
+  const total=donutData.reduce((a,b)=>a+b.v,0);
+  const cx=110,cy=110,r=78,sw=26;
+  const C=2*Math.PI*r;
+  let off=0,segs='';
+  donutData.forEach(d=>{
+    const frac=d.v/total;const len=frac*C;
+    segs+=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${d.c}" stroke-width="${sw}"
+      stroke-dasharray="${len-2} ${C-len+2}" stroke-dashoffset="${-off}" transform="rotate(-90 ${cx} ${cy})" stroke-linecap="round"/>`;
+    off+=len;
+  });
+  document.getElementById('donut').innerHTML=`
+    <div style="display:flex;align-items:center;gap:22px;flex-wrap:wrap">
+      <svg viewBox="0 0 220 220" style="width:200px;height:200px;flex:none">
+        ${segs}
+        <text x="110" y="103" text-anchor="middle" font-family="Outfit" font-weight="700" font-size="30" fill="#111827">${total}%</text>
+        <text x="110" y="124" text-anchor="middle" font-size="11" fill="#9CA3AF">positive replies</text>
+      </svg>
+      <div class="donut-rows" style="flex:1;min-width:160px">
+        ${donutData.map(d=>`<div class="r"><span class="sw" style="background:${d.c}"></span><span class="nm">${d.nm}</span><span class="v">${d.v}%</span></div>`).join('')}
+      </div>
+    </div>`;
+}
+
+/* ============ ANALYTICS: SEQ PERF TABLE ============ */
+function renderSeqPerf(){
+  document.getElementById('seqPerfRows').innerHTML=sequences.map(s=>`
+    <tr>
+      <td><div style="font-weight:600">${s.name}</div><div class="sub-cell">${s.leads} leads</div></td>
+      <td><span class="status ${s.active?'replied':'new'}">${s.active?'Active':'Paused'}</span></td>
+      <td class="muted">${(s.leads*4.2|0).toLocaleString()}</td>
+      <td><b style="font-family:Outfit">${s.open}%</b></td>
+      <td><b style="font-family:Outfit;color:var(--brand)">${s.reply}%</b></td>
+      <td class="muted">${s.meet}</td>
+    </tr>`).join('');
+}
+
+/* ============ INIT ============ */
+function render(){
+  renderKPIs();
+  renderArea();
+  renderPipe();
+  renderFeed();
+  renderSeq();
+  renderLeads();
+  renderComposer();
+  renderBars();
+  renderDonut();
+  renderSeqPerf();
+}
+render();
+</script>
+</body>
+</html>

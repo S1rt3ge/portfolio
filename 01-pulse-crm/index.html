@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pulse CRM — демо-продукт</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F6F7F9;--panel:#FFFFFF;--ink:#0F172A;--muted:#64748B;--faint:#94A3B8;
+  --line:#E9EBEF;--brand:#6366F1;--brand-d:#4F46E5;--brand-soft:#EEF0FE;
+  --ok:#16A34A;--ok-bg:#ECFDF3;--bad:#DC2626;--bad-bg:#FEF2F2;--warn:#B45309;--warn-bg:#FEF6E7;
+  --blue:#2563EB;--blue-bg:#E8EFFE;--purple:#6D28D9;--purple-bg:#F0EAFE;--gray-bg:#F1F2F5;
+  --side:#0E1525;--side-ink:#9AA6BC;--side-line:#1E293B;
+  --serif:'Fraunces',Georgia,'Times New Roman',serif;--sans:'Inter',-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  --sh:0 1px 2px rgba(16,24,40,.04),0 4px 14px rgba(16,24,40,.03);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:var(--sans);background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:var(--serif)}
+.icon{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.app{display:flex;min-height:100vh}
+.sidebar{width:240px;flex:none;background:var(--side);display:flex;flex-direction:column;padding:18px 14px;position:sticky;top:0;height:100vh}
+.brand{display:flex;align-items:center;gap:11px;padding:6px 6px 16px}
+.brand .logo{width:36px;height:36px;border-radius:10px;background:var(--brand);display:flex;align-items:center;justify-content:center;color:#fff}
+.brand .name{color:#fff;font-weight:600;font-size:19px;letter-spacing:.2px;font-family:var(--serif)}
+.brand .tag{font-size:10px;color:#fff;background:rgba(255,255,255,.14);padding:2px 6px;border-radius:5px;font-weight:600;margin-left:2px}
+.nav{overflow:auto;flex:1;margin:0 -4px;padding:0 4px}
+.nav-label{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:#5A6B86;padding:14px 10px 6px;font-weight:600}
+.nav-item{display:flex;align-items:center;gap:12px;padding:9px 11px;border-radius:9px;color:var(--side-ink);font-size:14px;font-weight:500;cursor:pointer;margin-bottom:2px}
+.nav-item:hover{background:#16203a;color:#CBD5E1}
+.nav-item.active{background:var(--brand);color:#fff}
+.nav-item .icon{width:19px;height:19px}
+.nav-item .badge{margin-left:auto;background:#1E293B;color:#CBD5E1;font-size:11px;padding:1px 8px;border-radius:20px;font-weight:600}
+.nav-item.active .badge{background:rgba(255,255,255,.22);color:#fff}
+.side-foot{display:flex;align-items:center;gap:10px;padding:12px 8px 4px;border-top:1px solid var(--side-line);margin-top:6px}
+.side-foot .nm{color:#E2E8F0;font-size:13px;font-weight:600;line-height:1.3}
+.side-foot .rl{color:#5A6B86;font-size:11.5px}
+.main{flex:1;min-width:0;display:flex;flex-direction:column}
+.topbar{height:70px;flex:none;display:flex;align-items:center;gap:14px;padding:0 26px;border-bottom:1px solid var(--line);background:rgba(255,255,255,.85);backdrop-filter:blur(8px);position:sticky;top:0;z-index:20}
+.topbar h1{font-size:21px;font-weight:600;line-height:1.15;letter-spacing:-.01em}
+.topbar .sub{font-size:12.5px;color:var(--muted);margin-top:1px}
+.search{margin-left:auto;display:flex;align-items:center;gap:8px;background:var(--bg);border:1px solid var(--line);border-radius:9px;padding:0 12px;height:38px;width:240px;color:var(--faint)}
+.search .icon{width:17px;height:17px}
+.search input{border:0;background:transparent;outline:0;font-size:13.5px;color:var(--ink);width:100%;font-family:var(--sans)}
+.icon-btn{width:38px;height:38px;border-radius:9px;border:1px solid var(--line);background:var(--panel);display:flex;align-items:center;justify-content:center;color:var(--muted);position:relative;cursor:pointer}
+.icon-btn:hover{background:var(--bg)}
+.icon-btn .dot{position:absolute;top:8px;right:9px;width:8px;height:8px;background:var(--bad);border-radius:50%;border:2px solid var(--panel)}
+.btn{display:inline-flex;align-items:center;gap:7px;height:38px;padding:0 15px;border-radius:9px;background:var(--brand);color:#fff;font-size:13.5px;font-weight:600;border:0;cursor:pointer;white-space:nowrap;font-family:var(--sans);transition:.15s}
+.btn:hover{background:var(--brand-d)}
+.btn .icon{width:17px;height:17px}
+.btn.ghost{background:var(--panel);color:var(--ink);border:1px solid var(--line)}
+.btn.ghost:hover{background:var(--bg)}
+.content{flex:1;min-height:0}
+.view{display:none}
+.view.active{display:block}
+.view.pad{padding:24px 26px;display:none}
+.view.pad.active{display:block}
+.sec-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.sec-h h2{font-size:22px;font-weight:600}
+.sec-h .sub{font-size:13px;color:var(--muted);margin-top:2px}
+.stack{display:flex;flex-direction:column;gap:18px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:17px 19px;box-shadow:var(--sh);transition:.16s}
+.kpi:hover{transform:translateY(-2px);box-shadow:0 10px 26px rgba(16,24,40,.08)}
+.kpi .top{display:flex;align-items:flex-start;justify-content:space-between}
+.kpi .lab{color:var(--muted);font-size:13px;font-weight:500}
+.kpi .ic{width:38px;height:38px;border-radius:11px;background:var(--brand-soft);color:var(--brand);display:flex;align-items:center;justify-content:center}
+.kpi .ic .icon{width:20px;height:20px}
+.kpi .val{font-family:var(--serif);font-size:30px;font-weight:600;margin-top:14px;letter-spacing:-.01em}
+.spark{width:100%;height:30px;margin-top:12px;display:block}
+.kpi .foot{display:flex;align-items:center;gap:7px;margin-top:11px}
+.delta{display:inline-flex;align-items:center;gap:2px;font-size:12px;font-weight:600;padding:2px 7px;border-radius:6px}
+.up{color:var(--ok);background:var(--ok-bg)}.down{color:var(--bad);background:var(--bad-bg)}
+.kpi .vs{color:var(--faint);font-size:12px}
+.row{display:grid;gap:18px}
+.r21{grid-template-columns:1.65fr 1fr}
+.r11{grid-template-columns:1fr 1fr}
+.rdeals{grid-template-columns:1.7fr 1fr}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;box-shadow:var(--sh);display:flex;flex-direction:column}
+.card .hd{display:flex;align-items:center;justify-content:space-between;padding:16px 19px;border-bottom:1px solid var(--line)}
+.card .hd h3{font-size:16px;font-weight:600}
+.card .hd .mut{font-size:12.5px;color:var(--muted);margin-top:2px;font-family:var(--sans)}
+.card .bd{padding:18px;flex:1}
+.pill{font-size:12px;font-weight:600;padding:4px 10px;border-radius:7px;background:var(--ok-bg);color:var(--ok)}
+.pill.soft{background:var(--brand-soft);color:var(--brand);cursor:pointer}
+.chart-wrap svg{width:100%;height:auto;display:block}
+.ai-id{display:flex;align-items:center;gap:10px}
+.ai-id .sp{width:36px;height:36px;border-radius:10px;background:#111827;color:#fff;display:flex;align-items:center;justify-content:center}
+.ai-id .sp .icon{width:20px;height:20px;stroke:#fff;fill:#fff;stroke-width:0}
+.ai-id h3{font-size:16px;font-weight:600;display:flex;align-items:center;gap:7px}
+.online{font-size:11px;font-weight:600;color:var(--ok);display:inline-flex;align-items:center;gap:4px;font-family:var(--sans)}
+.online::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--ok);display:inline-block}
+.ai-body{padding:16px 18px;display:flex;flex-direction:column;gap:12px}
+.msg{max-width:88%;font-size:13.5px;line-height:1.5;padding:10px 13px;border-radius:13px}
+.msg.u{align-self:flex-end;background:var(--brand);color:#fff;border-bottom-right-radius:4px}
+.msg.a{align-self:flex-start;background:#F3F4F8;color:#1E293B;border-bottom-left-radius:4px}
+.msg.a b{font-weight:600}
+.risk{color:var(--bad);font-weight:600}
+.chips{display:flex;flex-wrap:wrap;gap:7px}
+.chip{font-size:12px;color:var(--brand);background:var(--brand-soft);border:0;padding:6px 11px;border-radius:20px;font-weight:500;cursor:pointer;font-family:var(--sans)}
+.chip:hover{background:#E0E3FC}
+.ai-input{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:11px;padding:0 6px 0 13px;height:42px;background:var(--bg)}
+.ai-input input{flex:1;border:0;background:transparent;outline:0;font-size:13.5px;color:var(--ink);font-family:var(--sans)}
+.ai-input .snd{width:32px;height:32px;border-radius:8px;background:var(--brand);color:#fff;border:0;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.ai-input .snd .icon{width:17px;height:17px}
+.feed{display:flex;flex-direction:column}
+.fi{display:flex;gap:11px;padding:12px 0;border-bottom:1px solid var(--line)}
+.fi:last-child{border:0;padding-bottom:0}
+.fi .fic{width:34px;height:34px;border-radius:10px;background:var(--brand-soft);color:var(--brand);display:flex;align-items:center;justify-content:center;flex:none}
+.fi .fic .icon{width:17px;height:17px}
+.fi .ft{font-size:13px;line-height:1.45}
+.fi .fm{font-size:11.5px;color:var(--faint);margin-top:2px}
+.bars{display:flex;flex-direction:column;gap:15px}
+.bar{display:grid;grid-template-columns:128px 1fr 56px;align-items:center;gap:12px}
+.bar .bl{font-size:13px;color:var(--ink);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar .track{height:10px;background:var(--brand-soft);border-radius:6px;overflow:hidden}
+.bar .fill{height:100%;background:var(--brand);border-radius:6px}
+.bar .bv{font-size:13px;color:var(--muted);text-align:right;font-weight:600}
+.donut-wrap{display:flex;align-items:center;gap:22px}
+.legend{display:flex;flex-direction:column;gap:11px;flex:1}
+.lg{display:flex;align-items:center;gap:9px;font-size:13px;color:var(--ink)}
+.lg .sw2{width:11px;height:11px;border-radius:3px;flex:none}
+.lg .pc{margin-left:auto;color:var(--muted);font-weight:600}
+table{width:100%;border-collapse:collapse}
+thead th{text-align:left;font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--faint);font-weight:600;padding:0 14px 11px}
+tbody tr{cursor:pointer}
+tbody tr:hover{background:var(--bg)}
+tbody td{padding:13px 14px;border-top:1px solid var(--line);font-size:13.5px}
+.co{display:flex;align-items:center;gap:11px;font-weight:600}
+.co .lo{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex:none}
+.who{display:flex;align-items:center;gap:8px}
+.av-s{border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#fff;flex:none;position:relative;overflow:hidden;width:28px;height:28px}
+.av-s img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.amt{font-weight:600}
+.muted{color:var(--muted)}
+.st{font-size:12px;font-weight:600;padding:4px 10px;border-radius:7px;display:inline-block;white-space:nowrap}
+.st-new{background:var(--gray-bg);color:#475569}
+.st-qual{background:var(--purple-bg);color:var(--purple)}
+.st-prop{background:var(--blue-bg);color:var(--blue)}
+.st-nego{background:var(--warn-bg);color:var(--warn)}
+.st-won{background:var(--ok-bg);color:var(--ok)}
+.tag{font-size:12px;font-weight:600;padding:3px 9px;border-radius:6px;background:var(--brand-soft);color:var(--brand)}
+.tag.g{background:var(--ok-bg);color:var(--ok)}.tag.b{background:var(--blue-bg);color:var(--blue)}.tag.n{background:var(--gray-bg);color:#475569}
+.toolbar{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.seg{display:flex;background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:3px;gap:2px}
+.seg button{border:0;background:transparent;color:var(--muted);font-size:13px;font-weight:600;padding:6px 12px;border-radius:7px;cursor:pointer;display:flex;align-items:center;gap:6px;font-family:var(--sans)}
+.seg button.active{background:var(--brand-soft);color:var(--brand)}
+.seg .icon{width:16px;height:16px}
+.input{display:flex;align-items:center;gap:8px;background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:0 12px;height:38px;color:var(--faint)}
+.input .icon{width:16px;height:16px}
+.input input{border:0;background:transparent;outline:0;font-size:13.5px;color:var(--ink);width:170px;font-family:var(--sans)}
+.kanban{display:flex;gap:16px;overflow-x:auto;padding-bottom:8px}
+.kcol{flex:0 0 268px;background:#F1F2F5;border-radius:13px;padding:12px;display:flex;flex-direction:column}
+.kcol-hd{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;margin-bottom:11px;padding:0 4px}
+.kcol-hd .dotc{width:9px;height:9px;border-radius:50%}
+.kcol-hd .cnt{color:var(--muted);font-weight:600;background:#fff;border-radius:20px;padding:1px 8px;font-size:11.5px;margin-left:auto}
+.kcard{background:#fff;border:1px solid var(--line);border-radius:11px;padding:13px;margin-bottom:10px;cursor:pointer;box-shadow:0 1px 2px rgba(16,24,40,.05);transition:.14s}
+.kcard:hover{border-color:#C7CBD3;transform:translateY(-2px);box-shadow:0 8px 18px rgba(16,24,40,.08)}
+.kcard .kco{font-weight:600;font-size:14px;margin-bottom:4px}
+.kcard .kc2{font-size:12px;color:var(--muted);margin-bottom:10px}
+.kcard .kfoot{display:flex;align-items:center;justify-content:space-between}
+.kcard .kamt{color:var(--brand);font-weight:600;font-size:13px}
+.split{display:grid;grid-template-columns:330px 1fr;height:calc(100vh - 71px)}
+.pane-l{border-right:1px solid var(--line);background:var(--panel);overflow:auto}
+.pane-r{overflow:auto;background:var(--panel);display:flex;flex-direction:column}
+.conv{display:flex;gap:11px;padding:14px 18px;border-bottom:1px solid var(--line);cursor:pointer}
+.conv:hover{background:var(--bg)}
+.conv.active{background:var(--brand-soft)}
+.conv .ct{flex:1;min-width:0}
+.conv .cn{font-size:13.5px;font-weight:600;display:flex;justify-content:space-between;gap:8px}
+.conv .cn .tm{font-size:11.5px;color:var(--faint);font-weight:500;flex:none}
+.conv .cs{font-size:12.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:3px}
+.conv .un{width:8px;height:8px;border-radius:50%;background:var(--brand);flex:none;align-self:center}
+.thread-h{padding:16px 22px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px}
+.thread-b{flex:1;overflow:auto;padding:22px;display:flex;flex-direction:column;gap:14px;background:var(--bg)}
+.em{max-width:78%;font-size:13.5px;line-height:1.55;padding:13px 16px;border-radius:13px;background:#fff;border:1px solid var(--line)}
+.em.me{align-self:flex-end;background:var(--brand);color:#fff;border:0}
+.em .emh{font-size:11.5px;color:var(--faint);margin-bottom:5px}
+.reply{padding:14px 22px;border-top:1px solid var(--line);display:flex;align-items:center;gap:10px}
+.reply .input{flex:1}.reply .input input{width:100%}
+.auto-card{display:flex;align-items:center;gap:16px;padding:16px 18px;border:1px solid var(--line);border-radius:13px;background:var(--panel);margin-bottom:12px;box-shadow:var(--sh)}
+.auto-card .ai-ic{width:42px;height:42px;border-radius:11px;background:var(--brand-soft);color:var(--brand);display:flex;align-items:center;justify-content:center;flex:none}
+.auto-card .at{flex:1}
+.auto-card .an{font-size:14px;font-weight:600}
+.auto-card .ad{font-size:12.5px;color:var(--muted);margin-top:4px;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.flowtag{background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:2px 8px;font-weight:500;color:var(--ink)}
+.runs{font-size:12px;color:var(--faint);font-weight:500;text-align:right;flex:none}
+.sw{position:relative;width:42px;height:24px;flex:none}
+.sw input{opacity:0;width:0;height:0;position:absolute}
+.sw .tr{position:absolute;inset:0;background:#CBD5E1;border-radius:20px;transition:.2s;cursor:pointer}
+.sw .tr::before{content:"";position:absolute;width:18px;height:18px;border-radius:50%;background:#fff;top:3px;left:3px;transition:.2s}
+.sw input:checked+.tr{background:var(--brand)}
+.sw input:checked+.tr::before{transform:translateX(18px)}
+.tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);margin-bottom:22px;overflow:auto}
+.tab{padding:11px 14px;font-size:14px;color:var(--muted);font-weight:500;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap}
+.tab:hover{color:var(--ink)}
+.tab.active{color:var(--brand);border-color:var(--brand);font-weight:600}
+.tabpanel{display:none}.tabpanel.active{display:block}
+.field{margin-bottom:16px;max-width:440px}
+.field label{display:block;font-size:13px;color:var(--muted);font-weight:500;margin-bottom:6px}
+.field input,.field select{width:100%;height:40px;border:1px solid var(--line);border-radius:9px;padding:0 12px;font-size:14px;color:var(--ink);background:#fff;outline:0;font-family:var(--sans)}
+.field input:focus,.field select:focus{border-color:var(--brand)}
+.intg{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+.icard{border:1px solid var(--line);border-radius:13px;padding:16px;background:var(--panel);box-shadow:var(--sh)}
+.icard .ih{display:flex;align-items:center;gap:11px;margin-bottom:8px}
+.icard .ilogo{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:15px}
+.icard .in{font-size:14px;font-weight:600}
+.icard .idesc{font-size:12.5px;color:var(--muted);line-height:1.5;margin-bottom:12px;min-height:36px}
+.note-row{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--line)}
+.note-row:last-child{border:0}
+.note-row .nt{font-size:14px;font-weight:500}
+.note-row .nd{font-size:12.5px;color:var(--muted);margin-top:2px}
+.plan{border:1px solid var(--line);border-radius:14px;padding:20px}
+.plan.cur{border:2px solid var(--brand)}
+.plan .pn{font-size:15px;font-weight:600}
+.plan .pp{font-family:var(--serif);font-size:30px;font-weight:600;margin:8px 0}
+.plan .pp span{font-size:14px;color:var(--muted);font-weight:500;font-family:var(--sans)}
+.usage{display:flex;flex-direction:column;gap:13px;margin:14px 0}
+.usage .ur{font-size:12.5px;color:var(--muted);display:flex;justify-content:space-between;margin-bottom:5px}
+.overlay{position:fixed;inset:0;background:rgba(15,23,42,.4);z-index:40;opacity:0;pointer-events:none;transition:.2s}
+.overlay.open{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;height:100vh;width:444px;max-width:92vw;background:#fff;z-index:50;transform:translateX(100%);transition:transform .26s cubic-bezier(.4,0,.2,1);box-shadow:-10px 0 44px rgba(15,23,42,.16);display:flex;flex-direction:column}
+.drawer.open{transform:none}
+.dr-h{padding:20px 22px;border-bottom:1px solid var(--line);display:flex;align-items:flex-start;gap:12px}
+.dr-h .x{margin-left:auto;cursor:pointer;color:var(--muted);width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center}
+.dr-h .x:hover{background:var(--bg)}
+.dr-b{flex:1;overflow:auto;padding:20px 22px}
+.dr-acts{display:flex;gap:9px;margin-bottom:22px}
+.dr-acts .btn{flex:1;justify-content:center}
+.kv{display:grid;grid-template-columns:130px 1fr;gap:10px 12px;font-size:13.5px;margin-bottom:8px}
+.kv .k{color:var(--muted)}
+.kv .v{font-weight:500;text-align:right}
+.blk{margin-top:22px}
+.blk h4{font-size:13px;text-transform:uppercase;letter-spacing:.04em;color:var(--faint);font-weight:600;margin-bottom:12px;font-family:var(--sans)}
+.tl{position:relative;padding-left:22px}
+.tl::before{content:"";position:absolute;left:6px;top:4px;bottom:4px;width:2px;background:var(--line)}
+.tle{position:relative;margin-bottom:16px}
+.tle::before{content:"";position:absolute;left:-22px;top:3px;width:12px;height:12px;border-radius:50%;background:var(--brand);border:2px solid #fff;box-shadow:0 0 0 2px var(--brand-soft)}
+.tle .tlt{font-size:13.5px;font-weight:500}
+.tle .tld{font-size:12px;color:var(--faint);margin-top:2px}
+.tk{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line);font-size:13.5px}
+.tk:last-child{border:0}
+.tk .cb{width:19px;height:19px;border-radius:5px;border:1.8px solid #CBD5E1;flex:none;display:flex;align-items:center;justify-content:center}
+.tk.done .cb{background:var(--ok);border-color:var(--ok);color:#fff}
+.tk.done .tkt{color:var(--faint);text-decoration:line-through}
+.demo-tag{font-size:11px;font-weight:600;color:var(--muted);background:var(--bg);border:1px solid var(--line);padding:5px 11px;border-radius:20px}
+.stepper{display:flex;gap:6px;margin-bottom:6px}
+.stepper .s{flex:1;height:5px;border-radius:3px;background:var(--line)}
+.stepper .s.on{background:var(--brand)}
+.dd-amt{font-family:var(--serif);font-size:30px;font-weight:600;letter-spacing:-.01em;margin-bottom:4px}
+.burger{display:none;width:38px;height:38px;border-radius:9px;border:1px solid var(--line);background:var(--panel);align-items:center;justify-content:center;color:var(--ink);cursor:pointer;flex:none}
+.sb-ov{position:fixed;inset:0;background:rgba(15,23,42,.45);z-index:55;opacity:0;pointer-events:none;transition:.2s}
+.sb-ov.open{opacity:1;pointer-events:auto}
+@media(max-width:1080px){.r21,.r11,.rdeals{grid-template-columns:1fr}}
+@media(max-width:900px){
+ .burger{display:flex}
+ .sidebar{position:fixed;left:0;top:0;z-index:60;transform:translateX(-100%);transition:transform .25s ease;box-shadow:8px 0 40px rgba(2,6,23,.35)}
+ .sidebar.open{transform:none}
+ .topbar{padding:0 14px;gap:10px}
+ .search{display:none}
+ .split{grid-template-columns:1fr;height:auto}
+ .pane-l{max-height:300px;border-right:0;border-bottom:1px solid var(--line)}
+ .pane-r{min-height:60vh}
+ .thread-b{min-height:340px}
+ .toolbar{flex-wrap:wrap}
+ .card .bd{overflow-x:auto}.card .bd table{min-width:480px}
+ .frm2{grid-template-columns:1fr!important}
+}
+@media(max-width:560px){.hide-sm{display:none}.topbar h1{font-size:17px}.view.pad{padding:14px 12px}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.5"/></symbol>
+<symbol id="i-deals" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5.5A1.5 1.5 0 0 1 9.5 4h5A1.5 1.5 0 0 1 16 5.5V7"/><path d="M3 12h18"/></symbol>
+<symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 20c0-3.3 2.6-5.4 5.5-5.4s5.5 2.1 5.5 5.4"/><path d="M16 5.2a3 3 0 0 1 0 5.6"/><path d="M17.6 14.9c2.1.5 3.7 2.3 3.7 5.1"/></symbol>
+<symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M4 6.5 12 12l8-5.5"/></symbol>
+<symbol id="i-ai" viewBox="0 0 24 24"><path d="M12 3l1.9 4.8L18.7 9.6l-4.8 1.9L12 16.3l-1.9-4.8L5.3 9.6l4.8-1.8z"/><path d="M18.2 14.4l.9 2.3 2.3.9-2.3.9-.9 2.3-.9-2.3-2.3-.9 2.3-.9z"/></symbol>
+<symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 3 5 13.2h6l-1 7.8 8-10.2h-6z"/></symbol>
+<symbol id="i-bar" viewBox="0 0 24 24"><path d="M4 20V4M4 20h16"/><rect x="7.5" y="11" width="3.4" height="6" rx="1"/><rect x="13.5" y="7" width="3.4" height="10" rx="1"/></symbol>
+<symbol id="i-pie" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 12V3M12 12l7.8 4.6"/></symbol>
+<symbol id="i-set" viewBox="0 0 24 24"><path d="M4 7.5h16M4 14.5h16"/><circle cx="9" cy="7.5" r="2.2"/><circle cx="15" cy="14.5" r="2.2"/></symbol>
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.3-3.3"/></symbol>
+<symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 9.5a6 6 0 0 1 12 0c0 4.5 2 5.5 2 5.5H4s2-1 2-5.5"/><path d="M10 19a2 2 0 0 0 4 0"/></symbol>
+<symbol id="i-send" viewBox="0 0 24 24"><path d="M4 12 20 4l-6 16-3-7z"/><path d="m11 13 9-9"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+<symbol id="i-pulse" viewBox="0 0 24 24"><path d="M3 12h4l2.5-6 4 12 2.5-6H21"/></symbol>
+<symbol id="i-trend" viewBox="0 0 24 24"><path d="m4 16 5-5 3 3 7-7"/><path d="M16 7h4v4"/></symbol>
+<symbol id="i-dollar" viewBox="0 0 24 24"><path d="M12 3v18"/><path d="M16.4 7.4c0-1.9-2-3-4.4-3s-4.5 1.3-4.5 3.3 2 2.8 4.5 3.3 4.5 1 4.5 3.2-2 3.3-4.5 3.3-4.6-1.1-4.6-3.1"/></symbol>
+<symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.6"/><circle cx="12" cy="12" r="1.1"/></symbol>
+<symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+<symbol id="i-phone" viewBox="0 0 24 24"><path d="M6 4h3l1.5 4-2 1.3a10 10 0 0 0 4.9 4.9l1.3-2 4 1.5v3a1.7 1.7 0 0 1-1.8 1.7A15 15 0 0 1 4.3 6.3 1.7 1.7 0 0 1 6 4.5z"/></symbol>
+<symbol id="i-cal" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M4 9.5h16M8 3v4M16 3v4"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 5 5L20 7"/></symbol>
+<symbol id="i-dots" viewBox="0 0 24 24"><circle cx="6" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="18" cy="12" r="1.5"/></symbol>
+<symbol id="i-filter" viewBox="0 0 24 24"><path d="M4 5h16l-6 8v5l-4 2v-7z"/></symbol>
+<symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3.2 2"/></symbol>
+<symbol id="i-note" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/></symbol>
+<symbol id="i-task" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="m8.5 12 2.5 2.5L16 9"/></symbol>
+<symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+<symbol id="i-list" viewBox="0 0 24 24"><path d="M8 6h12M8 12h12M8 18h12"/><circle cx="4" cy="6" r="1.3"/><circle cx="4" cy="12" r="1.3"/><circle cx="4" cy="18" r="1.3"/></symbol>
+<symbol id="i-cols" viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="16" rx="1.5"/><rect x="14" y="4" width="6" height="16" rx="1.5"/></symbol>
+<symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+<symbol id="i-cr" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
+<symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v11m-5-4 5 4 5-4M5 20h14"/></symbol>
+</defs></svg>
+
+<div class="app">
+  <aside class="sidebar" id="sb">
+    <div class="brand">
+      <span class="logo"><svg class="icon" style="width:22px;height:22px"><use href="#i-pulse"/></svg></span>
+      <span class="name">Pulse</span><span class="tag">CRM</span>
+    </div>
+    <nav class="nav">
+      <div class="nav-label">Основное</div>
+      <div class="nav-item active" data-view="v-dash"><svg class="icon"><use href="#i-grid"/></svg>Дашборд</div>
+      <div class="nav-item" data-view="v-deals"><svg class="icon"><use href="#i-deals"/></svg>Сделки<span class="badge">87</span></div>
+      <div class="nav-item" data-view="v-contacts"><svg class="icon"><use href="#i-users"/></svg>Контакты</div>
+      <div class="nav-item" data-view="v-inbox"><svg class="icon"><use href="#i-mail"/></svg>Входящие<span class="badge">5</span></div>
+      <div class="nav-label">Интеллект</div>
+      <div class="nav-item" data-view="v-ai"><svg class="icon"><use href="#i-ai"/></svg>Pulse AI</div>
+      <div class="nav-item" data-view="v-auto"><svg class="icon"><use href="#i-bolt"/></svg>Автоматизации</div>
+      <div class="nav-label">Аналитика</div>
+      <div class="nav-item" data-view="v-reports"><svg class="icon"><use href="#i-bar"/></svg>Отчёты</div>
+      <div class="nav-item" data-view="v-settings"><svg class="icon"><use href="#i-set"/></svg>Настройки</div>
+    </nav>
+    <div class="side-foot">
+      <span class="av-s" style="width:36px;height:36px;font-size:13px;background:#28344d">АБ<img src="https://i.pravatar.cc/100?img=12" onerror="this.remove()"></span>
+      <div><div class="nm">Алексей Б.</div><div class="rl">Администратор</div></div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <button class="burger" onclick="toggleSide()"><svg class="icon"><use href="#i-menu"/></svg></button>
+      <div>
+        <h1 id="pg-title">Дашборд</h1>
+        <div class="sub" id="pg-sub">Воскресенье, 15 июня 2025</div>
+      </div>
+      <span class="demo-tag" style="margin-left:14px">Демо-продукт</span>
+      <div class="search"><svg class="icon"><use href="#i-search"/></svg><input placeholder="Поиск…"></div>
+      <div class="icon-btn hide-sm"><svg class="icon"><use href="#i-bell"/></svg><span class="dot"></span></div>
+      <button class="btn hide-sm"><svg class="icon"><use href="#i-plus"/></svg>Создать</button>
+      <span class="av-s" style="width:38px;height:38px;font-size:13px;background:var(--brand)">АБ<img src="https://i.pravatar.cc/100?img=12" onerror="this.remove()"></span>
+    </header>
+
+    <div class="content">
+
+      <!-- DASHBOARD -->
+      <section class="view pad active" id="v-dash">
+        <div class="stack">
+          <div class="kpis">
+            <div class="kpi"><div class="top"><span class="lab">Выручка (MRR)</span><span class="ic"><svg class="icon"><use href="#i-dollar"/></svg></span></div><div class="val">$128 450</div><svg class="spark" viewBox="0 0 120 30" preserveAspectRatio="none"><polyline points="2,24 22,20 42,22 62,14 82,16 102,8 118,4" fill="none" stroke="#6366F1" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg><div class="foot"><span class="delta up">↑ 12,4%</span><span class="vs">за месяц</span></div></div>
+            <div class="kpi"><div class="top"><span class="lab">Новые лиды</span><span class="ic"><svg class="icon"><use href="#i-users"/></svg></span></div><div class="val">312</div><svg class="spark" viewBox="0 0 120 30" preserveAspectRatio="none"><polyline points="2,22 22,24 42,18 62,19 82,12 102,13 118,6" fill="none" stroke="#6366F1" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg><div class="foot"><span class="delta up">↑ 8,1%</span><span class="vs">за месяц</span></div></div>
+            <div class="kpi"><div class="top"><span class="lab">Конверсия</span><span class="ic"><svg class="icon"><use href="#i-trend"/></svg></span></div><div class="val">24,8%</div><svg class="spark" viewBox="0 0 120 30" preserveAspectRatio="none"><polyline points="2,20 22,16 42,18 62,12 82,13 102,9 118,5" fill="none" stroke="#6366F1" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg><div class="foot"><span class="delta up">↑ 3,2%</span><span class="vs">за месяц</span></div></div>
+            <div class="kpi"><div class="top"><span class="lab">Активные сделки</span><span class="ic"><svg class="icon"><use href="#i-target"/></svg></span></div><div class="val">87</div><svg class="spark" viewBox="0 0 120 30" preserveAspectRatio="none"><polyline points="2,8 22,11 42,9 62,14 82,13 102,19 118,22" fill="none" stroke="#DC2626" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg><div class="foot"><span class="delta down">↓ 2,0%</span><span class="vs">за месяц</span></div></div>
+          </div>
+          <div class="row r21">
+            <div class="card">
+              <div class="hd"><div><h3>Выручка</h3><div class="mut">Помесячно · 2025</div></div><span class="pill">+18% к прошл. году</span></div>
+              <div class="bd"><div class="chart-wrap">
+                <svg viewBox="0 0 580 215" role="img" aria-label="График помесячной выручки за 2025 год">
+                  <line x1="56" y1="32" x2="566" y2="32" stroke="#EEF0F3"/><line x1="56" y1="78" x2="566" y2="78" stroke="#EEF0F3"/><line x1="56" y1="124" x2="566" y2="124" stroke="#EEF0F3"/><line x1="56" y1="170" x2="566" y2="170" stroke="#E4E7EC"/>
+                  <text x="46" y="36" text-anchor="end" font-size="10.5" fill="#94A3B8">$120k</text><text x="46" y="82" text-anchor="end" font-size="10.5" fill="#94A3B8">$80k</text><text x="46" y="128" text-anchor="end" font-size="10.5" fill="#94A3B8">$40k</text><text x="46" y="174" text-anchor="end" font-size="10.5" fill="#94A3B8">$0</text>
+                  <path d="M56,98.5 100,89.2 144,93.8 188,80 232,71.9 276,63.8 320,68.5 364,55.8 408,43.1 452,50 496,32.7 540,22.3 L540,170 L56,170 Z" fill="#6366F1" fill-opacity="0.10"/>
+                  <path d="M56,98.5 100,89.2 144,93.8 188,80 232,71.9 276,63.8 320,68.5 364,55.8 408,43.1 452,50 496,32.7 540,22.3" fill="none" stroke="#6366F1" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  <circle cx="540" cy="22.3" r="4.5" fill="#6366F1" stroke="#fff" stroke-width="2"/>
+                  <g font-size="10.5" fill="#94A3B8" text-anchor="middle"><text x="56" y="190">Янв</text><text x="100" y="190">Фев</text><text x="144" y="190">Мар</text><text x="188" y="190">Апр</text><text x="232" y="190">Май</text><text x="276" y="190">Июн</text><text x="320" y="190">Июл</text><text x="364" y="190">Авг</text><text x="408" y="190">Сен</text><text x="452" y="190">Окт</text><text x="496" y="190">Ноя</text><text x="540" y="190">Дек</text></g>
+                </svg>
+              </div></div>
+            </div>
+            <div class="card">
+              <div class="hd"><div class="ai-id"><span class="sp"><svg class="icon"><use href="#i-ai"/></svg></span><h3>Pulse AI <span class="online">Онлайн</span></h3></div></div>
+              <div class="ai-body">
+                <div class="msg u">Сделай сводку по воронке за эту неделю</div>
+                <div class="msg a">За неделю добавлено <b>48 лидов</b> (+11%). В работе <b>87 сделок</b> на <b>$612K</b>.<br><span class="risk">Риск:</span> 3 сделки без активности более 5 дней — стоит связаться сегодня.</div>
+                <div class="chips"><button class="chip" onclick="goAI()">Открыть Pulse AI</button><button class="chip" onclick="goAI()">Прогноз на месяц</button></div>
+              </div>
+              <div style="padding:0 18px 18px"><div class="ai-input"><input placeholder="Спросите Pulse AI…" onclick="goAI()"><button class="snd" onclick="goAI()"><svg class="icon"><use href="#i-send"/></svg></button></div></div>
+            </div>
+          </div>
+          <div class="row r11">
+            <div class="card"><div class="hd"><div><h3>Воронка продаж</h3><div class="mut">По этапам · текущий квартал</div></div></div><div class="bd"><div class="bars">
+              <div class="bar"><span class="bl">Новые</span><span class="track"><span class="fill" style="width:100%"></span></span><span class="bv">312</span></div>
+              <div class="bar"><span class="bl">Квалификация</span><span class="track"><span class="fill" style="width:59%"></span></span><span class="bv">184</span></div>
+              <div class="bar"><span class="bl">Предложение</span><span class="track"><span class="fill" style="width:31%"></span></span><span class="bv">96</span></div>
+              <div class="bar"><span class="bl">Переговоры</span><span class="track"><span class="fill" style="width:17%"></span></span><span class="bv">54</span></div>
+              <div class="bar"><span class="bl">Закрыто</span><span class="track"><span class="fill" style="width:12%"></span></span><span class="bv">38</span></div>
+            </div></div></div>
+            <div class="card"><div class="hd"><div><h3>Источники лидов</h3><div class="mut">Всего 1 240 за месяц</div></div></div><div class="bd"><div class="donut-wrap">
+              <svg width="140" height="140" viewBox="0 0 140 140" role="img" aria-label="Источники лидов">
+                <circle cx="70" cy="70" r="54" fill="none" stroke="#F1F2F5" stroke-width="18"/>
+                <g transform="rotate(-90 70 70)" fill="none" stroke-width="18">
+                  <circle cx="70" cy="70" r="54" stroke="#6366F1" stroke-dasharray="142.5 339.3"/>
+                  <circle cx="70" cy="70" r="54" stroke="#818CF8" stroke-dasharray="95.0 339.3" stroke-dashoffset="-142.5"/>
+                  <circle cx="70" cy="70" r="54" stroke="#A5B4FC" stroke-dasharray="61.1 339.3" stroke-dashoffset="-237.5"/>
+                  <circle cx="70" cy="70" r="54" stroke="#C7D2FE" stroke-dasharray="40.7 339.3" stroke-dashoffset="-298.6"/>
+                </g>
+                <text x="70" y="66" text-anchor="middle" font-size="22" font-weight="600" fill="#0F172A" font-family="Fraunces,serif">1 240</text><text x="70" y="85" text-anchor="middle" font-size="11.5" fill="#94A3B8">лидов</text>
+              </svg>
+              <div class="legend">
+                <div class="lg"><span class="sw2" style="background:#6366F1"></span>Веб-сайт<span class="pc">42%</span></div>
+                <div class="lg"><span class="sw2" style="background:#818CF8"></span>Реклама<span class="pc">28%</span></div>
+                <div class="lg"><span class="sw2" style="background:#A5B4FC"></span>Рефералы<span class="pc">18%</span></div>
+                <div class="lg"><span class="sw2" style="background:#C7D2FE"></span>Другое<span class="pc">12%</span></div>
+              </div>
+            </div></div></div>
+          </div>
+          <div class="row rdeals">
+            <div class="card">
+              <div class="hd"><div><h3>Последние сделки</h3><div class="mut">Кликните, чтобы открыть карточку</div></div><span class="pill soft" onclick="go('v-deals')">Все сделки</span></div>
+              <div class="bd" style="padding:8px 6px 12px"><table><thead><tr><th>Компания</th><th>Сумма</th><th>Этап</th><th>Менеджер</th></tr></thead><tbody id="dash-deals"></tbody></table></div>
+            </div>
+            <div class="card">
+              <div class="hd"><h3>Активность</h3></div>
+              <div class="bd feed">
+                <div class="fi"><span class="fic"><svg class="icon"><use href="#i-mail"/></svg></span><div><div class="ft"><b>Анна Орлова</b> ответила на письмо с КП</div><div class="fm">12 минут назад</div></div></div>
+                <div class="fi"><span class="fic" style="background:var(--ok-bg);color:var(--ok)"><svg class="icon"><use href="#i-check"/></svg></span><div><div class="ft">Сделка «Медсеть Плюс» закрыта — $96 400</div><div class="fm">1 час назад</div></div></div>
+                <div class="fi"><span class="fic" style="background:var(--bad-bg);color:var(--bad)"><svg class="icon"><use href="#i-ai"/></svg></span><div><div class="ft">Pulse AI: 3 сделки в зоне риска</div><div class="fm">2 часа назад</div></div></div>
+                <div class="fi"><span class="fic"><svg class="icon"><use href="#i-plus"/></svg></span><div><div class="ft">Новый лид с сайта → «ТехноСервис»</div><div class="fm">3 часа назад</div></div></div>
+                <div class="fi"><span class="fic"><svg class="icon"><use href="#i-note"/></svg></span><div><div class="ft"><b>Дмитрий С.</b> добавил заметку к «Глобал Ритейл»</div><div class="fm">сегодня</div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- DEALS -->
+      <section class="view pad" id="v-deals">
+        <div class="toolbar">
+          <div class="seg"><button class="active" id="seg-kan" onclick="dealView('kan')"><svg class="icon"><use href="#i-cols"/></svg>Доска</button><button id="seg-tab" onclick="dealView('tab')"><svg class="icon"><use href="#i-list"/></svg>Таблица</button></div>
+          <div class="input"><svg class="icon"><use href="#i-search"/></svg><input placeholder="Поиск сделок"></div>
+          <button class="btn ghost"><svg class="icon"><use href="#i-filter"/></svg>Фильтры</button>
+          <button class="btn" style="margin-left:auto"><svg class="icon"><use href="#i-plus"/></svg>Новая сделка</button>
+        </div>
+        <div id="deals-kan"><div class="kanban" id="kanban"></div></div>
+        <div id="deals-tab" style="display:none"><div class="card"><div class="bd" style="padding:8px 6px 12px"><table><thead><tr><th>Компания</th><th>Контакт</th><th>Сумма</th><th>Этап</th><th>Вероятность</th><th>Менеджер</th></tr></thead><tbody id="deals-table"></tbody></table></div></div></div>
+      </section>
+
+      <!-- CONTACTS -->
+      <section class="view pad" id="v-contacts">
+        <div class="toolbar">
+          <div class="input"><svg class="icon"><use href="#i-search"/></svg><input placeholder="Поиск контактов"></div>
+          <button class="btn ghost"><svg class="icon"><use href="#i-filter"/></svg>Все типы</button>
+          <button class="btn ghost"><svg class="icon"><use href="#i-download"/></svg>Экспорт</button>
+          <button class="btn" style="margin-left:auto"><svg class="icon"><use href="#i-plus"/></svg>Добавить контакт</button>
+        </div>
+        <div class="card"><div class="bd" style="padding:8px 6px 12px"><table><thead><tr><th>Имя</th><th>Компания</th><th>Email</th><th>Телефон</th><th>Сделок</th><th>Тип</th></tr></thead><tbody id="contacts-table"></tbody></table></div></div>
+      </section>
+
+      <!-- INBOX -->
+      <section class="view" id="v-inbox">
+        <div class="split">
+          <div class="pane-l" id="conv-list"></div>
+          <div class="pane-r">
+            <div class="thread-h"><span class="av-s" style="background:#2563EB;width:40px;height:40px;font-size:14px">МК<img src="https://i.pravatar.cc/100?img=44" onerror="this.remove()"></span><div><div style="font-weight:600;font-size:14px">Мария Ким · Глобал Ритейл</div><div style="font-size:12px;color:var(--muted)">Тема: Коммерческое предложение по подписке Pro</div></div><div class="icon-btn" style="margin-left:auto"><svg class="icon"><use href="#i-dots"/></svg></div></div>
+            <div class="thread-b">
+              <div class="em"><div class="emh">Мария Ким · 5 ч назад</div>Добрый день! Посмотрели вашу презентацию, всё понравилось. Подскажите, входит ли в тариф Pro интеграция с нашей телефонией и сколько менеджеров можно подключить?</div>
+              <div class="em me"><div class="emh" style="color:rgba(255,255,255,.7)">Вы · 4 ч назад</div>Здравствуйте, Мария! Да, телефония входит, менеджеров — до 25 на тарифе Pro. Прикладываю расчёт и доступ к демо-стенду на неделю.</div>
+              <div class="em"><div class="emh">Мария Ким · 2 ч назад</div>Отлично, спасибо! Обсудим внутри и вернёмся с решением до конца недели.</div>
+            </div>
+            <div class="reply"><div class="input"><input placeholder="Ответить Марии…"></div><button class="btn"><svg class="icon"><use href="#i-send"/></svg>Отправить</button></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PULSE AI -->
+      <section class="view" id="v-ai">
+        <div class="split">
+          <div class="pane-l">
+            <div style="padding:16px 18px"><button class="btn" style="width:100%;justify-content:center"><svg class="icon"><use href="#i-plus"/></svg>Новый чат</button></div>
+            <div class="conv active"><div class="ct"><div class="cn">Сводка по воронке</div><div class="cs">3 сделки в зоне риска…</div></div></div>
+            <div class="conv"><div class="ct"><div class="cn">Анализ лида «ТехноСервис»</div><div class="cs">Вероятность закрытия 64%…</div></div></div>
+            <div class="conv"><div class="ct"><div class="cn">Прогноз выручки</div><div class="cs">Ожидаемо $141K в июле…</div></div></div>
+            <div class="conv"><div class="ct"><div class="cn">Черновик письма для СтройГрупп</div><div class="cs">Тема: знакомство и оффер…</div></div></div>
+          </div>
+          <div class="pane-r">
+            <div class="thread-h"><span class="sp" style="width:36px;height:36px;border-radius:10px;background:#111827;color:#fff;display:flex;align-items:center;justify-content:center"><svg class="icon" style="stroke:#fff;fill:#fff;stroke-width:0"><use href="#i-ai"/></svg></span><div><div style="font-weight:600;font-size:14px;display:flex;gap:8px;align-items:center">Pulse AI <span class="online">Онлайн</span></div><div style="font-size:12px;color:var(--muted)">Подключён к вашим сделкам, контактам и почте</div></div></div>
+            <div class="thread-b" id="ai-thread">
+              <div class="msg a" style="max-width:80%">Привет, Алексей! Я Pulse AI. Могу собрать сводку, проанализировать сделку, написать письмо или дать прогноз. С чего начнём?</div>
+              <div class="msg u" style="max-width:80%">Сделай сводку по воронке за эту неделю</div>
+              <div class="msg a" style="max-width:80%">За неделю добавлено <b>48 лидов</b> (+11% к прошлой). В работе <b>87 сделок</b> на сумму <b>$612K</b>, средний чек <b>$7 040</b>.<br><br><span class="risk">Зона риска:</span> 3 сделки без активности более 5 дней — «ТехноСервис», «ФинКонсалт», «СтройГрупп». Рекомендую связаться сегодня.</div>
+            </div>
+            <div style="padding:0 22px 10px"><div class="chips"><button class="chip" onclick="aiAsk('Кто лучший менеджер месяца?')">Кто лучший менеджер?</button><button class="chip" onclick="aiAsk('Дай прогноз выручки на июль')">Прогноз на июль</button><button class="chip" onclick="aiAsk('Напиши письмо для СтройГрупп')">Написать письмо</button></div></div>
+            <div class="reply"><div class="input"><input id="ai-in" placeholder="Спросите Pulse AI…" onkeydown="if(event.key==='Enter')aiSend()"></div><button class="btn" onclick="aiSend()"><svg class="icon"><use href="#i-send"/></svg>Отправить</button></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- AUTOMATIONS -->
+      <section class="view pad" id="v-auto">
+        <div class="sec-h"><div><h2>Автоматизации</h2><div class="sub">Сценарии работают за вас 24/7 — без участия менеджера</div></div><button class="btn"><svg class="icon"><use href="#i-plus"/></svg>Новый сценарий</button></div>
+        <div id="auto-list"></div>
+        <div class="card" style="margin-top:8px">
+          <div class="hd"><h3>Конструктор сценария</h3><span class="pill soft">Пример</span></div>
+          <div class="bd"><div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+            <span class="flowtag" style="padding:10px 14px;font-weight:600"><span style="color:var(--brand)">Триггер:</span> новый лид с сайта</span>
+            <svg class="icon" style="color:var(--faint)"><use href="#i-arrow"/></svg>
+            <span class="flowtag" style="padding:10px 14px;font-weight:600"><span style="color:var(--warn)">Условие:</span> бюджет &gt; $5 000</span>
+            <svg class="icon" style="color:var(--faint)"><use href="#i-arrow"/></svg>
+            <span class="flowtag" style="padding:10px 14px;font-weight:600"><span style="color:var(--ok)">Действие:</span> создать сделку</span>
+            <svg class="icon" style="color:var(--faint)"><use href="#i-arrow"/></svg>
+            <span class="flowtag" style="padding:10px 14px;font-weight:600"><span style="color:var(--ok)">Действие:</span> назначить менеджера + письмо</span>
+          </div></div>
+        </div>
+      </section>
+
+      <!-- REPORTS -->
+      <section class="view pad" id="v-reports">
+        <div class="stack">
+          <div class="kpis">
+            <div class="kpi"><div class="top"><span class="lab">Выручка YTD</span><span class="ic"><svg class="icon"><use href="#i-dollar"/></svg></span></div><div class="val">$1,02M</div><div class="foot"><span class="delta up">↑ 23%</span><span class="vs">к 2024</span></div></div>
+            <div class="kpi"><div class="top"><span class="lab">Сделок закрыто</span><span class="ic"><svg class="icon"><use href="#i-check"/></svg></span></div><div class="val">418</div><div class="foot"><span class="delta up">↑ 15%</span><span class="vs">к 2024</span></div></div>
+            <div class="kpi"><div class="top"><span class="lab">Средний чек</span><span class="ic"><svg class="icon"><use href="#i-trend"/></svg></span></div><div class="val">$7 040</div><div class="foot"><span class="delta up">↑ 6%</span><span class="vs">за квартал</span></div></div>
+            <div class="kpi"><div class="top"><span class="lab">Цикл сделки</span><span class="ic"><svg class="icon"><use href="#i-clock"/></svg></span></div><div class="val">18 дн</div><div class="foot"><span class="delta up">↓ 3 дн</span><span class="vs">быстрее</span></div></div>
+          </div>
+          <div class="row r11">
+            <div class="card"><div class="hd"><div><h3>Выручка по менеджерам</h3><div class="mut">За квартал</div></div></div><div class="bd"><div class="bars">
+              <div class="bar"><span class="bl">Алексей Б.</span><span class="track"><span class="fill" style="width:100%"></span></span><span class="bv">$312K</span></div>
+              <div class="bar"><span class="bl">Дмитрий С.</span><span class="track"><span class="fill" style="width:78%"></span></span><span class="bv">$244K</span></div>
+              <div class="bar"><span class="bl">Ирина П.</span><span class="track"><span class="fill" style="width:61%"></span></span><span class="bv">$190K</span></div>
+              <div class="bar"><span class="bl">Олег В.</span><span class="track"><span class="fill" style="width:44%"></span></span><span class="bv">$138K</span></div>
+            </div></div></div>
+            <div class="card"><div class="hd"><div><h3>Конверсия по этапам</h3><div class="mut">Воронка → закрытие</div></div></div><div class="bd"><div class="bars">
+              <div class="bar"><span class="bl">Лид → Квал.</span><span class="track"><span class="fill" style="width:59%"></span></span><span class="bv">59%</span></div>
+              <div class="bar"><span class="bl">Квал. → Предл.</span><span class="track"><span class="fill" style="width:52%"></span></span><span class="bv">52%</span></div>
+              <div class="bar"><span class="bl">Предл. → Перег.</span><span class="track"><span class="fill" style="width:56%"></span></span><span class="bv">56%</span></div>
+              <div class="bar"><span class="bl">Перег. → Закрыто</span><span class="track"><span class="fill" style="width:70%"></span></span><span class="bv">70%</span></div>
+            </div></div></div>
+          </div>
+          <div class="card"><div class="hd"><div><h3>Динамика выручки</h3><div class="mut">12 месяцев</div></div><span class="pill">+18% к прошл. году</span></div><div class="bd"><div class="chart-wrap">
+            <svg viewBox="0 0 580 215" role="img" aria-label="Динамика выручки за 12 месяцев">
+              <line x1="56" y1="32" x2="566" y2="32" stroke="#EEF0F3"/><line x1="56" y1="78" x2="566" y2="78" stroke="#EEF0F3"/><line x1="56" y1="124" x2="566" y2="124" stroke="#EEF0F3"/><line x1="56" y1="170" x2="566" y2="170" stroke="#E4E7EC"/>
+              <g fill="#6366F1"><rect x="64" y="98" width="30" height="72" rx="3"/><rect x="108" y="89" width="30" height="81" rx="3"/><rect x="152" y="93" width="30" height="77" rx="3"/><rect x="196" y="80" width="30" height="90" rx="3"/><rect x="240" y="72" width="30" height="98" rx="3"/><rect x="284" y="64" width="30" height="106" rx="3"/><rect x="328" y="68" width="30" height="102" rx="3"/><rect x="372" y="56" width="30" height="114" rx="3"/><rect x="416" y="43" width="30" height="127" rx="3"/><rect x="460" y="50" width="30" height="120" rx="3"/><rect x="504" y="33" width="30" height="137" rx="3"/><rect x="548" y="22" width="30" height="148" rx="3"/></g>
+              <g font-size="10.5" fill="#94A3B8" text-anchor="middle"><text x="79" y="188">Янв</text><text x="123" y="188">Фев</text><text x="167" y="188">Мар</text><text x="211" y="188">Апр</text><text x="255" y="188">Май</text><text x="299" y="188">Июн</text><text x="343" y="188">Июл</text><text x="387" y="188">Авг</text><text x="431" y="188">Сен</text><text x="475" y="188">Окт</text><text x="519" y="188">Ноя</text><text x="563" y="188">Дек</text></g>
+            </svg>
+          </div></div></div>
+        </div>
+      </section>
+
+      <!-- SETTINGS -->
+      <section class="view pad" id="v-settings">
+        <div class="tabs">
+          <div class="tab active" onclick="setTab(this,'t-prof')">Профиль</div>
+          <div class="tab" onclick="setTab(this,'t-team')">Команда</div>
+          <div class="tab" onclick="setTab(this,'t-bill')">Тариф и оплата</div>
+          <div class="tab" onclick="setTab(this,'t-notif')">Уведомления</div>
+          <div class="tab" onclick="setTab(this,'t-intg')">Интеграции</div>
+        </div>
+        <div class="tabpanel active" id="t-prof">
+          <div class="card"><div class="bd">
+            <div style="display:flex;align-items:center;gap:16px;margin-bottom:22px"><span class="av-s" style="width:64px;height:64px;font-size:22px;background:var(--brand)">АБ<img src="https://i.pravatar.cc/150?img=12" onerror="this.remove()"></span><div><button class="btn ghost">Сменить фото</button><div style="font-size:12px;color:var(--muted);margin-top:8px">PNG или JPG, до 2 МБ</div></div></div>
+            <div class="frm2" style="display:grid;grid-template-columns:1fr 1fr;gap:0 24px;max-width:760px">
+              <div class="field"><label>Имя</label><input value="Алексей Бурьянов"></div>
+              <div class="field"><label>Должность</label><input value="Администратор"></div>
+              <div class="field"><label>Email</label><input value="alexey@pulse-crm.app"></div>
+              <div class="field"><label>Телефон</label><input value="+7 999 120-45-67"></div>
+              <div class="field"><label>Часовой пояс</label><select><option>(GMT+3) Москва</option><option>(GMT+2) Калининград</option><option>(GMT+5) Екатеринбург</option></select></div>
+              <div class="field"><label>Язык интерфейса</label><select><option>Русский</option><option>English</option></select></div>
+            </div>
+            <button class="btn"><svg class="icon"><use href="#i-check"/></svg>Сохранить изменения</button>
+          </div></div>
+        </div>
+        <div class="tabpanel" id="t-team">
+          <div class="sec-h"><div class="sub">5 участников · 25 мест на тарифе Pro</div><button class="btn"><svg class="icon"><use href="#i-plus"/></svg>Пригласить</button></div>
+          <div class="card"><div class="bd" style="padding:8px 6px 12px"><table><thead><tr><th>Сотрудник</th><th>Email</th><th>Роль</th><th>Статус</th></tr></thead><tbody id="team-table"></tbody></table></div></div>
+        </div>
+        <div class="tabpanel" id="t-bill">
+          <div class="row r21">
+            <div class="plan cur"><div style="display:flex;justify-content:space-between;align-items:center"><span class="pn">Тариф Pro</span><span class="pill">Активен</span></div><div class="pp">$49 <span>/ мес</span></div><div style="font-size:13px;color:var(--muted)">До 25 пользователей · безлимит сделок · Pulse AI · все интеграции</div>
+              <div class="usage">
+                <div><div class="ur"><span>Контакты</span><span>1 240 / 5 000</span></div><span class="track" style="display:block;height:8px;background:var(--brand-soft);border-radius:5px;overflow:hidden"><span style="display:block;height:100%;width:25%;background:var(--brand)"></span></span></div>
+                <div><div class="ur"><span>Письма / мес</span><span>8 240 / 20 000</span></div><span class="track" style="display:block;height:8px;background:var(--brand-soft);border-radius:5px;overflow:hidden"><span style="display:block;height:100%;width:41%;background:var(--brand)"></span></span></div>
+                <div><div class="ur"><span>AI-запросы / мес</span><span>640 / 1 000</span></div><span class="track" style="display:block;height:8px;background:var(--brand-soft);border-radius:5px;overflow:hidden"><span style="display:block;height:100%;width:64%;background:var(--brand)"></span></span></div>
+              </div>
+              <button class="btn" style="width:100%;justify-content:center">Управлять подпиской</button>
+            </div>
+            <div class="card"><div class="hd"><h3>История платежей</h3></div><div class="bd" style="padding:6px 6px 10px"><table><tbody>
+              <tr><td>01.06.2025</td><td class="muted">Pro · месяц</td><td class="amt">$49</td><td><span class="tag g">Оплачено</span></td></tr>
+              <tr><td>01.05.2025</td><td class="muted">Pro · месяц</td><td class="amt">$49</td><td><span class="tag g">Оплачено</span></td></tr>
+              <tr><td>01.04.2025</td><td class="muted">Pro · месяц</td><td class="amt">$49</td><td><span class="tag g">Оплачено</span></td></tr>
+            </tbody></table></div></div>
+          </div>
+        </div>
+        <div class="tabpanel" id="t-notif">
+          <div class="card"><div class="bd">
+            <div class="note-row"><div><div class="nt">Новая сделка</div><div class="nd">Уведомлять, когда создаётся сделка</div></div><label class="sw"><input type="checkbox" checked><span class="tr"></span></label></div>
+            <div class="note-row"><div><div class="nt">Новое сообщение во «Входящих»</div><div class="nd">Push и email при новом письме клиента</div></div><label class="sw"><input type="checkbox" checked><span class="tr"></span></label></div>
+            <div class="note-row"><div><div class="nt">Сделка в зоне риска</div><div class="nd">Pulse AI предупредит о простое сделки</div></div><label class="sw"><input type="checkbox" checked><span class="tr"></span></label></div>
+            <div class="note-row"><div><div class="nt">Еженедельный отчёт</div><div class="nd">Сводка по продажам каждый понедельник</div></div><label class="sw"><input type="checkbox"><span class="tr"></span></label></div>
+            <div class="note-row"><div><div class="nt">Telegram-уведомления</div><div class="nd">Дублировать важные события в Telegram</div></div><label class="sw"><input type="checkbox" checked><span class="tr"></span></label></div>
+          </div></div>
+        </div>
+        <div class="tabpanel" id="t-intg">
+          <div class="intg" id="intg-grid"></div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<div class="overlay" id="ov" onclick="closeDrawer()"></div>
+<div class="sb-ov" id="sbov" onclick="toggleSide()"></div>
+<aside class="drawer" id="dr-deal">
+  <div class="dr-h"><div><div style="font-family:var(--serif);font-size:18px;font-weight:600" id="dd-co">—</div><div style="font-size:13px;color:var(--muted);margin-top:3px">Сделка · <span id="dd-stage">—</span></div></div><div class="x" onclick="closeDrawer()"><svg class="icon"><use href="#i-x"/></svg></div></div>
+  <div class="dr-b">
+    <div class="dd-amt" id="dd-amt">—</div>
+    <div class="stepper"><span class="s on"></span><span class="s on"></span><span class="s on"></span><span class="s"></span><span class="s"></span></div>
+    <div style="font-size:12.5px;color:var(--muted);margin-bottom:18px">Этап 3 из 5 · вероятность <b id="dd-prob" style="color:var(--ink)">64%</b></div>
+    <div class="dr-acts"><button class="btn"><svg class="icon"><use href="#i-mail"/></svg>Написать</button><button class="btn ghost"><svg class="icon"><use href="#i-phone"/></svg>Позвонить</button><button class="btn ghost"><svg class="icon"><use href="#i-task"/></svg></button></div>
+    <div class="kv"><span class="k">Контакт</span><span class="v" id="dd-contact">—</span><span class="k">Менеджер</span><span class="v" id="dd-owner">—</span><span class="k">Источник</span><span class="v">Веб-сайт</span><span class="k">Создана</span><span class="v">2 июня 2025</span><span class="k">Ожид. закрытие</span><span class="v">20 июня 2025</span></div>
+    <div class="blk"><h4>Активность</h4><div class="tl">
+      <div class="tle"><div class="tlt">Отправлено коммерческое предложение</div><div class="tld">Сегодня, 11:24 · Алексей Б.</div></div>
+      <div class="tle"><div class="tlt">Звонок 14 мин — обсудили условия</div><div class="tld">Вчера, 16:02 · Алексей Б.</div></div>
+      <div class="tle"><div class="tlt">Сделка перешла на этап «Переговоры»</div><div class="tld">12 июня · автоматически</div></div>
+      <div class="tle"><div class="tlt">Создана из заявки с сайта</div><div class="tld">2 июня · Pulse Automations</div></div>
+    </div></div>
+    <div class="blk"><h4>Задачи</h4>
+      <div class="tk done"><span class="cb"><svg class="icon" style="width:13px;height:13px;stroke-width:3"><use href="#i-check"/></svg></span><span class="tkt">Подготовить КП</span></div>
+      <div class="tk"><span class="cb"></span><span class="tkt">Согласовать договор</span><span style="margin-left:auto;color:var(--bad);font-size:12px;font-weight:600">Завтра</span></div>
+      <div class="tk"><span class="cb"></span><span class="tkt">Выставить счёт</span><span style="margin-left:auto;color:var(--faint);font-size:12px">18 июня</span></div>
+    </div>
+    <div class="blk"><h4>Заметки</h4><div style="background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:13px;font-size:13.5px;line-height:1.5;color:var(--ink)">Клиент сравнивает с конкурентом. Решающий фактор — интеграция с телефонией и срок внедрения. Готовы стартовать в июле.</div></div>
+  </div>
+</aside>
+
+<aside class="drawer" id="dr-contact">
+  <div class="dr-h"><span class="av-s" id="dc-av" style="width:48px;height:48px;font-size:16px;background:var(--brand)">—</span><div><div style="font-family:var(--serif);font-size:18px;font-weight:600" id="dc-name">—</div><div style="font-size:13px;color:var(--muted);margin-top:3px" id="dc-title">—</div></div><div class="x" onclick="closeDrawer()"><svg class="icon"><use href="#i-x"/></svg></div></div>
+  <div class="dr-b">
+    <div class="dr-acts"><button class="btn"><svg class="icon"><use href="#i-mail"/></svg>Написать</button><button class="btn ghost"><svg class="icon"><use href="#i-phone"/></svg>Позвонить</button><button class="btn ghost"><svg class="icon"><use href="#i-cal"/></svg></button></div>
+    <div class="kv"><span class="k">Компания</span><span class="v" id="dc-co">—</span><span class="k">Email</span><span class="v" id="dc-email">—</span><span class="k">Телефон</span><span class="v" id="dc-phone">—</span><span class="k">Тип</span><span class="v" id="dc-type">—</span><span class="k">Ответственный</span><span class="v">Алексей Б.</span></div>
+    <div class="blk"><h4>Сделки контакта</h4>
+      <div style="border:1px solid var(--line);border-radius:10px;padding:13px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center"><div><div style="font-weight:600;font-size:13.5px">Подписка Pro · 25 мест</div><div style="font-size:12px;color:var(--muted);margin-top:2px">Этап: Переговоры</div></div><span class="amt">$58 200</span></div>
+      <div style="border:1px solid var(--line);border-radius:10px;padding:13px;display:flex;justify-content:space-between;align-items:center"><div><div style="font-weight:600;font-size:13.5px">Доп. модуль аналитики</div><div style="font-size:12px;color:var(--muted);margin-top:2px">Этап: Закрыто</div></div><span class="amt">$9 400</span></div>
+    </div>
+    <div class="blk"><h4>Активность</h4><div class="tl">
+      <div class="tle"><div class="tlt">Ответила на письмо с КП</div><div class="tld">2 ч назад</div></div>
+      <div class="tle"><div class="tlt">Открыла демо-стенд (12 мин)</div><div class="tld">Вчера</div></div>
+      <div class="tle"><div class="tlt">Добавлена в CRM из формы на сайте</div><div class="tld">2 июня</div></div>
+    </div></div>
+  </div>
+</aside>
+
+<script>
+const owners={'АБ':{n:'Алексей Б.',c:'#6366F1',p:12},'ДС':{n:'Дмитрий С.',c:'#0EA5E9',p:33},'ИП':{n:'Ирина П.',c:'#F59E0B',p:47},'ОВ':{n:'Олег В.',c:'#16A34A',p:15}};
+const deals=[
+ {co:'ТехноСервис',c2:'Подписка Pro',contact:'Игорь Петров',amt:'$24 500',stage:'Переговоры',cls:'st-nego',prob:'64%',owner:'АБ',lo:'ТС',lc:'#E8EFFE',lt:'#2563EB',col:'nego'},
+ {co:'Глобал Ритейл',c2:'Pro · 25 мест',contact:'Мария Ким',amt:'$58 200',stage:'Предложение',cls:'st-prop',prob:'48%',owner:'ДС',lo:'ГР',lc:'#F0EAFE',lt:'#6D28D9',col:'prop'},
+ {co:'Айтилогик',c2:'Внедрение',contact:'Сергей Волков',amt:'$12 800',stage:'Квалификация',cls:'st-qual',prob:'30%',owner:'АБ',lo:'АЛ',lc:'#FEF6E7',lt:'#B45309',col:'qual'},
+ {co:'Медсеть Плюс',c2:'Годовой контракт',contact:'Анна Орлова',amt:'$96 400',stage:'Закрыто',cls:'st-won',prob:'100%',owner:'ИП',lo:'МП',lc:'#ECFDF3',lt:'#16A34A',col:'won'},
+ {co:'СтройГрупп',c2:'Демо запрошено',contact:'Павел Раков',amt:'$33 100',stage:'Новая',cls:'st-new',prob:'15%',owner:'ДС',lo:'СГ',lc:'#F1F2F5',lt:'#475569',col:'new'},
+ {co:'ФинКонсалт',c2:'Pro + аналитика',contact:'Ольга Белая',amt:'$47 900',stage:'Переговоры',cls:'st-nego',prob:'58%',owner:'АБ',lo:'ФК',lc:'#E8EFFE',lt:'#2563EB',col:'nego'},
+ {co:'ЭкоМаркет',c2:'Стартовый',contact:'Денис Лис',amt:'$8 200',stage:'Квалификация',cls:'st-qual',prob:'28%',owner:'ОВ',lo:'ЭМ',lc:'#ECFDF3',lt:'#16A34A',col:'qual'},
+ {co:'АвтоПрайд',c2:'Pro · 10 мест',contact:'Роман Гай',amt:'$21 700',stage:'Новая',cls:'st-new',prob:'12%',owner:'ИП',lo:'АП',lc:'#F1F2F5',lt:'#475569',col:'new'},
+ {co:'ДатаЛаб',c2:'Корпоративный',contact:'Юлия Сон',amt:'$74 000',stage:'Предложение',cls:'st-prop',prob:'45%',owner:'АБ',lo:'ДЛ',lc:'#F0EAFE',lt:'#6D28D9',col:'prop'}
+];
+const cols=[{k:'new',t:'Новые',c:'#94A3B8'},{k:'qual',t:'Квалификация',c:'#6D28D9'},{k:'prop',t:'Предложение',c:'#2563EB'},{k:'nego',t:'Переговоры',c:'#B45309'},{k:'won',t:'Закрыто',c:'#16A34A'}];
+const contacts=[
+ {name:'Игорь Петров',title:'Директор по закупкам',co:'ТехноСервис',email:'i.petrov@technoservice.ru',phone:'+7 901 220-11-04',deals:'2',type:'Клиент',tc:'g',av:'#6366F1',p:11},
+ {name:'Мария Ким',title:'CEO',co:'Глобал Ритейл',email:'m.kim@globalretail.ru',phone:'+7 905 555-01-72',deals:'1',type:'Лид',tc:'b',av:'#2563EB',p:44},
+ {name:'Сергей Волков',title:'CTO',co:'Айтилогик',email:'s.volkov@itlogic.io',phone:'+7 916 740-33-21',deals:'1',type:'Лид',tc:'b',av:'#F59E0B',p:13},
+ {name:'Анна Орлова',title:'Главный врач',co:'Медсеть Плюс',email:'a.orlova@medset.ru',phone:'+7 903 118-22-90',deals:'3',type:'Клиент',tc:'g',av:'#16A34A',p:45},
+ {name:'Павел Раков',title:'Коммерческий директор',co:'СтройГрупп',email:'p.rakov@stroygroup.ru',phone:'+7 921 654-08-15',deals:'1',type:'Новый',tc:'n',av:'#0EA5E9',p:52},
+ {name:'Ольга Белая',title:'Финансовый директор',co:'ФинКонсалт',email:'o.belaya@finconsult.ru',phone:'+7 999 201-77-43',deals:'2',type:'Клиент',tc:'g',av:'#6D28D9',p:31},
+ {name:'Денис Лис',title:'Владелец',co:'ЭкоМаркет',email:'denis@ecomarket.by',phone:'+375 29 311-00-77',deals:'1',type:'Лид',tc:'b',av:'#16A34A',p:68},
+ {name:'Юлия Сон',title:'Head of Data',co:'ДатаЛаб',email:'y.son@datalab.ai',phone:'+7 926 400-19-58',deals:'1',type:'Партнёр',tc:'',av:'#6366F1',p:27}
+];
+const convs=[
+ {n:'Мария Ким',s:'Отлично, спасибо! Обсудим внутри…',t:'2 ч',un:1,av:'#2563EB',i:'МК',p:44},
+ {n:'Игорь Петров',s:'Когда сможем созвониться по договору?',t:'4 ч',un:1,av:'#6366F1',i:'ИП',p:11},
+ {n:'Поддержка · Айтилогик',s:'Прислали доступы к тестовому контуру',t:'вчера',un:0,av:'#F59E0B',i:'АЛ',p:13},
+ {n:'Анна Орлова',s:'Счёт оплачен, ждём внедрение',t:'вчера',un:0,av:'#16A34A',i:'АО',p:45},
+ {n:'Ольга Белая',s:'Можно добавить ещё 5 лицензий?',t:'2 дн',un:1,av:'#6D28D9',i:'ОБ',p:31},
+ {n:'Павел Раков',s:'Спасибо за демо, интересно',t:'3 дн',un:0,av:'#0EA5E9',i:'ПР',p:52}
+];
+const autos=[
+ {n:'Новый лид с сайта → сделка',d:['Триггер: форма на сайте','Действие: создать сделку','назначить менеджера'],on:1,runs:'342 запуска'},
+ {n:'Сделка без активности 5 дней',d:['Триггер: простой 5 дней','Действие: напомнить менеджеру','+ пометить риск'],on:1,runs:'88 запусков'},
+ {n:'Сделка закрыта → благодарность',d:['Триггер: статус «Закрыто»','Действие: письмо клиенту','выставить счёт'],on:1,runs:'418 запусков'},
+ {n:'Брошенная заявка → возврат',d:['Триггер: не отвечает 3 дня','Действие: серия из 2 писем'],on:0,runs:'126 запусков'},
+ {n:'День рождения клиента',d:['Триггер: дата ДР','Действие: поздравление + бонус'],on:1,runs:'54 запуска'},
+ {n:'Новый VIP-клиент → Telegram',d:['Триггер: сделка > $50K','Действие: алерт в Telegram'],on:1,runs:'19 запусков'}
+];
+const team=[
+ {n:'Алексей Бурьянов',e:'alexey@pulse-crm.app',r:'Администратор',rc:'',st:'Активен',p:12},
+ {n:'Дмитрий Седов',e:'d.sedov@pulse-crm.app',r:'Менеджер',rc:'b',st:'Активен',p:33},
+ {n:'Ирина Павлова',e:'i.pavlova@pulse-crm.app',r:'Менеджер',rc:'b',st:'Активен',p:47},
+ {n:'Олег Витте',e:'o.vitte@pulse-crm.app',r:'Менеджер',rc:'b',st:'Активен',p:15},
+ {n:'Наталья Ким',e:'n.kim@pulse-crm.app',r:'Только просмотр',rc:'n',st:'Приглашён',p:24}
+];
+const intgs=[
+ {n:'Telegram',d:'Уведомления и бот для заявок',c:'#229ED9',l:'T',on:1},
+ {n:'Gmail',d:'Двусторонняя синхронизация почты',c:'#EA4335',l:'G',on:1},
+ {n:'Stripe',d:'Приём онлайн-платежей и счета',c:'#635BFF',l:'S',on:0},
+ {n:'Google Calendar',d:'Встречи и напоминания',c:'#4285F4',l:'C',on:1},
+ {n:'Slack',d:'Командные уведомления',c:'#4A154B',l:'#',on:0},
+ {n:'WhatsApp',d:'Сообщения клиентам',c:'#25D366',l:'W',on:0}
+];
+const titles={'v-dash':['Дашборд','Воскресенье, 15 июня 2025'],'v-deals':['Сделки','87 активных · $1,2M в воронке'],'v-contacts':['Контакты','1 240 контактов в базе'],'v-inbox':['Входящие','5 непрочитанных сообщений'],'v-ai':['Pulse AI','Ваш AI-ассистент по продажам'],'v-auto':['Автоматизации','8 активных сценариев'],'v-reports':['Отчёты и аналитика','Обновлено сегодня в 09:00'],'v-settings':['Настройки','Управление аккаунтом и командой']};
+
+function el(h){const t=document.createElement('template');t.innerHTML=h.trim();return t.content.firstChild;}
+const $=id=>document.getElementById(id);
+const AV=n=>'https://i.pravatar.cc/120?img='+n;
+function avChip(ini,color,p,size){size=size||28;return '<span class="av-s" style="width:'+size+'px;height:'+size+'px;font-size:'+Math.round(size*0.4)+'px;background:'+color+'">'+ini+(p?'<img src="'+AV(p)+'" onerror="this.remove()">':'')+'</span>';}
+const ownerAv=code=>{const o=owners[code]||{c:'#6366F1',p:0};return avChip(code,o.c,o.p);};
+
+function dealRow(d){return '<tr onclick="openDeal('+deals.indexOf(d)+')"><td><div class="co"><span class="lo" style="background:'+d.lc+';color:'+d.lt+'">'+d.lo+'</span>'+d.co+'</div></td><td class="amt">'+d.amt+'</td><td><span class="st '+d.cls+'">'+d.stage+'</span></td><td><div class="who">'+ownerAv(d.owner)+'</div></td></tr>';}
+function dealRowFull(d){return '<tr onclick="openDeal('+deals.indexOf(d)+')"><td><div class="co"><span class="lo" style="background:'+d.lc+';color:'+d.lt+'">'+d.lo+'</span>'+d.co+'</div></td><td class="muted">'+d.contact+'</td><td class="amt">'+d.amt+'</td><td><span class="st '+d.cls+'">'+d.stage+'</span></td><td class="muted">'+d.prob+'</td><td><div class="who">'+ownerAv(d.owner)+'</div></td></tr>';}
+
+function render(){
+ $('dash-deals').innerHTML=deals.slice(0,6).map(dealRow).join('');
+ $('deals-table').innerHTML=deals.map(dealRowFull).join('');
+ $('kanban').innerHTML=cols.map(c=>{const cd=deals.filter(d=>d.col===c.k);return '<div class="kcol"><div class="kcol-hd"><span class="dotc" style="background:'+c.c+'"></span>'+c.t+'<span class="cnt">'+cd.length+'</span></div>'+cd.map(d=>'<div class="kcard" onclick="openDeal('+deals.indexOf(d)+')"><div class="kco">'+d.co+'</div><div class="kc2">'+d.c2+'</div><div class="kfoot"><span class="kamt">'+d.amt+'</span>'+ownerAv(d.owner)+'</div></div>').join('')+'</div>';}).join('');
+ $('contacts-table').innerHTML=contacts.map((c,i)=>'<tr onclick="openContact('+i+')"><td><div class="co">'+avChip(c.name.split(' ').map(w=>w[0]).join('').slice(0,2),c.av,c.p)+c.name+'</div></td><td class="muted">'+c.co+'</td><td class="muted">'+c.email+'</td><td class="muted">'+c.phone+'</td><td>'+c.deals+'</td><td><span class="tag '+c.tc+'">'+c.type+'</span></td></tr>').join('');
+ $('conv-list').innerHTML=convs.map((c,i)=>'<div class="conv'+(i===0?' active':'')+'">'+avChip(c.i,c.av,c.p,38)+'<div class="ct"><div class="cn">'+c.n+'<span class="tm">'+c.t+'</span></div><div class="cs">'+c.s+'</div></div>'+(c.un?'<span class="un"></span>':'')+'</div>').join('');
+ $('auto-list').innerHTML=autos.map(a=>'<div class="auto-card"><span class="ai-ic"><svg class="icon"><use href="#i-bolt"/></svg></span><div class="at"><div class="an">'+a.n+'</div><div class="ad">'+a.d.map(x=>'<span class="flowtag">'+x+'</span>').join('<svg class="icon" style="width:14px;height:14px;color:#94A3B8"><use href="#i-arrow"/></svg>')+'</div></div><div class="runs">'+a.runs+'</div><label class="sw"><input type="checkbox"'+(a.on?' checked':'')+'><span class="tr"></span></label></div>').join('');
+ $('team-table').innerHTML=team.map(m=>'<tr><td><div class="co">'+avChip(m.n.split(' ').map(w=>w[0]).join('').slice(0,2),'#6366F1',m.p)+m.n+'</div></td><td class="muted">'+m.e+'</td><td><span class="tag '+m.rc+'">'+m.r+'</span></td><td>'+(m.st==='Активен'?'<span class="tag g">Активен</span>':'<span class="tag n">Приглашён</span>')+'</td></tr>').join('');
+ $('intg-grid').innerHTML=intgs.map(g=>'<div class="icard"><div class="ih"><span class="ilogo" style="background:'+g.c+'">'+g.l+'</span><div class="in">'+g.n+'</div></div><div class="idesc">'+g.d+'</div>'+(g.on?'<button class="btn ghost" style="width:100%;justify-content:center;color:var(--ok);border-color:#BBF7D0"><svg class="icon"><use href="#i-check"/></svg>Подключено</button>':'<button class="btn" style="width:100%;justify-content:center">Подключить</button>')+'</div>').join('');
+}
+
+function go(id){
+ document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===id));
+ document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active',n.dataset.view===id));
+ $('pg-title').textContent=titles[id][0];
+ $('pg-sub').textContent=titles[id][1];
+ const sb=$('sb');if(sb){sb.classList.remove('open');$('sbov').classList.remove('open');}
+ window.scrollTo(0,0);
+}
+function goAI(){go('v-ai');}
+function toggleSide(){const s=$('sb'),o=$('sbov');const op=s.classList.toggle('open');o.classList.toggle('open',op);}
+document.querySelectorAll('.nav-item').forEach(n=>n.addEventListener('click',()=>go(n.dataset.view)));
+
+function dealView(m){$('deals-kan').style.display=m==='kan'?'block':'none';$('deals-tab').style.display=m==='tab'?'block':'none';$('seg-kan').classList.toggle('active',m==='kan');$('seg-tab').classList.toggle('active',m==='tab');}
+
+function openDeal(i){const d=deals[i];$('dd-co').textContent=d.co;$('dd-stage').textContent=d.stage;$('dd-amt').textContent=d.amt;$('dd-prob').textContent=d.prob;$('dd-contact').textContent=d.contact;$('dd-owner').textContent=(owners[d.owner]?owners[d.owner].n:d.owner);openD('dr-deal');}
+function openContact(i){const c=contacts[i];const ini=c.name.split(' ').map(w=>w[0]).join('').slice(0,2);const a=$('dc-av');a.style.background=c.av;a.innerHTML=ini+'<img src="'+AV(c.p)+'" onerror="this.remove()">';$('dc-name').textContent=c.name;$('dc-title').textContent=c.title+' · '+c.co;$('dc-co').textContent=c.co;$('dc-email').textContent=c.email;$('dc-phone').textContent=c.phone;$('dc-type').textContent=c.type;openD('dr-contact');}
+function openD(id){$('ov').classList.add('open');$(id).classList.add('open');}
+function closeDrawer(){$('ov').classList.remove('open');document.querySelectorAll('.drawer').forEach(d=>d.classList.remove('open'));}
+
+function setTab(t,id){document.querySelectorAll('#v-settings .tab').forEach(x=>x.classList.remove('active'));t.classList.add('active');document.querySelectorAll('#v-settings .tabpanel').forEach(p=>p.classList.toggle('active',p.id===id));}
+
+const aiAns={
+ 'менеджер':'Лучший менеджер месяца — <b>Алексей Б.</b>: $312K выручки, 38 закрытых сделок, конверсия 31%. На втором месте Дмитрий С. ($244K).',
+ 'прогноз':'Прогноз выручки на июль: <b>$141K</b> (+10% к июню). Уверенность 82%. Драйверы: 3 сделки на финальном этапе на сумму $178K с вероятностью 60–100%.',
+ 'письмо':'Готово, черновик письма для «СтройГрупп»:<br><br>«Павел, спасибо за интерес к Pulse CRM. Прикладываю расчёт под 10 менеджеров и доступ к демо на 7 дней. Предлагаю короткий созвон в четверг в 15:00 — покажу сценарии под вашу воронку.»',
+ 'default':'Анализирую данные вашей CRM… <i>(в демо это заглушка — в рабочей версии Pulse AI отвечает по реальным сделкам, контактам и почте через подключённую модель.)</i>'
+};
+function pushMsg(t,cls){const th=$('ai-thread');th.appendChild(el('<div class="msg '+cls+'" style="max-width:80%">'+t+'</div>'));th.scrollTop=th.scrollHeight;}
+function aiReply(q){const k=Object.keys(aiAns).find(k=>k!=='default'&&q.toLowerCase().includes(k));setTimeout(()=>pushMsg(aiAns[k]||aiAns.default,'a'),450);}
+function aiAsk(q){pushMsg(q,'u');aiReply(q);}
+function aiSend(){const i=$('ai-in');if(!i.value.trim())return;const q=i.value;i.value='';pushMsg(q,'u');aiReply(q);}
+
+render();
+</script>
+</body>
+</html>

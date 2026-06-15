@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Replai — AI-поддержка клиентов</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F6F5FB;--panel:#FFFFFF;--ink:#1A1626;--muted:#6B6680;--faint:#A29DB5;--line:#ECEAF3;
+  --brand:#7C3AED;--brand-d:#6D28D9;--soft:#F2ECFE;--grad:linear-gradient(135deg,#7C3AED 0%,#A855F7 100%);
+  --ok:#16A34A;--ok-bg:#E9F7EF;--warn:#B45309;--warn-bg:#FBF1E2;--bad:#DC2626;--bad-bg:#FCEBEB;--blue:#2563EB;--blue-bg:#E8EFFE;--teal:#0D9488;--teal-bg:#E0F2F0;
+  --disp:'Manrope',-apple-system,'Segoe UI',sans-serif;--sans:'Inter',-apple-system,'Segoe UI',Roboto,sans-serif;
+  --sh:0 1px 2px rgba(26,22,38,.04),0 6px 18px rgba(26,22,38,.04);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:var(--sans);background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;font-size:14px}
+h1,h2,h3,.disp{font-family:var(--disp);letter-spacing:-.01em}
+.icon{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.app{display:flex;min-height:100vh}
+.sb{width:240px;flex:none;background:var(--panel);border-right:1px solid var(--line);display:flex;flex-direction:column;padding:18px 14px;position:sticky;top:0;height:100vh}
+.brand{display:flex;align-items:center;gap:11px;padding:6px 8px 18px}
+.brand .lg{width:38px;height:38px;border-radius:11px;background:var(--grad);color:#fff;display:flex;align-items:center;justify-content:center}
+.brand .wm{font-family:var(--disp);font-size:21px;font-weight:800}
+.brand .tag{font-size:10px;color:var(--brand);background:var(--soft);padding:2px 7px;border-radius:5px;font-weight:700}
+.nlabel{font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--faint);padding:14px 10px 6px;font-weight:700}
+.nav-item{display:flex;align-items:center;gap:12px;padding:10px 11px;border-radius:10px;color:var(--muted);font-size:14px;font-weight:500;cursor:pointer;margin-bottom:2px}
+.nav-item:hover{background:var(--bg);color:var(--ink)}
+.nav-item.active{background:var(--soft);color:var(--brand);font-weight:600}
+.nav-item .icon{width:19px;height:19px}
+.nav-item .badge{margin-left:auto;background:var(--soft);color:var(--brand);font-size:11px;padding:1px 8px;border-radius:20px;font-weight:700}
+.sb-foot{margin-top:auto;display:flex;align-items:center;gap:10px;padding:12px 8px 4px;border-top:1px solid var(--line)}
+.main{flex:1;min-width:0;display:flex;flex-direction:column}
+.top{height:68px;flex:none;display:flex;align-items:center;gap:14px;padding:0 24px;border-bottom:1px solid var(--line);background:rgba(255,255,255,.85);backdrop-filter:blur(8px);position:sticky;top:0;z-index:20}
+.top h1{font-size:20px;font-weight:700}
+.top .sub{font-size:12px;color:var(--muted);margin-top:1px}
+.search{margin-left:auto;display:flex;align-items:center;gap:8px;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:0 12px;height:38px;width:230px;color:var(--faint)}
+.search input{border:0;background:transparent;outline:0;font-size:13px;color:var(--ink);width:100%;font-family:var(--sans)}
+.ibtn{width:38px;height:38px;border-radius:10px;border:1px solid var(--line);background:var(--panel);display:flex;align-items:center;justify-content:center;color:var(--muted);cursor:pointer;position:relative}
+.ibtn:hover{color:var(--ink)}.ibtn .dot{position:absolute;top:8px;right:9px;width:8px;height:8px;background:var(--bad);border-radius:50%;border:2px solid var(--panel)}
+.burger{display:none;width:38px;height:38px;border-radius:10px;border:1px solid var(--line);background:var(--panel);align-items:center;justify-content:center;color:var(--ink);cursor:pointer;flex:none}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;height:38px;padding:0 16px;border-radius:10px;background:var(--brand);color:#fff;font-size:13px;font-weight:600;border:0;cursor:pointer;white-space:nowrap;font-family:var(--sans)}
+.btn:hover{background:var(--brand-d)}.btn .icon{width:16px;height:16px}
+.btn.grad{background:var(--grad)}
+.btn.ghost{background:var(--panel);color:var(--ink);border:1px solid var(--line)}.btn.ghost:hover{background:var(--bg)}
+.btn.block{width:100%}
+.ava{border-radius:50%;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-weight:600;flex:none;position:relative;overflow:hidden;background:var(--brand)}
+.ava img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.aibadge{display:inline-flex;align-items:center;gap:5px;background:var(--grad);color:#fff;font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px}
+.aibadge .icon{width:13px;height:13px;stroke:#fff}
+.content{flex:1;min-height:0}
+.view{display:none}.view.active{display:block}
+.pad{padding:20px 24px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px;margin-bottom:18px}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:15px;padding:17px 19px;box-shadow:var(--sh)}
+.kpi .lab{color:var(--muted);font-size:12.5px;font-weight:500;display:flex;justify-content:space-between;align-items:center}
+.kpi .ic{width:36px;height:36px;border-radius:10px;background:var(--soft);color:var(--brand);display:flex;align-items:center;justify-content:center}
+.kpi .ic.g{background:var(--ok-bg);color:var(--ok)}.kpi .ic.b{background:var(--blue-bg);color:var(--blue)}.kpi .ic.t{background:var(--teal-bg);color:var(--teal)}
+.kpi .val{font-family:var(--disp);font-size:29px;font-weight:700;margin-top:12px}
+.kpi .d{font-size:12px;font-weight:600;margin-top:7px}.kpi .d.up{color:var(--ok)}.kpi .d.mut{color:var(--muted)}
+.row{display:grid;gap:16px}.r-2-1{grid-template-columns:1.7fr 1fr}.r-1-1{grid-template-columns:1fr 1fr}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:15px;box-shadow:var(--sh);display:flex;flex-direction:column;margin-bottom:16px}
+.card .hd{display:flex;align-items:center;justify-content:space-between;padding:15px 18px;border-bottom:1px solid var(--line)}
+.card .hd h3{font-size:15px;font-weight:700}
+.card .hd .mut{font-size:12px;color:var(--muted)}
+.card .hd .lk{font-size:13px;color:var(--brand);font-weight:600;cursor:pointer}
+.card .bd{padding:18px}
+.chart-wrap svg{width:100%;height:auto;display:block}
+.donut-wrap{display:flex;align-items:center;gap:22px}
+.legend{display:flex;flex-direction:column;gap:11px;flex:1}
+.lg{display:flex;align-items:center;gap:9px;font-size:12.5px}.lg .sw{width:11px;height:11px;border-radius:3px;flex:none}.lg .pc{margin-left:auto;color:var(--muted);font-weight:600}
+.bars{display:flex;flex-direction:column;gap:13px}
+.bar{display:grid;grid-template-columns:130px 1fr 46px;align-items:center;gap:12px}
+.bar .bl{font-size:12.5px;font-weight:500;color:var(--ink)}
+.bar .track{height:9px;background:var(--soft);border-radius:6px;overflow:hidden}.bar .fill{height:100%;background:var(--grad);border-radius:6px}
+.bar .bv{font-size:12.5px;color:var(--muted);text-align:right;font-weight:600}
+table{width:100%;border-collapse:collapse}
+thead th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--faint);font-weight:600;padding:0 14px 11px}
+tbody tr{cursor:pointer}tbody tr:hover{background:var(--bg)}
+tbody td{padding:12px 14px;border-top:1px solid var(--line);font-size:13px}
+.who{display:flex;align-items:center;gap:10px;font-weight:500}
+.muted{color:var(--muted)}
+.stt{font-size:11.5px;font-weight:600;padding:4px 10px;border-radius:7px;display:inline-block;white-space:nowrap}
+.s-ai{background:var(--soft);color:var(--brand)}.s-open{background:var(--blue-bg);color:var(--blue)}.s-wait{background:var(--warn-bg);color:var(--warn)}.s-done{background:var(--ok-bg);color:var(--ok)}.s-esc{background:var(--bad-bg);color:var(--bad)}
+.ch-ic{width:24px;height:24px;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff}
+/* split inbox */
+.split{display:grid;grid-template-columns:320px 1fr;height:calc(100vh - 69px)}
+.pane-l{border-right:1px solid var(--line);background:var(--panel);overflow:auto}
+.pl-h{padding:14px 16px;border-bottom:1px solid var(--line);font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:between;gap:8px}
+.conv{display:flex;gap:11px;padding:13px 16px;border-bottom:1px solid var(--line);cursor:pointer}
+.conv:hover{background:var(--bg)}.conv.active{background:var(--soft)}
+.conv .ct{flex:1;min-width:0}
+.conv .cn{font-size:13.5px;font-weight:600;display:flex;justify-content:space-between;gap:8px}
+.conv .cn .tm{font-size:11px;color:var(--faint);font-weight:500;flex:none}
+.conv .cs{font-size:12.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:3px}
+.conv .cb{display:flex;align-items:center;gap:6px;margin-top:6px}
+.pane-r{overflow:auto;background:var(--bg);display:flex;flex-direction:column}
+.thread-h{padding:14px 22px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px;background:var(--panel)}
+.thread-b{flex:1;overflow:auto;padding:22px;display:flex;flex-direction:column;gap:16px}
+.em{max-width:80%;font-size:13.5px;line-height:1.55;padding:13px 16px;border-radius:14px;background:var(--panel);border:1px solid var(--line)}
+.em .emh{font-size:11.5px;color:var(--faint);margin-bottom:5px}
+.em.me{align-self:flex-end;background:var(--brand);color:#fff;border:0}
+.ai-draft{align-self:stretch;border:1.5px solid transparent;background:linear-gradient(#fff,#fff) padding-box,var(--grad) border-box;border-radius:16px;padding:16px 18px;box-shadow:0 8px 24px rgba(124,58,237,.1)}
+.ai-draft .adh{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.ai-draft .conf{margin-left:auto;font-size:12px;color:var(--ok);font-weight:700;background:var(--ok-bg);padding:3px 9px;border-radius:20px}
+.ai-draft .adtxt{font-size:14px;line-height:1.6;color:var(--ink)}
+.ai-draft .src{display:flex;align-items:center;gap:8px;margin-top:12px;flex-wrap:wrap;font-size:12px;color:var(--muted)}
+.srcchip{background:var(--soft);color:var(--brand);font-weight:600;padding:4px 10px;border-radius:7px;font-size:12px;display:inline-flex;align-items:center;gap:5px}
+.srcchip .icon{width:13px;height:13px}
+.ai-draft .adacts{display:flex;gap:9px;margin-top:14px;flex-wrap:wrap}
+.reply{padding:14px 22px;border-top:1px solid var(--line);background:var(--panel);display:flex;align-items:center;gap:10px}
+.reply .inp{flex:1;display:flex;align-items:center;background:var(--bg);border:1px solid var(--line);border-radius:11px;padding:0 14px;height:44px}
+.reply .inp input{flex:1;border:0;background:transparent;outline:0;font-size:13.5px;color:var(--ink);font-family:var(--sans)}
+.kbgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.kbcard{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:16px 18px;cursor:pointer;box-shadow:var(--sh);transition:.15s}
+.kbcard:hover{transform:translateY(-3px);box-shadow:0 14px 28px rgba(26,22,38,.08)}
+.kbcard .kc{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--brand)}
+.kbcard .kt{font-family:var(--disp);font-size:16px;font-weight:600;margin:6px 0 8px;line-height:1.3}
+.kbcard .km{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:12px}
+.kbbanner{background:var(--grad);border-radius:15px;padding:20px 24px;color:#fff;display:flex;align-items:center;gap:16px;margin-bottom:18px}
+.kbbanner .ic{width:48px;height:48px;border-radius:12px;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;flex:none}
+.kbbanner h3{font-size:18px;font-weight:700;color:#fff}.kbbanner p{font-size:13px;color:rgba(255,255,255,.85);margin-top:2px}
+.auto-card{display:flex;align-items:center;gap:16px;padding:16px 18px;border:1px solid var(--line);border-radius:13px;background:var(--panel);margin-bottom:12px;box-shadow:var(--sh)}
+.auto-card .ai-ic{width:42px;height:42px;border-radius:11px;background:var(--soft);color:var(--brand);display:flex;align-items:center;justify-content:center;flex:none}
+.auto-card .an{font-size:14px;font-weight:600}.auto-card .ad{font-size:12.5px;color:var(--muted);margin-top:3px}
+.runs{font-size:12px;color:var(--faint);font-weight:500;text-align:right;flex:none}
+.sw2{position:relative;width:42px;height:24px;flex:none}.sw2 input{opacity:0;width:0;height:0;position:absolute}
+.sw2 .tr{position:absolute;inset:0;background:#D6D2E2;border-radius:20px;transition:.2s;cursor:pointer}.sw2 .tr::before{content:"";position:absolute;width:18px;height:18px;border-radius:50%;background:#fff;top:3px;left:3px;transition:.2s}
+.sw2 input:checked+.tr{background:var(--brand)}.sw2 input:checked+.tr::before{transform:translateX(18px)}
+.feed{display:flex;flex-direction:column}
+.fi{display:flex;gap:11px;padding:11px 0;border-bottom:1px solid var(--line)}.fi:last-child{border:0;padding-bottom:0}
+.fi .fic{width:32px;height:32px;border-radius:9px;background:var(--soft);color:var(--brand);display:flex;align-items:center;justify-content:center;flex:none}
+.fi .ft{font-size:13px;line-height:1.4}.fi .fm{font-size:11.5px;color:var(--faint);margin-top:2px}
+.overlay{position:fixed;inset:0;background:rgba(26,22,38,.4);z-index:40;opacity:0;pointer-events:none;transition:.2s}.overlay.open{opacity:1;pointer-events:auto}
+.sb-ov{position:fixed;inset:0;background:rgba(26,22,38,.4);z-index:55;opacity:0;pointer-events:none;transition:.2s}.sb-ov.open{opacity:1;pointer-events:auto}
+@media(max-width:1080px){.r-2-1,.r-1-1,.kbgrid{grid-template-columns:1fr}.kbgrid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:900px){
+ .burger{display:flex}
+ .sb{position:fixed;left:0;top:0;z-index:60;transform:translateX(-100%);transition:transform .25s ease;box-shadow:8px 0 40px rgba(26,22,38,.18)}
+ .sb.open{transform:none}
+ .top{padding:0 14px;gap:10px}.search{display:none}
+ .pad{padding:14px 14px}
+ .split{grid-template-columns:1fr;height:auto}
+ .pane-l{max-height:280px;border-right:0;border-bottom:1px solid var(--line)}
+ .pane-r{min-height:62vh}.thread-b{min-height:46vh}
+ .card .bd-scroll{overflow-x:auto}.card table{min-width:520px}
+ .kbgrid{grid-template-columns:1fr}
+}
+@media(max-width:560px){.hide-sm{display:none}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.5"/></symbol>
+<symbol id="i-inbox" viewBox="0 0 24 24"><path d="M3 13h5l2 3h4l2-3h5"/><path d="M5 5h14l2 8v5a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-5z"/></symbol>
+<symbol id="i-book" viewBox="0 0 24 24"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 5v14"/></symbol>
+<symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 3 5 13.2h6l-1 7.8 8-10.2h-6z"/></symbol>
+<symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 20V4M4 20h16"/><rect x="7.5" y="11" width="3.4" height="6" rx="1"/><rect x="13.5" y="7" width="3.4" height="10" rx="1"/></symbol>
+<symbol id="i-set" viewBox="0 0 24 24"><path d="M4 7.5h16M4 14.5h16"/><circle cx="9" cy="7.5" r="2.2"/><circle cx="15" cy="14.5" r="2.2"/></symbol>
+<symbol id="i-ai" viewBox="0 0 24 24"><path d="M12 3l1.9 4.8L18.7 9.6l-4.8 1.9L12 16.3l-1.9-4.8L5.3 9.6l4.8-1.8z"/><path d="M18.2 14.4l.9 2.3 2.3.9-2.3.9-.9 2.3-.9-2.3-2.3-.9 2.3-.9z"/></symbol>
+<symbol id="i-bot" viewBox="0 0 24 24"><rect x="4" y="8" width="16" height="11" rx="3"/><path d="M12 8V4M9 4h6"/><circle cx="9.5" cy="13" r="1.2"/><circle cx="14.5" cy="13" r="1.2"/></symbol>
+<symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3.2 2"/></symbol>
+<symbol id="i-smile" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8.5 14a4 4 0 0 0 7 0"/><circle cx="9" cy="10" r="1"/><circle cx="15" cy="10" r="1"/></symbol>
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.3-3.3"/></symbol>
+<symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 9.5a6 6 0 0 1 12 0c0 4.5 2 5.5 2 5.5H4s2-1 2-5.5"/><path d="M10 19a2 2 0 0 0 4 0"/></symbol>
+<symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 5 5L20 7"/></symbol>
+<symbol id="i-send" viewBox="0 0 24 24"><path d="M4 12 20 4l-6 16-3-7z"/><path d="m11 13 9-9"/></symbol>
+<symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="m14 6 4 4"/></symbol>
+<symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.4"/><path d="M5 20c0-3.6 3.1-6 7-6s7 2.4 7 6"/></symbol>
+<symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></symbol>
+<symbol id="i-trend" viewBox="0 0 24 24"><path d="m4 16 5-5 3 3 7-7"/><path d="M16 7h4v4"/></symbol>
+</defs></svg>
+
+<div class="app">
+  <aside class="sb" id="sb">
+    <div class="brand"><span class="lg"><svg class="icon" style="width:21px;height:21px;fill:#fff;stroke:#fff"><use href="#i-ai"/></svg></span><span class="wm">Replai</span><span class="tag">AI</span></div>
+    <div class="nlabel">Поддержка</div>
+    <div class="nav-item active" data-view="v-over"><svg class="icon"><use href="#i-grid"/></svg>Обзор</div>
+    <div class="nav-item" data-view="v-inbox"><svg class="icon"><use href="#i-inbox"/></svg>AI-входящие<span class="badge">24</span></div>
+    <div class="nav-item" data-view="v-kb"><svg class="icon"><use href="#i-book"/></svg>База знаний</div>
+    <div class="nav-item" data-view="v-auto"><svg class="icon"><use href="#i-bolt"/></svg>Автоматизации</div>
+    <div class="nlabel">Аналитика</div>
+    <div class="nav-item" data-view="v-analytics"><svg class="icon"><use href="#i-chart"/></svg>Отчёты</div>
+    <div class="nav-item" data-view="v-over"><svg class="icon"><use href="#i-set"/></svg>Настройки</div>
+    <div class="sb-foot"><span class="ava" style="width:36px;height:36px;font-size:13px">МД<img src="https://i.pravatar.cc/100?img=32" onerror="this.remove()"></span><div><div style="font-size:13px;font-weight:600">Марина Д.</div><div style="font-size:11.5px;color:var(--faint)">Тимлид поддержки</div></div></div>
+  </aside>
+
+  <main class="main">
+    <header class="top">
+      <button class="burger" onclick="toggleSide()"><svg class="icon"><use href="#i-menu"/></svg></button>
+      <div><h1 id="pg-title">Обзор</h1><div class="sub" id="pg-sub">Поддержка · сегодня, 15 июня</div></div>
+      <div class="search"><svg class="icon" style="width:16px;height:16px"><use href="#i-search"/></svg><input placeholder="Поиск по диалогам…"></div>
+      <div class="ibtn hide-sm"><svg class="icon" style="width:18px;height:18px"><use href="#i-bell"/></svg><span class="dot"></span></div>
+      <button class="btn grad hide-sm"><svg class="icon"><use href="#i-ai"/></svg>Обучить AI</button>
+    </header>
+
+    <div class="content">
+      <!-- OVERVIEW -->
+      <section class="view active pad" id="v-over">
+        <div class="kpis">
+          <div class="kpi"><div class="lab">AI решает сам<span class="ic"><svg class="icon" style="width:18px;height:18px"><use href="#i-bot"/></svg></span></div><div class="val">68%</div><div class="d up">↑ 9 п.п. за месяц</div></div>
+          <div class="kpi"><div class="lab">Среднее время ответа<span class="ic b"><svg class="icon" style="width:18px;height:18px"><use href="#i-clock"/></svg></span></div><div class="val">38 сек</div><div class="d up">↓ в 12 раз</div></div>
+          <div class="kpi"><div class="lab">CSAT<span class="ic g"><svg class="icon" style="width:18px;height:18px"><use href="#i-smile"/></svg></span></div><div class="val">4,7 / 5</div><div class="d up">↑ 0,3</div></div>
+          <div class="kpi"><div class="lab">Открытых диалогов<span class="ic t"><svg class="icon" style="width:18px;height:18px"><use href="#i-inbox"/></svg></span></div><div class="val">24</div><div class="d mut">8 ждут оператора</div></div>
+        </div>
+        <div class="row r-2-1">
+          <div class="card"><div class="hd"><div><h3>Обращения и AI-разрешение</h3><div class="mut">За неделю</div></div><span class="aibadge"><svg class="icon"><use href="#i-ai"/></svg>68% автоматизировано</span></div><div class="bd"><div class="chart-wrap">
+            <svg viewBox="0 0 580 210" role="img" aria-label="Обращения и доля AI за неделю">
+              <line x1="40" y1="28" x2="566" y2="28" stroke="#F0EDF7"/><line x1="40" y1="74" x2="566" y2="74" stroke="#F0EDF7"/><line x1="40" y1="120" x2="566" y2="120" stroke="#F0EDF7"/><line x1="40" y1="166" x2="566" y2="166" stroke="#E7E2F2"/>
+              <path d="M52,96 138,84 224,92 310,70 396,58 482,66 556,46 L556,166 L52,166 Z" fill="#7C3AED" fill-opacity="0.07"/>
+              <path d="M52,96 138,84 224,92 310,70 396,58 482,66 556,46" fill="none" stroke="#C4B5FD" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M52,128 138,120 224,124 310,104 396,92 482,96 556,78" fill="none" stroke="#7C3AED" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <g font-size="10.5" fill="#A29DB5" text-anchor="middle"><text x="52" y="184">Пн</text><text x="138" y="184">Вт</text><text x="224" y="184">Ср</text><text x="310" y="184">Чт</text><text x="396" y="184">Пт</text><text x="482" y="184">Сб</text><text x="556" y="184">Вс</text></g>
+            </svg>
+            <div style="display:flex;gap:18px;margin-top:10px;font-size:12px;color:var(--muted)"><span style="display:flex;align-items:center;gap:6px"><span style="width:10px;height:10px;border-radius:2px;background:#C4B5FD"></span>Всего обращений</span><span style="display:flex;align-items:center;gap:6px"><span style="width:10px;height:10px;border-radius:2px;background:#7C3AED"></span>Решено AI</span></div>
+          </div></div></div>
+          <div class="card"><div class="hd"><h3>Кто решает</h3></div><div class="bd"><div class="donut-wrap">
+            <svg width="138" height="138" viewBox="0 0 138 138" role="img" aria-label="Распределение решений">
+              <circle cx="69" cy="69" r="53" fill="none" stroke="#F0EDF7" stroke-width="18"/>
+              <g transform="rotate(-90 69 69)" fill="none" stroke-width="18">
+                <circle cx="69" cy="69" r="53" stroke="#7C3AED" stroke-dasharray="226.4 333" />
+                <circle cx="69" cy="69" r="53" stroke="#34D399" stroke-dasharray="73.3 333" stroke-dashoffset="-226.4"/>
+                <circle cx="69" cy="69" r="53" stroke="#FBBF24" stroke-dasharray="33.3 333" stroke-dashoffset="-299.7"/>
+              </g>
+              <text x="69" y="65" text-anchor="middle" font-size="20" font-weight="700" fill="#1A1626" font-family="Manrope,sans-serif">68%</text><text x="69" y="83" text-anchor="middle" font-size="10" fill="#A29DB5">решает AI</text>
+            </svg>
+            <div class="legend">
+              <div class="lg"><span class="sw" style="background:#7C3AED"></span>AI автономно<span class="pc">68%</span></div>
+              <div class="lg"><span class="sw" style="background:#34D399"></span>Оператор<span class="pc">22%</span></div>
+              <div class="lg"><span class="sw" style="background:#FBBF24"></span>Эскалация<span class="pc">10%</span></div>
+            </div>
+          </div></div></div>
+        </div>
+        <div class="row r-2-1">
+          <div class="card" style="margin-bottom:0"><div class="hd"><div><h3>Последние диалоги</h3></div><span class="lk" onclick="go('v-inbox')">Все входящие →</span></div><div class="bd-scroll"><table><thead><tr><th>Клиент</th><th>Тема</th><th>Канал</th><th>Статус</th><th>Время</th></tr></thead><tbody id="over-convs"></tbody></table></div></div>
+          <div class="card" style="margin-bottom:0"><div class="hd"><h3>Частые темы</h3></div><div class="bd"><div class="bars">
+            <div class="bar"><span class="bl">Возврат / обмен</span><span class="track"><span class="fill" style="width:100%"></span></span><span class="bv">142</span></div>
+            <div class="bar"><span class="bl">Статус заказа</span><span class="track"><span class="fill" style="width:84%"></span></span><span class="bv">119</span></div>
+            <div class="bar"><span class="bl">Оплата</span><span class="track"><span class="fill" style="width:61%"></span></span><span class="bv">86</span></div>
+            <div class="bar"><span class="bl">Доставка</span><span class="track"><span class="fill" style="width:48%"></span></span><span class="bv">68</span></div>
+            <div class="bar"><span class="bl">Гарантия</span><span class="track"><span class="fill" style="width:33%"></span></span><span class="bv">47</span></div>
+          </div></div></div>
+        </div>
+      </section>
+
+      <!-- INBOX -->
+      <section class="view" id="v-inbox">
+        <div class="split">
+          <div class="pane-l">
+            <div class="pl-h">Входящие<span class="aibadge" style="margin-left:auto"><svg class="icon"><use href="#i-bot"/></svg>AI на дежурстве</span></div>
+            <div id="conv-list"></div>
+          </div>
+          <div class="pane-r">
+            <div class="thread-h"><span class="ava" style="width:40px;height:40px;font-size:14px">АО<img src="https://i.pravatar.cc/100?img=45" onerror="this.remove()"></span><div><div style="font-weight:700;font-size:14px">Анна Орлова</div><div style="font-size:12px;color:var(--muted)">Тема: Возврат товара · заказ #4821</div></div><span class="stt s-ai" style="margin-left:auto">AI обрабатывает</span></div>
+            <div class="thread-b">
+              <div class="em"><div class="emh">Анна · 14:02 · через чат на сайте</div>Здравствуйте! Хочу вернуть кофемолку, заказ #4821 — не подошла. Как оформить возврат и сколько ждать деньги?</div>
+              <div class="ai-draft">
+                <div class="adh"><span class="aibadge"><svg class="icon"><use href="#i-ai"/></svg>Replai AI</span> предлагает ответ<span class="conf">уверенность 94%</span></div>
+                <div class="adtxt">Здравствуйте, Анна! Оформить возврат можно в течение 14 дней. Я создала заявку на возврат по заказу #4821 — курьер заберёт товар завтра в удобный интервал. Деньги вернутся на карту в течение 3–5 рабочих дней после получения. Подтвердить заявку?</div>
+                <div class="src">На основе:<span class="srcchip"><svg class="icon"><use href="#i-book"/></svg>Политика возврата</span><span class="srcchip"><svg class="icon"><use href="#i-book"/></svg>Сроки возврата средств</span></div>
+                <div class="adacts"><button class="btn grad" onclick="aiSend()"><svg class="icon"><use href="#i-send"/></svg>Отправить</button><button class="btn ghost"><svg class="icon"><use href="#i-edit"/></svg>Редактировать</button><button class="btn ghost"><svg class="icon"><use href="#i-user"/></svg>Передать оператору</button></div>
+              </div>
+            </div>
+            <div class="reply"><div class="inp"><input id="re-in" placeholder="Написать ответ вручную…"><span class="aibadge"><svg class="icon"><use href="#i-ai"/></svg>AI</span></div><button class="btn" onclick="aiSend()"><svg class="icon"><use href="#i-send"/></svg>Отправить</button></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- KNOWLEDGE BASE -->
+      <section class="view pad" id="v-kb">
+        <div class="kbbanner"><span class="ic"><svg class="icon" style="width:24px;height:24px;stroke:#fff"><use href="#i-ai"/></svg></span><div style="flex:1"><h3>AI обучен на 42 статьях</h3><p>Replai отвечает клиентам на основе вашей базы знаний. Добавляйте статьи — AI учится автоматически.</p></div><button class="btn" style="background:#fff;color:var(--brand)"><svg class="icon"><use href="#i-plus"/></svg>Статья</button></div>
+        <div class="kbgrid" id="kb-grid"></div>
+      </section>
+
+      <!-- AUTOMATIONS -->
+      <section class="view pad" id="v-auto">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px"><div><h2 style="font-size:20px;font-weight:700">Автоматизации</h2><div style="font-size:13px;color:var(--muted);margin-top:2px">AI-правила, которые работают без оператора</div></div><button class="btn"><svg class="icon"><use href="#i-plus"/></svg>Новое правило</button></div>
+        <div id="auto-list"></div>
+      </section>
+
+      <!-- ANALYTICS -->
+      <section class="view pad" id="v-analytics">
+        <div class="kpis">
+          <div class="kpi"><div class="lab">Обращений за месяц<span class="ic"><svg class="icon" style="width:18px;height:18px"><use href="#i-inbox"/></svg></span></div><div class="val">5 840</div><div class="d up">↑ 14%</div></div>
+          <div class="kpi"><div class="lab">AI-разрешение<span class="ic"><svg class="icon" style="width:18px;height:18px"><use href="#i-bot"/></svg></span></div><div class="val">68%</div><div class="d up">↑ 9 п.п.</div></div>
+          <div class="kpi"><div class="lab">CSAT<span class="ic g"><svg class="icon" style="width:18px;height:18px"><use href="#i-smile"/></svg></span></div><div class="val">4,7</div><div class="d up">↑ 0,3</div></div>
+          <div class="kpi"><div class="lab">Экономия часов<span class="ic t"><svg class="icon" style="width:18px;height:18px"><use href="#i-clock"/></svg></span></div><div class="val">412 ч</div><div class="d up">≈ 2,5 ставки</div></div>
+        </div>
+        <div class="card"><div class="hd"><h3>AI-разрешение по неделям</h3><span class="aibadge"><svg class="icon"><use href="#i-trend"/></svg>растёт</span></div><div class="bd"><div class="chart-wrap">
+          <svg viewBox="0 0 580 200" role="img" aria-label="AI-разрешение по неделям" style="width:100%;height:auto">
+            <line x1="36" y1="24" x2="566" y2="24" stroke="#F0EDF7"/><line x1="36" y1="70" x2="566" y2="70" stroke="#F0EDF7"/><line x1="36" y1="116" x2="566" y2="116" stroke="#F0EDF7"/><line x1="36" y1="160" x2="566" y2="160" stroke="#E7E2F2"/>
+            <g fill="#7C3AED"><rect x="64" y="104" width="40" height="56" rx="4"/><rect x="138" y="92" width="40" height="68" rx="4"/><rect x="212" y="84" width="40" height="76" rx="4"/><rect x="286" y="72" width="40" height="88" rx="4"/><rect x="360" y="62" width="40" height="98" rx="4"/><rect x="434" y="50" width="40" height="110" rx="4"/><rect x="508" y="40" width="40" height="120" rx="4"/></g>
+            <g font-size="10.5" fill="#A29DB5" text-anchor="middle"><text x="84" y="176">Н1</text><text x="158" y="176">Н2</text><text x="232" y="176">Н3</text><text x="306" y="176">Н4</text><text x="380" y="176">Н5</text><text x="454" y="176">Н6</text><text x="528" y="176">Н7</text></g>
+          </svg>
+        </div></div></div>
+        <div class="row r-1-1">
+          <div class="card"><div class="hd"><h3>Каналы обращений</h3></div><div class="bd"><div class="bars">
+            <div class="bar"><span class="bl">Чат на сайте</span><span class="track"><span class="fill" style="width:100%"></span></span><span class="bv">44%</span></div>
+            <div class="bar"><span class="bl">Email</span><span class="track"><span class="fill" style="width:58%"></span></span><span class="bv">26%</span></div>
+            <div class="bar"><span class="bl">Telegram</span><span class="track"><span class="fill" style="width:42%"></span></span><span class="bv">18%</span></div>
+            <div class="bar"><span class="bl">WhatsApp</span><span class="track"><span class="fill" style="width:28%"></span></span><span class="bv">12%</span></div>
+          </div></div></div>
+          <div class="card"><div class="hd"><h3>Тональность</h3></div><div class="bd"><div class="donut-wrap">
+            <svg width="138" height="138" viewBox="0 0 138 138" role="img" aria-label="Тональность обращений">
+              <circle cx="69" cy="69" r="53" fill="none" stroke="#F0EDF7" stroke-width="18"/>
+              <g transform="rotate(-90 69 69)" fill="none" stroke-width="18">
+                <circle cx="69" cy="69" r="53" stroke="#34D399" stroke-dasharray="213 333"/>
+                <circle cx="69" cy="69" r="53" stroke="#FBBF24" stroke-dasharray="80 333" stroke-dashoffset="-213"/>
+                <circle cx="69" cy="69" r="53" stroke="#F87171" stroke-dasharray="40 333" stroke-dashoffset="-293"/>
+              </g>
+              <text x="69" y="73" text-anchor="middle" font-size="18" font-weight="700" fill="#1A1626" font-family="Manrope,sans-serif">64%</text>
+            </svg>
+            <div class="legend">
+              <div class="lg"><span class="sw" style="background:#34D399"></span>Позитив<span class="pc">64%</span></div>
+              <div class="lg"><span class="sw" style="background:#FBBF24"></span>Нейтрально<span class="pc">24%</span></div>
+              <div class="lg"><span class="sw" style="background:#F87171"></span>Негатив<span class="pc">12%</span></div>
+            </div>
+          </div></div></div>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<div class="sb-ov" id="sbov" onclick="toggleSide()"></div>
+
+<script>
+const $=id=>document.getElementById(id);
+const AV=n=>'https://i.pravatar.cc/100?img='+n;
+function ava(name,p,size){const ini=name.split(' ').map(w=>w[0]).join('').slice(0,2);return '<span class="ava" style="width:'+size+'px;height:'+size+'px;font-size:'+Math.round(size*0.38)+'px">'+ini+'<img src="'+AV(p)+'" onerror="this.remove()"></span>';}
+const CH={chat:{l:'Чат',c:'#7C3AED'},email:{l:'Email',c:'#2563EB'},tg:{l:'TG',c:'#0EA5E9'},wa:{l:'WA',c:'#16A34A'}};
+
+const convs=[
+ {name:'Анна Орлова',p:45,subj:'Возврат товара · #4821',ch:'chat',time:'14:02',unread:1,status:'AI обрабатывает',cls:'s-ai',ai:1},
+ {name:'Игорь Петров',p:11,subj:'Где мой заказ #4799?',ch:'tg',time:'13:48',unread:1,status:'Решено AI',cls:'s-done',ai:1},
+ {name:'Мария Ким',p:44,subj:'Не проходит оплата',ch:'email',time:'13:30',unread:0,status:'Ждёт оператора',cls:'s-wait',ai:0},
+ {name:'Денис Лис',p:68,subj:'Вопрос по гарантии',ch:'wa',time:'12:55',unread:0,status:'Решено AI',cls:'s-done',ai:1},
+ {name:'Ольга Белая',p:31,subj:'Жалоба на доставку',ch:'chat',time:'12:20',unread:1,status:'Эскалация',cls:'s-esc',ai:0},
+ {name:'Павел Раков',p:51,subj:'Как сменить тариф?',ch:'email',time:'11:40',unread:0,status:'Решено AI',cls:'s-done',ai:1}
+];
+const kb=[
+ {t:'Как оформить возврат товара',c:'Возвраты',views:'2 140'},
+ {t:'Сроки возврата денежных средств',c:'Возвраты',views:'1 680'},
+ {t:'Отслеживание статуса заказа',c:'Заказы',views:'3 020'},
+ {t:'Способы оплаты и их проблемы',c:'Оплата',views:'1 240'},
+ {t:'Условия и сроки доставки',c:'Доставка',views:'2 760'},
+ {t:'Гарантия и обслуживание',c:'Гарантия',views:'960'},
+ {t:'Смена тарифа и подписки',c:'Аккаунт',views:'1 410'},
+ {t:'Промокоды и бонусы',c:'Оплата',views:'1 890'}
+];
+const autos=[
+ {n:'Авто-ответ на частые вопросы',d:'AI отвечает по базе знаний, если уверенность > 85%',on:1,runs:'3 420 / нед'},
+ {n:'Эскалация при негативе',d:'Если тональность негативная — сразу оператору + тег «приоритет»',on:1,runs:'128 / нед'},
+ {n:'Авто-тег по теме обращения',d:'AI классифицирует и проставляет тему диалога',on:1,runs:'5 840 / нед'},
+ {n:'Ответ на языке клиента',d:'AI определяет язык и отвечает на нём (12 языков)',on:1,runs:'910 / нед'},
+ {n:'Создание заявки на возврат',d:'AI оформляет возврат и согласует забор курьером',on:0,runs:'214 / нед'}
+];
+
+function chip(ch){const c=CH[ch];return '<span class="ch-ic" style="background:'+c.c+'">'+c.l[0]+'</span>';}
+function render(){
+ $('over-convs').innerHTML=convs.slice(0,5).map(c=>'<tr onclick="go(\'v-inbox\')"><td><div class="who">'+ava(c.name,c.p,28)+c.name+'</div></td><td class="muted">'+c.subj+'</td><td><span class="ch-ic" style="background:'+CH[c.ch].c+'">'+CH[c.ch].l[0]+'</span></td><td><span class="stt '+c.cls+'">'+c.status+'</span></td><td class="muted">'+c.time+'</td></tr>').join('');
+ $('conv-list').innerHTML=convs.map((c,i)=>'<div class="conv'+(i===0?' active':'')+'">'+ava(c.name,c.p,38)+'<div class="ct"><div class="cn">'+c.name+'<span class="tm">'+c.time+'</span></div><div class="cs">'+c.subj+'</div><div class="cb">'+chip(c.ch)+(c.ai?'<span class="aibadge" style="font-size:10px;padding:2px 7px"><svg class="icon" style="width:11px;height:11px"><use href="#i-bot"/></svg>AI</span>':'<span class="stt '+c.cls+'" style="font-size:10px;padding:2px 7px">'+c.status+'</span>')+'</div></div></div>').join('');
+ $('kb-grid').innerHTML=kb.map(a=>'<div class="kbcard"><div class="kc">'+a.c+'</div><div class="kt">'+a.t+'</div><div class="km"><span><svg class="icon" style="width:13px;height:13px;vertical-align:-2px"><use href="#i-eye"/></svg> '+a.views+'</span><span class="aibadge" style="font-size:10px;padding:2px 7px"><svg class="icon" style="width:11px;height:11px"><use href="#i-check"/></svg>в AI</span></div></div>').join('');
+ $('auto-list').innerHTML=autos.map(a=>'<div class="auto-card"><span class="ai-ic"><svg class="icon"><use href="#i-bolt"/></svg></span><div style="flex:1"><div class="an">'+a.n+'</div><div class="ad">'+a.d+'</div></div><div class="runs">'+a.runs+'</div><label class="sw2"><input type="checkbox"'+(a.on?' checked':'')+'><span class="tr"></span></label></div>').join('');
+}
+
+const titles={'v-over':['Обзор','Поддержка · сегодня, 15 июня'],'v-inbox':['AI-входящие','24 диалога · 8 ждут оператора'],'v-kb':['База знаний','42 статьи · AI обучен'],'v-auto':['Автоматизации','5 активных правил'],'v-analytics':['Отчёты','Обновлено сегодня в 14:00']};
+function go(id){document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===id));document.querySelectorAll('.nav-item[data-view]').forEach(n=>n.classList.toggle('active',n.dataset.view===id));if(titles[id]){$('pg-title').textContent=titles[id][0];$('pg-sub').textContent=titles[id][1];}const sb=$('sb');if(sb){sb.classList.remove('open');$('sbov').classList.remove('open');}window.scrollTo(0,0);}
+function toggleSide(){const s=$('sb'),o=$('sbov');const op=s.classList.toggle('open');o.classList.toggle('open',op);}
+document.querySelectorAll('.nav-item[data-view]').forEach(n=>n.addEventListener('click',()=>go(n.dataset.view)));
+function aiSend(){const inp=$('re-in');if(inp)inp.value='';const t=document.querySelector('.thread-b');const d=document.querySelector('.ai-draft');if(d)d.style.display='none';const m=document.createElement('div');m.className='em me';m.innerHTML='<div class="emh" style="color:rgba(255,255,255,.7)">Replai AI · только что · отправлено автоматически</div>Здравствуйте, Анна! Оформить возврат можно в течение 14 дней. Я создала заявку по заказу #4821 — курьер заберёт товар завтра. Деньги вернутся на карту за 3–5 рабочих дней.';t.appendChild(m);t.scrollTop=t.scrollHeight;}
+
+render();
+</script>
+</body>
+</html>

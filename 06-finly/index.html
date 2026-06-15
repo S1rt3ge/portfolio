@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Finly — Corporate Spend Management</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0F1B2D; --ink2:#33425b; --muted:#6b7a93;
+  --brand:#2563EB; --brand-dk:#1d4ed8; --brand-soft:#eaf0ff;
+  --emerald:#10B981; --emerald-soft:#e6f7f0;
+  --amber:#f59e0b; --rose:#ef4444; --rose-soft:#fdeaea;
+  --bg:#f4f6fb; --panel:#ffffff; --panel2:#f8fafd;
+  --line:#e6eaf2; --line2:#eef1f7;
+  --shadow:0 1px 2px rgba(15,27,45,.04),0 8px 24px rgba(15,27,45,.06);
+  --shadow-lg:0 10px 40px rgba(15,27,45,.12);
+  --radius:16px; --radius-sm:11px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;font-size:14px;line-height:1.5}
+.display{font-family:'Sora',sans-serif}
+button{font-family:inherit;cursor:pointer}
+img{display:block}
+::-webkit-scrollbar{width:9px;height:9px}
+::-webkit-scrollbar-thumb{background:#cfd6e4;border-radius:9px}
+::-webkit-scrollbar-track{background:transparent}
+
+/* ---------- App shell ---------- */
+.app{display:flex;min-height:100vh}
+.sidebar{width:248px;flex:none;background:var(--ink);color:#c4cee0;display:flex;flex-direction:column;padding:20px 14px;position:sticky;top:0;height:100vh}
+.brand{display:flex;align-items:center;gap:11px;padding:6px 10px 22px}
+.brand .logo{width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,#2563EB,#4f8bff);display:flex;align-items:center;justify-content:center;box-shadow:0 6px 16px rgba(37,99,235,.45);flex:none}
+.brand .logo svg{width:21px;height:21px}
+.brand .name{font-family:'Sora';font-weight:800;font-size:20px;color:#fff;letter-spacing:-.3px}
+.nav{display:flex;flex-direction:column;gap:3px;flex:1}
+.nav .lbl{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#5e6f8c;padding:14px 12px 6px;font-weight:600}
+.nav a{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:11px;color:#aebbd2;text-decoration:none;font-weight:500;font-size:14px;transition:.16s;position:relative}
+.nav a svg{width:19px;height:19px;flex:none;opacity:.85}
+.nav a:hover{background:rgba(255,255,255,.06);color:#fff}
+.nav a.active{background:linear-gradient(135deg,#2563EB,#3b7bff);color:#fff;box-shadow:0 6px 18px rgba(37,99,235,.4)}
+.nav a.active svg{opacity:1}
+.nav a .badge{margin-left:auto;background:var(--rose);color:#fff;font-size:11px;font-weight:700;padding:2px 7px;border-radius:20px}
+.nav a.active .badge{background:rgba(255,255,255,.25)}
+.side-card{margin-top:14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:13px;padding:14px}
+.side-card .t{color:#fff;font-weight:600;font-size:13px}
+.side-card .d{font-size:12px;color:#92a2bf;margin-top:3px;line-height:1.45}
+.side-card button{margin-top:11px;width:100%;background:#fff;color:var(--ink);border:0;border-radius:9px;padding:8px;font-weight:600;font-size:12.5px}
+
+/* ---------- Main ---------- */
+.main{flex:1;min-width:0;display:flex;flex-direction:column}
+.topbar{height:66px;background:rgba(255,255,255,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:14px;padding:0 24px;position:sticky;top:0;z-index:40}
+.burger{display:none;width:38px;height:38px;border-radius:9px;border:1px solid var(--line);background:var(--panel);align-items:center;justify-content:center;cursor:pointer;flex:none}
+.burger svg{width:18px;height:18px}
+.topbar .search{flex:1;max-width:420px;display:flex;align-items:center;gap:9px;background:var(--panel2);border:1px solid var(--line);border-radius:11px;padding:9px 13px;color:var(--muted)}
+.topbar .search input{border:0;background:transparent;outline:0;font-family:inherit;font-size:13.5px;width:100%;color:var(--ink)}
+.topbar .search svg{width:17px;height:17px;flex:none}
+.topbar .spacer{flex:1}
+.chip{display:inline-flex;align-items:center;gap:6px;background:var(--emerald-soft);color:#0a8f63;font-weight:700;font-size:11.5px;padding:6px 11px;border-radius:20px;border:1px solid #c7eddd}
+.chip .dot{width:7px;height:7px;border-radius:50%;background:var(--emerald);box-shadow:0 0 0 3px rgba(16,185,129,.18)}
+.tb-btn{width:40px;height:40px;border-radius:11px;border:1px solid var(--line);background:var(--panel);display:flex;align-items:center;justify-content:center;color:var(--ink2);position:relative}
+.tb-btn svg{width:18px;height:18px}
+.tb-btn .ping{position:absolute;top:9px;right:10px;width:7px;height:7px;background:var(--rose);border-radius:50%;border:2px solid #fff}
+.tb-user{display:flex;align-items:center;gap:10px;padding-left:6px}
+.tb-user .av{width:38px;height:38px;border-radius:11px;object-fit:cover;background:var(--brand-soft)}
+.tb-user .nm{font-weight:600;font-size:13.5px;line-height:1.2}
+.tb-user .rl{font-size:11.5px;color:var(--muted)}
+
+.content{padding:26px 24px 60px;max-width:1320px;width:100%}
+.page-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:22px;flex-wrap:wrap}
+.page-head h1{font-family:'Sora';font-size:27px;font-weight:700;letter-spacing:-.6px}
+.page-head .sub{color:var(--muted);font-size:13.5px;margin-top:3px}
+.btn{display:inline-flex;align-items:center;gap:8px;border:0;border-radius:11px;padding:11px 17px;font-weight:600;font-size:13.5px;transition:.16s}
+.btn svg{width:16px;height:16px}
+.btn.primary{background:var(--brand);color:#fff;box-shadow:0 8px 20px rgba(37,99,235,.3)}
+.btn.primary:hover{background:var(--brand-dk);transform:translateY(-1px)}
+.btn.ghost{background:var(--panel);color:var(--ink2);border:1px solid var(--line)}
+.btn.ghost:hover{border-color:#cfd8e8}
+
+.view{display:none;animation:fade .35s ease}
+.view.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+
+/* ---------- Cards / grid ---------- */
+.grid{display:grid;gap:18px}
+.kpis{grid-template-columns:repeat(4,1fr)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+.kpi{padding:18px 19px}
+.kpi .top{display:flex;align-items:center;justify-content:space-between}
+.kpi .ic{width:40px;height:40px;border-radius:11px;display:flex;align-items:center;justify-content:center}
+.kpi .ic svg{width:20px;height:20px}
+.kpi .lbl{color:var(--muted);font-size:12.5px;font-weight:500;margin-top:15px}
+.kpi .val{font-family:'Sora';font-size:29px;font-weight:700;letter-spacing:-.8px;margin-top:3px}
+.delta{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:700;padding:3px 8px;border-radius:20px;margin-top:8px}
+.delta svg{width:12px;height:12px}
+.delta.up{background:var(--emerald-soft);color:#0a8f63}
+.delta.dn{background:var(--rose-soft);color:#c5372e}
+.delta.neutral{background:#eef1f7;color:var(--ink2)}
+
+.row2{grid-template-columns:1.7fr 1fr}
+.sec-head{display:flex;align-items:center;justify-content:space-between;padding:18px 20px 4px}
+.sec-head h3{font-family:'Sora';font-size:16px;font-weight:600}
+.sec-head .lk{color:var(--brand);font-weight:600;font-size:12.5px;text-decoration:none}
+.sec-head .seg{display:flex;gap:2px;background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:3px}
+.sec-head .seg button{border:0;background:transparent;color:var(--muted);font-size:12px;font-weight:600;padding:5px 11px;border-radius:7px}
+.sec-head .seg button.on{background:#fff;color:var(--ink);box-shadow:var(--shadow)}
+
+/* area chart */
+.chart-wrap{padding:6px 20px 20px}
+.chart svg{width:100%;height:210px;display:block;overflow:visible}
+.chart .gl{stroke:var(--line2);stroke-width:1}
+.axis-x{display:flex;justify-content:space-between;color:var(--muted);font-size:11px;padding:8px 4px 0}
+
+/* tx list */
+.txlist{padding:6px 8px 12px}
+.txrow{display:flex;align-items:center;gap:13px;padding:11px 12px;border-radius:12px;cursor:pointer;transition:.13s}
+.txrow:hover{background:var(--panel2)}
+.mono{width:40px;height:40px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:#fff;flex:none;font-family:'Sora'}
+.txrow .mid{flex:1;min-width:0}
+.txrow .mname{font-weight:600;font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.txrow .mmeta{color:var(--muted);font-size:12px;margin-top:1px}
+.txrow .amt{font-family:'Sora';font-weight:600;font-size:14px;text-align:right;white-space:nowrap}
+.txrow .amt.in{color:var(--emerald)}
+
+/* category bars */
+.catlist{padding:8px 20px 20px;display:flex;flex-direction:column;gap:15px}
+.catrow .ct{display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px}
+.catrow .ct b{font-weight:600}
+.catrow .ct span{color:var(--muted);font-weight:600}
+.bar{height:8px;border-radius:8px;background:var(--line2);overflow:hidden}
+.bar i{display:block;height:100%;border-radius:8px}
+
+/* badges */
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;padding:4px 9px;border-radius:20px}
+.pill.cleared{background:var(--emerald-soft);color:#0a8f63}
+.pill.pending{background:#fff4e1;color:#b97500}
+.pill.flagged{background:var(--rose-soft);color:#c5372e}
+.pill.dot::before{content:'';width:6px;height:6px;border-radius:50%;background:currentColor}
+
+/* table */
+.scrollx{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+thead th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:600;padding:13px 16px;border-bottom:1px solid var(--line);background:var(--panel2)}
+tbody td{padding:13px 16px;border-bottom:1px solid var(--line2);font-size:13.5px;vertical-align:middle}
+tbody tr{cursor:pointer;transition:.13s}
+tbody tr:hover{background:var(--panel2)}
+tbody tr:last-child td{border-bottom:0}
+.td-merchant{display:flex;align-items:center;gap:11px}
+.td-merchant .mono{width:34px;height:34px;border-radius:9px;font-size:12.5px}
+.td-emp{display:flex;align-items:center;gap:9px}
+.td-emp img{width:28px;height:28px;border-radius:8px;object-fit:cover;background:var(--brand-soft)}
+.td-emp .ini{width:28px;height:28px;border-radius:8px;background:var(--brand-soft);color:var(--brand);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11px}
+.amtcell{font-family:'Sora';font-weight:600}
+
+.filters{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+.fbtn{border:1px solid var(--line);background:var(--panel);color:var(--ink2);font-weight:600;font-size:12.5px;padding:8px 14px;border-radius:10px;transition:.14s}
+.fbtn:hover{border-color:#cfd8e8}
+.fbtn.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+
+/* ---------- Cards view ---------- */
+.cardgrid{grid-template-columns:repeat(auto-fill,minmax(310px,1fr))}
+.cc{aspect-ratio:1.586;border-radius:18px;padding:22px;color:#fff;position:relative;overflow:hidden;cursor:pointer;transition:.2s;box-shadow:var(--shadow)}
+.cc:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg)}
+.cc::after{content:'';position:absolute;width:240px;height:240px;border-radius:50%;right:-90px;top:-110px;background:rgba(255,255,255,.12)}
+.cc .ccbrand{display:flex;align-items:center;justify-content:space-between;position:relative;z-index:2}
+.cc .ccbrand .fl{font-family:'Sora';font-weight:800;font-size:17px;letter-spacing:.5px}
+.cc .vbadge{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;background:rgba(255,255,255,.22);padding:4px 9px;border-radius:20px;backdrop-filter:blur(4px)}
+.cc .chip{position:absolute;left:22px;top:62px;width:40px;height:30px;border-radius:7px;background:linear-gradient(135deg,#f4d58d,#caa34a);z-index:2}
+.cc .chip::before{content:'';position:absolute;inset:5px 7px;border:1px solid rgba(0,0,0,.25);border-radius:3px}
+.cc .ccnum{font-family:'Sora';font-size:18px;letter-spacing:2.5px;position:absolute;left:22px;right:22px;bottom:54px;z-index:2;font-weight:600}
+.cc .ccfoot{position:absolute;left:22px;right:22px;bottom:20px;display:flex;justify-content:space-between;align-items:flex-end;z-index:2}
+.cc .ccfoot .h{font-size:9px;text-transform:uppercase;letter-spacing:.08em;opacity:.7}
+.cc .ccfoot .v{font-weight:600;font-size:13px;margin-top:2px}
+.cc.frozen{filter:grayscale(.6) brightness(.85)}
+.cc .froz{position:absolute;inset:0;display:none;align-items:center;justify-content:center;z-index:3;font-weight:700;letter-spacing:.05em;font-size:13px;background:rgba(15,27,45,.28);backdrop-filter:blur(2px)}
+.cc.frozen .froz{display:flex}
+
+/* ---------- Analytics ---------- */
+.bars{padding:14px 20px 22px;display:flex;flex-direction:column;gap:14px}
+.barrow{display:grid;grid-template-columns:120px 1fr 64px;align-items:center;gap:12px}
+.barrow .nm{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.barrow .track{height:24px;background:var(--line2);border-radius:8px;overflow:hidden}
+.barrow .track i{display:block;height:100%;border-radius:8px;background:linear-gradient(90deg,#2563EB,#4f8bff)}
+.barrow .vv{font-family:'Sora';font-weight:600;font-size:13px;text-align:right}
+.donut-wrap{display:flex;align-items:center;gap:24px;padding:20px;flex-wrap:wrap;justify-content:center}
+.donut-legend{display:flex;flex-direction:column;gap:11px;flex:1;min-width:160px}
+.lg{display:flex;align-items:center;gap:10px;font-size:13px}
+.lg .sw{width:11px;height:11px;border-radius:4px;flex:none}
+.lg .lv{margin-left:auto;font-family:'Sora';font-weight:600;color:var(--ink2)}
+
+/* ---------- Approvals ---------- */
+.apprlist{display:flex;flex-direction:column;gap:13px}
+.appr{display:flex;align-items:center;gap:15px;padding:16px 18px}
+.appr img,.appr .ini{width:46px;height:46px;border-radius:12px;flex:none}
+.appr img{object-fit:cover;background:var(--brand-soft)}
+.appr .ini{background:var(--brand-soft);color:var(--brand);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;font-family:'Sora'}
+.appr .ai{flex:1;min-width:0}
+.appr .an{font-weight:600;font-size:14.5px}
+.appr .am{color:var(--muted);font-size:12.5px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.appr .aamt{font-family:'Sora';font-weight:700;font-size:18px;white-space:nowrap}
+.appr .acts{display:flex;gap:8px;flex:none}
+.appr .acts button{border:0;border-radius:10px;padding:9px 15px;font-weight:600;font-size:13px}
+.appr .acts .ok{background:var(--emerald);color:#fff}
+.appr .acts .ok:hover{background:#0ea372}
+.appr .acts .no{background:var(--rose-soft);color:#c5372e}
+.appr .acts .no:hover{background:#fbdada}
+.appr.done{opacity:.55}
+.appr.done .acts{display:none}
+.appr .resolved{font-weight:700;font-size:13px}
+
+/* ---------- Drawer ---------- */
+.drawer-ov{position:fixed;inset:0;background:rgba(15,27,45,.42);z-index:70;opacity:0;pointer-events:none;transition:.25s}
+.drawer-ov.open{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;height:100vh;width:430px;max-width:92vw;background:var(--panel);z-index:75;box-shadow:-12px 0 40px rgba(15,27,45,.18);transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column}
+.drawer.open{transform:none}
+.drawer .dh{display:flex;align-items:center;justify-content:space-between;padding:20px 22px;border-bottom:1px solid var(--line)}
+.drawer .dh h3{font-family:'Sora';font-size:17px;font-weight:600}
+.drawer .x{width:34px;height:34px;border-radius:10px;border:1px solid var(--line);background:var(--panel);display:flex;align-items:center;justify-content:center;color:var(--ink2)}
+.drawer .x svg{width:16px;height:16px}
+.drawer .db{padding:22px;overflow-y:auto;flex:1}
+.dlabel{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:600;margin-bottom:8px}
+.detail-rows{display:flex;flex-direction:column;gap:1px;background:var(--line2);border-radius:12px;overflow:hidden;border:1px solid var(--line)}
+.detail-rows .dr{display:flex;justify-content:space-between;align-items:center;padding:13px 15px;background:var(--panel);font-size:13.5px}
+.detail-rows .dr .k{color:var(--muted)}
+.detail-rows .dr .v{font-weight:600;text-align:right}
+.receipt{margin-top:18px;border:1px dashed var(--line);border-radius:13px;padding:18px;background:var(--panel2)}
+.receipt .rh{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.receipt .rh .rt{font-family:'Sora';font-weight:600;font-size:14px}
+.receipt .rl{display:flex;justify-content:space-between;font-size:12.5px;padding:5px 0;color:var(--ink2)}
+.receipt .rl.tot{border-top:1px dashed var(--line);margin-top:7px;padding-top:10px;font-weight:700;font-size:14px;color:var(--ink)}
+
+.usage{margin:6px 0 20px}
+.usage .ut{display:flex;justify-content:space-between;font-size:13px;margin-bottom:8px}
+.usage .ut b{font-family:'Sora';font-weight:600}
+.usage .ubar{height:11px;border-radius:9px;background:var(--line2);overflow:hidden}
+.usage .ubar i{display:block;height:100%;border-radius:9px;background:linear-gradient(90deg,#2563EB,#4f8bff)}
+
+.mini-card{border-radius:14px;padding:18px;color:#fff;margin-bottom:18px;position:relative;overflow:hidden}
+.mini-card .mcn{font-family:'Sora';letter-spacing:2px;font-size:15px;font-weight:600}
+.mini-card .mch{font-size:12px;opacity:.85;margin-top:8px}
+
+.sb-ov{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:55;opacity:0;pointer-events:none;transition:.2s}
+.sb-ov.open{opacity:1;pointer-events:auto}
+
+@media(max-width:1080px){
+  .kpis{grid-template-columns:repeat(2,1fr)}
+  .row2{grid-template-columns:1fr}
+}
+@media(max-width:900px){
+  .burger{display:flex}
+  .sidebar{position:fixed;left:0;top:0;z-index:60;transform:translateX(-100%);transition:transform .25s}
+  .sidebar.open{transform:none}
+  .topbar .search{display:none}
+  .topbar{padding:0 16px}
+  .content{padding:20px 16px 50px}
+  table{min-width:620px}
+  .tb-user .meta{display:none}
+}
+@media(max-width:560px){
+  .kpis{grid-template-columns:1fr}
+  .page-head h1{font-size:22px}
+  .cardgrid{grid-template-columns:1fr}
+  .appr{flex-wrap:wrap}
+  .appr .acts{width:100%}
+  .appr .acts button{flex:1}
+  .barrow{grid-template-columns:88px 1fr 56px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sb">
+    <div class="brand">
+      <div class="logo"><svg viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h16M4 17h9" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/></svg></div>
+      <div class="name">Finly</div>
+    </div>
+    <nav class="nav" id="nav">
+      <div class="lbl">Manage</div>
+      <a data-view="overview" class="active" onclick="go('overview')">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M3 13h8V3H3v10Zm0 8h8v-6H3v6Zm10 0h8V11h-8v10Zm0-18v6h8V3h-8Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+        Overview</a>
+      <a data-view="cards" onclick="go('cards')">
+        <svg viewBox="0 0 24 24" fill="none"><rect x="2.5" y="5" width="19" height="14" rx="2.5" stroke="currentColor" stroke-width="1.8"/><path d="M2.5 9.5h19" stroke="currentColor" stroke-width="1.8"/></svg>
+        Cards</a>
+      <a data-view="transactions" onclick="go('transactions')">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M4 7h13l-3-3m6 13H7l3 3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Transactions</a>
+      <a data-view="approvals" onclick="go('approvals')">
+        <svg viewBox="0 0 24 24" fill="none"><path d="m4 12 5 5L20 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Approvals <span class="badge" id="apprBadge">4</span></a>
+      <a data-view="analytics" onclick="go('analytics')">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M4 19V5m0 14h16M8 15l3-4 3 2 4-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Analytics</a>
+      <div class="lbl">Account</div>
+      <a onclick="event.preventDefault()" href="#">
+        <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.8"/><path d="M4 20c0-4 3.5-6 8-6s8 2 8 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        Team</a>
+      <a onclick="event.preventDefault()" href="#">
+        <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/><path d="M12 3v3m0 12v3M3 12h3m12 0h3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        Settings</a>
+    </nav>
+    <div class="side-card">
+      <div class="t">Close the books faster</div>
+      <div class="d">Auto-sync receipts to QuickBooks. Try Finly Pro free for 30 days.</div>
+      <button>Upgrade plan</button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <header class="topbar">
+      <button class="burger" onclick="toggleSide()"><svg viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h16M4 17h16" stroke="#0F1B2D" stroke-width="2" stroke-linecap="round"/></svg></button>
+      <div class="search">
+        <svg viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/><path d="m20 20-3-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <input placeholder="Search merchants, cards, people…">
+      </div>
+      <div class="spacer"></div>
+      <span class="chip"><span class="dot"></span>Demo</span>
+      <button class="tb-btn" title="Notifications"><svg viewBox="0 0 24 24" fill="none"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 8 3 8H3s3-1 3-8Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M10 21a2 2 0 0 0 4 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span class="ping"></span></button>
+      <div class="tb-user">
+        <img class="av" src="https://i.pravatar.cc/150?img=12" onerror="this.remove()" alt="">
+        <div class="meta">
+          <div class="nm">Daniel Reyes</div>
+          <div class="rl">Finance Lead</div>
+        </div>
+      </div>
+    </header>
+
+    <main class="content">
+      <!-- OVERVIEW -->
+      <section class="view active" id="view-overview">
+        <div class="page-head">
+          <div>
+            <h1>Overview</h1>
+            <div class="sub">Spend snapshot for Northwind Labs — June 2026</div>
+          </div>
+          <div style="display:flex;gap:10px">
+            <button class="btn ghost"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 19h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Export</button>
+            <button class="btn primary"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>Issue card</button>
+          </div>
+        </div>
+        <div class="grid kpis" id="kpis"></div>
+
+        <div class="grid row2" style="margin-top:18px">
+          <div class="card">
+            <div class="sec-head">
+              <h3>Spend this month</h3>
+              <div class="seg"><button class="on">30D</button><button>90D</button><button>YTD</button></div>
+            </div>
+            <div class="chart-wrap"><div class="chart" id="areaChart"></div>
+              <div class="axis-x" id="areaAxis"></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="sec-head"><h3>Spend by category</h3><a class="lk" onclick="go('analytics')">View all</a></div>
+            <div class="catlist" id="catMini"></div>
+          </div>
+        </div>
+
+        <div class="grid row2" style="margin-top:18px">
+          <div class="card">
+            <div class="sec-head"><h3>Recent transactions</h3><a class="lk" onclick="go('transactions')">See all</a></div>
+            <div class="txlist" id="recentTx"></div>
+          </div>
+          <div class="card">
+            <div class="sec-head"><h3>Pending approvals</h3><a class="lk" onclick="go('approvals')">Review</a></div>
+            <div class="txlist" id="overviewAppr"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- CARDS -->
+      <section class="view" id="view-cards">
+        <div class="page-head">
+          <div><h1>Cards</h1><div class="sub">12 active cards across 5 teams • $48,200 monthly limit</div></div>
+          <button class="btn primary"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>Issue new card</button>
+        </div>
+        <div class="grid cardgrid" id="cardGrid"></div>
+      </section>
+
+      <!-- TRANSACTIONS -->
+      <section class="view" id="view-transactions">
+        <div class="page-head">
+          <div><h1>Transactions</h1><div class="sub">Showing latest activity across all cards</div></div>
+          <button class="btn ghost"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 19h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Export CSV</button>
+        </div>
+        <div class="filters" id="txFilters">
+          <button class="fbtn on" onclick="filterTx('all',this)">All</button>
+          <button class="fbtn" onclick="filterTx('Cleared',this)">Cleared</button>
+          <button class="fbtn" onclick="filterTx('Pending',this)">Pending</button>
+          <button class="fbtn" onclick="filterTx('Flagged',this)">Flagged</button>
+        </div>
+        <div class="card">
+          <div class="scrollx">
+            <table>
+              <thead><tr><th>Merchant</th><th>Employee</th><th>Category</th><th>Date</th><th>Status</th><th style="text-align:right">Amount</th></tr></thead>
+              <tbody id="txTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- APPROVALS -->
+      <section class="view" id="view-approvals">
+        <div class="page-head">
+          <div><h1>Approvals</h1><div class="sub">Expense requests awaiting your review</div></div>
+          <button class="btn ghost" onclick="approveAll()"><svg viewBox="0 0 24 24" fill="none"><path d="m4 12 5 5L20 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Approve all</button>
+        </div>
+        <div class="apprlist" id="apprList"></div>
+      </section>
+
+      <!-- ANALYTICS -->
+      <section class="view" id="view-analytics">
+        <div class="page-head">
+          <div><h1>Analytics</h1><div class="sub">Where your money went this quarter</div></div>
+          <div class="seg" style="background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:3px;display:flex;gap:2px">
+            <button class="on" style="border:0;background:var(--ink);color:#fff;font-size:12px;font-weight:600;padding:6px 13px;border-radius:7px">Q2 2026</button>
+            <button style="border:0;background:transparent;color:var(--muted);font-size:12px;font-weight:600;padding:6px 13px;border-radius:7px">Q1 2026</button>
+          </div>
+        </div>
+        <div class="grid row2">
+          <div class="card">
+            <div class="sec-head"><h3>Spend by category</h3></div>
+            <div class="bars" id="catBars"></div>
+          </div>
+          <div class="card">
+            <div class="sec-head"><h3>By card type</h3></div>
+            <div class="donut-wrap">
+              <div id="donut"></div>
+              <div class="donut-legend" id="donutLegend"></div>
+            </div>
+          </div>
+        </div>
+        <div class="grid" style="margin-top:18px">
+          <div class="card">
+            <div class="sec-head"><h3>Spend by team</h3><a class="lk" href="#" onclick="event.preventDefault()">Manage budgets</a></div>
+            <div class="bars" id="teamBars"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<!-- DRAWER -->
+<div class="drawer-ov" id="drawerOv" onclick="closeDrawer()"></div>
+<aside class="drawer" id="drawer">
+  <div class="dh"><h3 id="drawerTitle">Details</h3><button class="x" onclick="closeDrawer()"><svg viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button></div>
+  <div class="db" id="drawerBody"></div>
+</aside>
+
+<div class="sb-ov" id="sbov" onclick="toggleSide()"></div>
+
+<script>
+const $ = id => document.getElementById(id);
+const usd = n => '$' + Math.abs(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+const usd0 = n => '$' + Math.abs(n).toLocaleString('en-US');
+
+/* ---------- seed data ---------- */
+const vendorColors = {
+  AWS:'#FF9900', Figma:'#A259FF', Notion:'#0F1B2D', Linear:'#5E6AD2',
+  'Delta Airlines':'#003366', WeWork:'#0F1B2D', Slack:'#611f69', 'Google Ads':'#1a73e8',
+  Datadog:'#632ca6', Vercel:'#0F1B2D', 'Uber for Business':'#0F1B2D', Stripe:'#635bff',
+  GitHub:'#24292e', 'Adobe CC':'#FA0F00', Zoom:'#2D8CFF', Airbnb:'#FF5A5F'
+};
+const mono = v => (v.split(' ').map(w=>w[0]).join('').slice(0,2)).toUpperCase();
+
+const employees = [
+  {name:'Sarah Chen', img:5, team:'Engineering'},
+  {name:'Marcus Webb', img:13, team:'Sales'},
+  {name:'Priya Nair', img:9, team:'Design'},
+  {name:'James Okafor', img:11, team:'Marketing'},
+  {name:'Elena Rossi', img:16, team:'Engineering'},
+  {name:'Tom Bridger', img:33, team:'Operations'},
+  {name:'Aisha Khan', img:20, team:'Marketing'},
+  {name:'Daniel Reyes', img:12, team:'Finance'}
+];
+
+const transactions = [
+  {m:'AWS', emp:0, cat:'Cloud & Hosting', amt:-4280.50, date:'Jun 14', status:'Cleared', card:'Engineering'},
+  {m:'Figma', emp:2, cat:'Software', amt:-180.00, date:'Jun 14', status:'Cleared', card:'Design'},
+  {m:'Delta Airlines', emp:1, cat:'Travel', amt:-1242.30, date:'Jun 13', status:'Pending', card:'Sales Travel'},
+  {m:'Google Ads', emp:3, cat:'Marketing', amt:-6500.00, date:'Jun 13', status:'Cleared', card:'Marketing'},
+  {m:'WeWork', emp:5, cat:'Office & Rent', amt:-3100.00, date:'Jun 12', status:'Cleared', card:'Operations'},
+  {m:'Notion', emp:0, cat:'Software', amt:-96.00, date:'Jun 12', status:'Cleared', card:'Engineering'},
+  {m:'Uber for Business', emp:6, cat:'Travel', amt:-58.90, date:'Jun 11', status:'Flagged', card:'Marketing'},
+  {m:'Slack', emp:0, cat:'Software', amt:-720.00, date:'Jun 11', status:'Cleared', card:'Engineering'},
+  {m:'Linear', emp:4, cat:'Software', amt:-128.00, date:'Jun 10', status:'Cleared', card:'Engineering'},
+  {m:'Datadog', emp:4, cat:'Cloud & Hosting', amt:-1890.00, date:'Jun 10', status:'Pending', card:'Engineering'},
+  {m:'Adobe CC', emp:2, cat:'Software', amt:-599.88, date:'Jun 09', status:'Cleared', card:'Design'},
+  {m:'Stripe', emp:7, cat:'Fees', amt:2480.00, date:'Jun 09', status:'Cleared', card:'—'},
+  {m:'Airbnb', emp:1, cat:'Travel', amt:-840.00, date:'Jun 08', status:'Flagged', card:'Sales Travel'},
+  {m:'GitHub', emp:0, cat:'Software', amt:-420.00, date:'Jun 08', status:'Cleared', card:'Engineering'},
+  {m:'Zoom', emp:3, cat:'Software', amt:-149.90, date:'Jun 07', status:'Cleared', card:'Marketing'},
+  {m:'Vercel', emp:4, cat:'Cloud & Hosting', amt:-512.00, date:'Jun 07', status:'Cleared', card:'Engineering'}
+];
+
+const cards = [
+  {label:'Engineering', last4:'4821', holder:'Sarah Chen', type:'Virtual', grad:'linear-gradient(135deg,#1d3a8a,#2563EB 55%,#4f8bff)', spent:9540, limit:15000, frozen:false},
+  {label:'Marketing', last4:'7233', holder:'James Okafor', type:'Physical', grad:'linear-gradient(135deg,#0F1B2D,#28406b)', spent:7899, limit:10000, frozen:false},
+  {label:'Sales Travel', last4:'0192', holder:'Marcus Webb', type:'Physical', grad:'linear-gradient(135deg,#0a8f63,#10B981)', spent:2082, limit:6000, frozen:false},
+  {label:'Design', last4:'5567', holder:'Priya Nair', type:'Virtual', grad:'linear-gradient(135deg,#6d28d9,#a259ff)', spent:879, limit:3000, frozen:false},
+  {label:'Operations', last4:'3340', holder:'Tom Bridger', type:'Physical', grad:'linear-gradient(135deg,#b45309,#f59e0b)', spent:3100, limit:8000, frozen:true},
+  {label:'Finance Ops', last4:'9981', holder:'Daniel Reyes', type:'Virtual', grad:'linear-gradient(135deg,#334155,#64748b)', spent:1240, limit:5000, frozen:false}
+];
+
+let approvals = [
+  {emp:1, amt:1242.30, memo:'Delta flight — SFO→NYC for ACME pitch', cat:'Travel', when:'2h ago', status:'pending'},
+  {emp:6, amt:58.90, memo:'Client dinner — Uber to The Modern', cat:'Travel', when:'5h ago', status:'pending'},
+  {emp:2, amt:599.88, memo:'Adobe Creative Cloud — annual team plan', cat:'Software', when:'Yesterday', status:'pending'},
+  {emp:1, amt:840.00, memo:'Airbnb — 3 nights, Austin conference', cat:'Travel', when:'Yesterday', status:'pending'}
+];
+
+const categories = [
+  {n:'Cloud & Hosting', v:6682, c:'#2563EB'},
+  {n:'Marketing', v:6650, c:'#10B981'},
+  {n:'Travel', v:2141, c:'#f59e0b'},
+  {n:'Software', v:2293, c:'#8b5cf6'},
+  {n:'Office & Rent', v:3100, c:'#ef4444'}
+];
+const teams = [
+  {n:'Engineering', v:9540}, {n:'Marketing', v:7899}, {n:'Operations', v:3100},
+  {n:'Sales', v:2082}, {n:'Design', v:879}, {n:'Finance', v:1240}
+];
+const cardTypes = [
+  {n:'Virtual cards', v:11659, c:'#2563EB'},
+  {n:'Physical cards', v:13081, c:'#10B981'},
+  {n:'One-time', v:1480, c:'#f59e0b'}
+];
+const spendSeries = [820,1100,640,1980,1240,900,2100,1700,2480,1320,980,3100,2200,1450,4280];
+const spendDays = ['1','','3','','5','','7','','9','','11','','13','','15'];
+
+/* ---------- KPIs ---------- */
+function renderKpis(){
+  const data = [
+    {lbl:'Total balance', val:usd0(248920), delta:'+4.2%', dir:'up', ic:'wallet', bg:'var(--brand-soft)', fg:'var(--brand)'},
+    {lbl:'Spend this month', val:usd0(24740), delta:'+12.6%', dir:'dn', ic:'arrow', bg:'#fff4e1', fg:'#b97500'},
+    {lbl:'Active cards', val:'12', delta:'+2', dir:'neutral', ic:'card', bg:'var(--emerald-soft)', fg:'#0a8f63'},
+    {lbl:'Pending approvals', val:'4', delta:'$2.7K', dir:'neutral', ic:'check', bg:'var(--rose-soft)', fg:'#c5372e'}
+  ];
+  const icons = {
+    wallet:'<path d="M3 7h15a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Zm0 0V6a2 2 0 0 1 2-2h11M17 13h.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>',
+    arrow:'<path d="M7 17 17 7m0 0H9m8 0v8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>',
+    card:'<rect x="3" y="6" width="18" height="13" rx="2" stroke="currentColor" stroke-width="1.8" fill="none"/><path d="M3 10h18" stroke="currentColor" stroke-width="1.8"/>',
+    check:'<path d="m4 12 5 5L20 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>'
+  };
+  const arrowUp='<svg viewBox="0 0 24 24" fill="none"><path d="M12 19V5m0 0-6 6m6-6 6 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  const arrowDn='<svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14m0 0 6-6m-6 6-6-6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  $('kpis').innerHTML = data.map(k=>`
+    <div class="card kpi">
+      <div class="top">
+        <div class="ic" style="background:${k.bg};color:${k.fg}"><svg viewBox="0 0 24 24">${icons[k.ic]}</svg></div>
+      </div>
+      <div class="lbl">${k.lbl}</div>
+      <div class="val">${k.val}</div>
+      <span class="delta ${k.dir}">${k.dir==='up'?arrowUp:k.dir==='dn'?arrowDn:''}${k.delta}</span>
+    </div>`).join('');
+}
+
+/* ---------- area chart ---------- */
+function renderArea(){
+  const W=560,H=210,pad=8;
+  const max=Math.max(...spendSeries)*1.12;
+  const n=spendSeries.length;
+  const x=i=>pad + i*(W-pad*2)/(n-1);
+  const y=v=>H-12 - (v/max)*(H-30);
+  let line='', area='';
+  spendSeries.forEach((v,i)=>{ const px=x(i),py=y(v); line+=(i?'L':'M')+px.toFixed(1)+' '+py.toFixed(1)+' '; });
+  area = line + `L ${x(n-1).toFixed(1)} ${H} L ${x(0).toFixed(1)} ${H} Z`;
+  let grid='';
+  for(let g=0;g<=3;g++){ const gy=12+g*(H-30)/3; grid+=`<line class="gl" x1="0" y1="${gy}" x2="${W}" y2="${gy}"/>`; }
+  const dots = spendSeries.map((v,i)=> i%3===0?`<circle cx="${x(i).toFixed(1)}" cy="${y(v).toFixed(1)}" r="3.5" fill="#fff" stroke="#2563EB" stroke-width="2"/>`:'').join('');
+  $('areaChart').innerHTML = `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
+    <defs><linearGradient id="ag" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2563EB" stop-opacity=".26"/><stop offset="1" stop-color="#2563EB" stop-opacity="0"/>
+    </linearGradient></defs>
+    ${grid}
+    <path d="${area}" fill="url(#ag)"/>
+    <path d="${line}" fill="none" stroke="#2563EB" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"/>
+    ${dots}
+  </svg>`;
+  $('areaAxis').innerHTML = spendDays.map(d=>`<span>${d}</span>`).join('');
+}
+
+/* ---------- category mini ---------- */
+function renderCatMini(){
+  const max=Math.max(...categories.map(c=>c.v));
+  $('catMini').innerHTML = categories.map(c=>`
+    <div class="catrow">
+      <div class="ct"><b>${c.n}</b><span>${usd0(c.v)}</span></div>
+      <div class="bar"><i style="width:${(c.v/max*100).toFixed(0)}%;background:${c.c}"></i></div>
+    </div>`).join('');
+}
+
+/* ---------- transaction lists ---------- */
+function txMono(m){ return `<div class="mono" style="background:${vendorColors[m]||'#64748b'}">${mono(m)}</div>`; }
+function empAvatar(i,size){
+  const e=employees[i]; const s=size||28;
+  return `<img src="https://i.pravatar.cc/150?img=${e.img}" style="width:${s}px;height:${s}px;border-radius:8px;object-fit:cover" onerror="this.outerHTML='<div class=ini style=&quot;width:${s}px;height:${s}px&quot;>${mono(e.name)}</div>'" alt="">`;
+}
+
+function renderRecent(){
+  $('recentTx').innerHTML = transactions.slice(0,6).map((t,i)=>`
+    <div class="txrow" onclick="openTx(${transactions.indexOf(t)})">
+      ${txMono(t.m)}
+      <div class="mid"><div class="mname">${t.m}</div><div class="mmeta">${employees[t.emp].name} • ${t.cat}</div></div>
+      <div class="amt ${t.amt>0?'in':''}">${t.amt>0?'+':'−'}${usd(t.amt)}</div>
+    </div>`).join('');
+}
+
+function statusPill(s){ return `<span class="pill ${s.toLowerCase()} dot">${s}</span>`; }
+
+let txFilter='all';
+function renderTxTable(){
+  const rows = transactions.filter(t=> txFilter==='all' || t.status===txFilter);
+  $('txTable').innerHTML = rows.map(t=>{
+    const idx=transactions.indexOf(t);
+    return `<tr onclick="openTx(${idx})">
+      <td><div class="td-merchant">${txMono(t.m)}<div><div style="font-weight:600">${t.m}</div><div style="color:var(--muted);font-size:12px">${t.card}</div></div></div></td>
+      <td><div class="td-emp">${empAvatar(t.emp)}<span>${employees[t.emp].name}</span></div></td>
+      <td>${t.cat}</td>
+      <td style="color:var(--muted)">${t.date}</td>
+      <td>${statusPill(t.status)}</td>
+      <td style="text-align:right" class="amtcell ${t.amt>0?'':''}"><span style="color:${t.amt>0?'var(--emerald)':'var(--ink)'}">${t.amt>0?'+':'−'}${usd(t.amt)}</span></td>
+    </tr>`;
+  }).join('');
+}
+function filterTx(f,el){
+  txFilter=f;
+  document.querySelectorAll('#txFilters .fbtn').forEach(b=>b.classList.remove('on'));
+  el.classList.add('on');
+  renderTxTable();
+}
+
+/* ---------- cards grid ---------- */
+function renderCards(){
+  $('cardGrid').innerHTML = cards.map((c,i)=>`
+    <div class="cc ${c.frozen?'frozen':''}" style="background:${c.grad}" onclick="openCard(${i})">
+      <div class="ccbrand"><div class="fl">Finly</div><div class="vbadge">${c.type}</div></div>
+      <div class="chip"></div>
+      <div class="ccnum">•••• &nbsp;•••• &nbsp;•••• &nbsp;${c.last4}</div>
+      <div class="ccfoot">
+        <div><div class="h">Card holder</div><div class="v">${c.holder}</div></div>
+        <div style="text-align:right"><div class="h">Team</div><div class="v">${c.label}</div></div>
+      </div>
+      <div class="froz">FROZEN</div>
+    </div>`).join('');
+}
+
+/* ---------- approvals ---------- */
+function renderApprovals(){
+  $('apprList').innerHTML = approvals.map((a,i)=>{
+    const e=employees[a.emp];
+    return `<div class="card appr ${a.status!=='pending'?'done':''}" id="appr${i}">
+      ${empAvatar(a.emp,46)}
+      <div class="ai">
+        <div class="an">${e.name} <span style="color:var(--muted);font-weight:500;font-size:12px">• ${e.team}</span></div>
+        <div class="am">${a.memo}</div>
+      </div>
+      <div class="aamt">${usd(a.amt)}</div>
+      ${a.status==='pending'
+        ? `<div class="acts"><button class="ok" onclick="resolve(${i},'approved')">Approve</button><button class="no" onclick="resolve(${i},'denied')">Deny</button></div>`
+        : `<div class="resolved" style="color:${a.status==='approved'?'#0a8f63':'#c5372e'}">${a.status==='approved'?'✓ Approved':'✕ Denied'}</div>`}
+    </div>`;
+  }).join('');
+  renderOverviewAppr();
+}
+function renderOverviewAppr(){
+  const p = approvals.filter(a=>a.status==='pending').slice(0,4);
+  $('overviewAppr').innerHTML = p.length ? p.map((a)=>{
+    const e=employees[a.emp];
+    return `<div class="txrow" onclick="go('approvals')">
+      ${empAvatar(a.emp,40)}
+      <div class="mid"><div class="mname">${e.name}</div><div class="mmeta">${a.cat} • ${a.when}</div></div>
+      <div class="amt">${usd(a.amt)}</div>
+    </div>`;
+  }).join('') : `<div style="padding:24px;text-align:center;color:var(--muted)">All caught up 🎉</div>`;
+  const pending = approvals.filter(a=>a.status==='pending').length;
+  const badge=$('apprBadge');
+  if(pending) { badge.textContent=pending; badge.style.display=''; } else badge.style.display='none';
+}
+function resolve(i,verdict){
+  approvals[i].status=verdict;
+  renderApprovals();
+}
+function approveAll(){
+  approvals.forEach(a=>{ if(a.status==='pending') a.status='approved'; });
+  renderApprovals();
+}
+
+/* ---------- analytics ---------- */
+function renderBars(elId, arr){
+  const max=Math.max(...arr.map(a=>a.v));
+  $(elId).innerHTML = arr.map(a=>`
+    <div class="barrow">
+      <div class="nm">${a.n}</div>
+      <div class="track"><i style="width:${(a.v/max*100).toFixed(0)}%${a.c?';background:'+a.c:''}"></i></div>
+      <div class="vv">${usd0(a.v)}</div>
+    </div>`).join('');
+}
+function renderDonut(){
+  const total=cardTypes.reduce((s,c)=>s+c.v,0);
+  const cx=85,cy=85,r=62,sw=26;
+  const C=2*Math.PI*r;
+  let off=0; let segs='';
+  cardTypes.forEach(c=>{
+    const frac=c.v/total;
+    const len=frac*C;
+    segs+=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${c.c}" stroke-width="${sw}" stroke-dasharray="${len.toFixed(2)} ${(C-len).toFixed(2)}" stroke-dashoffset="${(-off).toFixed(2)}" transform="rotate(-90 ${cx} ${cy})" stroke-linecap="butt"/>`;
+    off+=len;
+  });
+  $('donut').innerHTML = `<svg width="170" height="170" viewBox="0 0 170 170">
+    <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--line2)" stroke-width="${sw}"/>
+    ${segs}
+    <text x="${cx}" y="${cy-4}" text-anchor="middle" font-family="Sora" font-size="22" font-weight="700" fill="#0F1B2D">${usd0(total).replace('.00','')}</text>
+    <text x="${cx}" y="${cy+15}" text-anchor="middle" font-size="11" fill="#6b7a93">Total spend</text>
+  </svg>`;
+  $('donutLegend').innerHTML = cardTypes.map(c=>`
+    <div class="lg"><span class="sw" style="background:${c.c}"></span>${c.n}<span class="lv">${usd0(c.v)}</span></div>`).join('');
+}
+
+/* ---------- drawers ---------- */
+function openDrawer(title, html){
+  $('drawerTitle').textContent=title;
+  $('drawerBody').innerHTML=html;
+  $('drawer').classList.add('open');
+  $('drawerOv').classList.add('open');
+}
+function closeDrawer(){
+  $('drawer').classList.remove('open');
+  $('drawerOv').classList.remove('open');
+}
+function openTx(i){
+  const t=transactions[i]; const e=employees[t.emp];
+  const sub=Math.abs(t.amt)/1.085;
+  const tax=Math.abs(t.amt)-sub;
+  openDrawer('Transaction', `
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px">
+      ${txMono(t.m).replace('mono','mono" style="width:52px;height:52px;font-size:18px;background:'+(vendorColors[t.m]||'#64748b')+';"').replace(/style="background:[^"]*"/,'')}
+      <div><div style="font-family:Sora;font-weight:700;font-size:20px">${t.m}</div>
+      <div style="color:var(--muted);font-size:13px;margin-top:2px">${t.date} 2026 • ${t.card} card</div></div>
+      <div style="margin-left:auto;text-align:right"><div style="font-family:Sora;font-weight:700;font-size:22px;color:${t.amt>0?'var(--emerald)':'var(--ink)'}">${t.amt>0?'+':'−'}${usd(t.amt)}</div>${statusPill(t.status)}</div>
+    </div>
+    <div class="dlabel">Details</div>
+    <div class="detail-rows">
+      <div class="dr"><span class="k">Employee</span><span class="v" style="display:flex;align-items:center;gap:8px;justify-content:flex-end">${empAvatar(t.emp,24)} ${e.name}</span></div>
+      <div class="dr"><span class="k">Team</span><span class="v">${e.team}</span></div>
+      <div class="dr"><span class="k">Category</span><span class="v">${t.cat}</span></div>
+      <div class="dr"><span class="k">Card</span><span class="v">${t.card} •••• ${(cards.find(c=>c.label===t.card)||{}).last4||'0000'}</span></div>
+      <div class="dr"><span class="k">Status</span><span class="v">${statusPill(t.status)}</span></div>
+      <div class="dr"><span class="k">Receipt</span><span class="v" style="color:var(--emerald)">● Matched</span></div>
+    </div>
+    <div class="receipt">
+      <div class="rh"><div class="rt">Receipt</div><div style="font-size:11px;color:var(--muted)">#INV-${(2840+i)}</div></div>
+      <div class="rl"><span>${t.m} — subtotal</span><span>${usd(t.amt>0?t.amt:sub)}</span></div>
+      <div class="rl"><span>Sales tax (8.5%)</span><span>${usd(t.amt>0?0:tax)}</span></div>
+      <div class="rl"><span>Processing</span><span>$0.00</span></div>
+      <div class="rl tot"><span>Total</span><span>${usd(t.amt)}</span></div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:20px">
+      <button class="btn primary" style="flex:1;justify-content:center" onclick="closeDrawer()">Approve</button>
+      <button class="btn ghost" style="flex:1;justify-content:center" onclick="closeDrawer()">Flag for review</button>
+    </div>`);
+}
+function openCard(i){
+  const c=cards[i];
+  const pct=Math.min(100,c.spent/c.limit*100);
+  const ctx = transactions.filter(t=>t.card===c.label).slice(0,5);
+  const txHtml = ctx.length ? ctx.map(t=>`
+    <div class="txrow" style="cursor:default">
+      ${txMono(t.m)}
+      <div class="mid"><div class="mname">${t.m}</div><div class="mmeta">${t.date} • ${t.cat}</div></div>
+      <div class="amt">−${usd(t.amt)}</div>
+    </div>`).join('') : `<div style="padding:18px;text-align:center;color:var(--muted)">No transactions yet</div>`;
+  openDrawer(c.label + ' card', `
+    <div class="mini-card" style="background:${c.grad}">
+      <div style="display:flex;justify-content:space-between;align-items:center"><div style="font-family:Sora;font-weight:800;font-size:16px">Finly</div><div class="vbadge" style="background:rgba(255,255,255,.22);padding:4px 9px;border-radius:20px;font-size:10px;font-weight:700;text-transform:uppercase">${c.type}</div></div>
+      <div class="mcn" style="margin-top:26px">•••• •••• •••• ${c.last4}</div>
+      <div class="mch">${c.holder} • ${c.label}</div>
+    </div>
+    <div class="usage">
+      <div class="ut"><span>Limit usage</span><b>${usd0(c.spent)} / ${usd0(c.limit)}</b></div>
+      <div class="ubar"><i style="width:${pct.toFixed(0)}%"></i></div>
+      <div style="font-size:12px;color:var(--muted);margin-top:7px">${(100-pct).toFixed(0)}% of monthly limit remaining</div>
+    </div>
+    <div class="dlabel">Card details</div>
+    <div class="detail-rows" style="margin-bottom:20px">
+      <div class="dr"><span class="k">Card holder</span><span class="v">${c.holder}</span></div>
+      <div class="dr"><span class="k">Type</span><span class="v">${c.type}</span></div>
+      <div class="dr"><span class="k">Status</span><span class="v" style="color:${c.frozen?'#c5372e':'#0a8f63'}">${c.frozen?'● Frozen':'● Active'}</span></div>
+      <div class="dr"><span class="k">Monthly limit</span><span class="v">${usd0(c.limit)}</span></div>
+    </div>
+    <div class="dlabel">Recent transactions</div>
+    <div style="margin:0 -8px">${txHtml}</div>
+    <div style="display:flex;gap:10px;margin-top:20px">
+      <button class="btn ${c.frozen?'primary':'ghost'}" style="flex:1;justify-content:center" onclick="toggleFreeze(${i})">${c.frozen?'Unfreeze card':'Freeze card'}</button>
+      <button class="btn ghost" style="flex:1;justify-content:center" onclick="closeDrawer()">Edit limit</button>
+    </div>`);
+}
+function toggleFreeze(i){
+  cards[i].frozen=!cards[i].frozen;
+  renderCards();
+  openCard(i);
+}
+
+/* ---------- nav + responsive ---------- */
+function go(view){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  $('view-'+view).classList.add('active');
+  document.querySelectorAll('#nav a[data-view]').forEach(a=>a.classList.toggle('active',a.dataset.view===view));
+  // close sidebar on mobile
+  $('sb').classList.remove('open');
+  $('sbov').classList.remove('open');
+  window.scrollTo({top:0,behavior:'instant'});
+}
+function toggleSide(){
+  const s=$('sb'), o=$('sbov');
+  const op=s.classList.toggle('open');
+  o.classList.toggle('open',op);
+}
+
+/* ---------- init ---------- */
+function render(){
+  renderKpis();
+  renderArea();
+  renderCatMini();
+  renderRecent();
+  renderTxTable();
+  renderCards();
+  renderApprovals();
+  renderBars('catBars', categories);
+  renderBars('teamBars', teams);
+  renderDonut();
+}
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Caretab — Telehealth & Clinic Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;450;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F4F8F7;--panel:#FFFFFF;--ink:#0F2620;--muted:#5C7771;--faint:#9DB2AD;
+  --line:#E3EDEA;--soft:#E6F4F1;--soft2:#F0F8F6;
+  --brand:#0D9488;--brand-d:#0B7C72;--brand-dd:#0F5E57;--brand-soft:#E6F4F1;
+  --ok:#0D9488;--ok-bg:#E6F4F1;--warn:#B5790E;--warn-bg:#FBF1DC;--bad:#C4453B;--bad-bg:#FBE9E7;
+  --blue:#2C6E9B;--blue-bg:#E7F0F6;--purple:#6D5BB5;--purple-bg:#EFEBF8;
+  --display:'Plus Jakarta Sans',-apple-system,'Segoe UI',sans-serif;
+  --sans:'Inter',-apple-system,'Segoe UI',Roboto,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:var(--sans);background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;font-size:14px;line-height:1.5}
+img,svg{display:block}
+.icon{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex:none}
+h1,h2,h3,.display{font-family:var(--display)}
+button{font-family:var(--sans);cursor:pointer}
+::-webkit-scrollbar{width:9px;height:9px}::-webkit-scrollbar-thumb{background:#CDDDD8;border-radius:9px}
+
+/* ---------- APP SHELL ---------- */
+.app{display:flex;min-height:100vh}
+.sidebar{width:246px;flex:none;background:var(--panel);border-right:1px solid var(--line);display:flex;flex-direction:column;padding:18px 14px;position:sticky;top:0;height:100vh}
+.brand{display:flex;align-items:center;gap:11px;padding:6px 8px 18px}
+.brand .mark{width:38px;height:38px;border-radius:11px;background:var(--brand);color:#fff;display:flex;align-items:center;justify-content:center;flex:none;box-shadow:0 6px 16px rgba(13,148,136,.32)}
+.brand .mark .icon{width:22px;height:22px;stroke-width:2}
+.brand .wm{font-family:var(--display);font-size:21px;font-weight:800;letter-spacing:-.02em}
+.brand .wm span{color:var(--brand)}
+.navlbl{font-size:11px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--faint);padding:14px 10px 7px}
+.nav{display:flex;flex-direction:column;gap:2px}
+.nav a{display:flex;align-items:center;gap:12px;padding:10px 11px;border-radius:11px;color:var(--muted);font-size:14px;font-weight:500;cursor:pointer;text-decoration:none;transition:.14s;position:relative}
+.nav a .icon{width:19px;height:19px;flex:none}
+.nav a:hover{background:var(--soft2);color:var(--ink)}
+.nav a.active{background:var(--soft);color:var(--brand-dd);font-weight:600}
+.nav a .pill{margin-left:auto;font-size:11px;font-weight:700;background:var(--brand);color:#fff;border-radius:20px;min-width:20px;height:20px;padding:0 6px;display:flex;align-items:center;justify-content:center}
+.nav a.active .pill{background:var(--brand)}
+.sidefoot{margin-top:auto;padding:12px 6px 4px;border-top:1px solid var(--line)}
+.docard{display:flex;align-items:center;gap:10px;padding:9px;border-radius:12px;background:var(--soft2);cursor:pointer;transition:.14s}
+.docard:hover{background:var(--soft)}
+.docard img{width:38px;height:38px;border-radius:50%;object-fit:cover;flex:none;background:var(--soft)}
+.docard .dn{font-size:13.5px;font-weight:600}.docard .dr{font-size:12px;color:var(--muted)}
+
+.main{flex:1;min-width:0;display:flex;flex-direction:column}
+.topbar{height:68px;background:rgba(255,255,255,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:16px;padding:0 26px;position:sticky;top:0;z-index:40}
+.burger{display:none;width:38px;height:38px;border-radius:9px;border:1px solid var(--line);background:var(--panel);align-items:center;justify-content:center;cursor:pointer;flex:none}
+.pagetitle{font-family:var(--display);font-size:21px;font-weight:700;letter-spacing:-.01em}
+.pagesub{font-size:12.5px;color:var(--muted);margin-top:1px}
+.search{margin-left:18px;display:flex;align-items:center;gap:9px;background:var(--soft2);border:1px solid var(--line);border-radius:11px;padding:0 13px;height:42px;width:300px;color:var(--muted)}
+.search input{border:0;background:transparent;outline:0;font-size:13.5px;width:100%;color:var(--ink);font-family:var(--sans)}
+.topbar .actions{margin-left:auto;display:flex;align-items:center;gap:11px}
+.demo-chip{font-size:11px;font-weight:700;letter-spacing:.04em;color:var(--brand-dd);background:var(--soft);border:1px solid #BFE3DC;padding:6px 11px;border-radius:20px}
+.iconbtn{width:42px;height:42px;border-radius:11px;border:1px solid var(--line);background:var(--panel);display:flex;align-items:center;justify-content:center;color:var(--muted);cursor:pointer;position:relative;transition:.14s}
+.iconbtn:hover{color:var(--brand);border-color:#BFE3DC}
+.iconbtn .dot{position:absolute;top:9px;right:10px;width:8px;height:8px;border-radius:50%;background:var(--bad);border:2px solid var(--panel)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:42px;padding:0 18px;border-radius:11px;background:var(--brand);color:#fff;font-size:13.5px;font-weight:600;border:0;cursor:pointer;white-space:nowrap;transition:.15s}
+.btn:hover{background:var(--brand-d);transform:translateY(-1px);box-shadow:0 8px 18px rgba(13,148,136,.28)}
+.btn.ghost{background:var(--panel);color:var(--ink);border:1px solid var(--line)}
+.btn.ghost:hover{background:var(--soft2);border-color:#BFE3DC;box-shadow:none;color:var(--brand-dd)}
+.btn.sm{height:36px;padding:0 13px;font-size:12.5px;border-radius:9px}
+.btn .icon{width:17px;height:17px}
+
+.content{padding:26px;flex:1}
+.view{display:none}.view.active{display:block;animation:fade .25s ease}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* ---------- KPI ---------- */
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:22px}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:0 1px 2px rgba(15,38,32,.04);transition:.16s}
+.kpi:hover{transform:translateY(-3px);box-shadow:0 14px 30px rgba(15,38,32,.08)}
+.kpi .top{display:flex;align-items:center;justify-content:space-between}
+.kpi .lbl{font-size:13px;color:var(--muted);font-weight:500}
+.kpi .ic{width:38px;height:38px;border-radius:11px;background:var(--soft);color:var(--brand-dd);display:flex;align-items:center;justify-content:center;flex:none}
+.kpi .ic.b{background:var(--blue-bg);color:var(--blue)}.kpi .ic.p{background:var(--purple-bg);color:var(--purple)}.kpi .ic.w{background:var(--warn-bg);color:var(--warn)}
+.kpi .val{font-family:var(--display);font-size:33px;font-weight:800;letter-spacing:-.02em;margin-top:13px;line-height:1}
+.kpi .delta{display:inline-flex;align-items:center;gap:4px;font-size:12.5px;font-weight:600;margin-top:9px}
+.kpi .delta.up{color:var(--ok)}.kpi .delta.down{color:var(--bad)}.kpi .delta .icon{width:14px;height:14px;stroke-width:2.2}
+.kpi .delta b{color:var(--faint);font-weight:500}
+
+/* ---------- LAYOUT GRID ---------- */
+.row2{display:grid;grid-template-columns:1.6fr 1fr;gap:18px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;box-shadow:0 1px 2px rgba(15,38,32,.04)}
+.card .ch{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-bottom:1px solid var(--line)}
+.card .ch h3{font-size:16px;font-weight:700;letter-spacing:-.01em}
+.card .ch .csub{font-size:12.5px;color:var(--muted);margin-top:2px}
+.card .cb{padding:20px}
+.tablink{font-size:12.5px;color:var(--brand);font-weight:600;cursor:pointer}
+.tablink:hover{text-decoration:underline}
+
+/* schedule timeline */
+.timeline{display:flex;flex-direction:column}
+.tl-row{display:flex;gap:16px;padding:13px 0;border-bottom:1px dashed var(--line)}
+.tl-row:last-child{border-bottom:0}
+.tl-time{width:62px;flex:none;font-size:12.5px;font-weight:600;color:var(--muted);padding-top:3px;font-variant-numeric:tabular-nums}
+.appt{flex:1;display:flex;align-items:center;gap:13px;background:var(--soft2);border:1px solid var(--line);border-left:3px solid var(--brand);border-radius:13px;padding:11px 14px;cursor:pointer;transition:.15s}
+.appt:hover{background:var(--soft);transform:translateX(2px);box-shadow:0 6px 16px rgba(15,38,32,.06)}
+.appt.video{border-left-color:var(--blue)}
+.appt .av{width:40px;height:40px;border-radius:50%;object-fit:cover;flex:none;background:var(--soft);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--brand-dd);font-size:14px}
+.appt .ainfo{min-width:0;flex:1}
+.appt .an{font-size:14px;font-weight:600}
+.appt .ar{font-size:12.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tag{font-size:11px;font-weight:600;padding:4px 9px;border-radius:7px;white-space:nowrap;flex:none}
+.tag.video{background:var(--blue-bg);color:var(--blue)}
+.tag.person{background:var(--soft);color:var(--brand-dd)}
+.tag.done{background:#EEF1F0;color:var(--muted)}
+
+/* tasks/alerts */
+.task{display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+.task:last-child{border-bottom:0}
+.task .tic{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex:none}
+.task .tic.alert{background:var(--bad-bg);color:var(--bad)}.task .tic.lab{background:var(--blue-bg);color:var(--blue)}.task .tic.msg{background:var(--purple-bg);color:var(--purple)}.task .tic.rx{background:var(--warn-bg);color:var(--warn)}
+.task .tt{font-size:13.5px;font-weight:600}.task .td{font-size:12.5px;color:var(--muted);margin-top:2px}
+.task .tm{margin-left:auto;font-size:11.5px;color:var(--faint);white-space:nowrap;flex:none}
+
+/* ---------- TABLE ---------- */
+.scrollx{overflow-x:auto}
+table.tbl{width:100%;border-collapse:collapse}
+table.tbl th{text-align:left;font-size:11.5px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);padding:0 16px 12px;border-bottom:1px solid var(--line)}
+table.tbl td{padding:13px 16px;border-bottom:1px solid var(--line);font-size:13.5px;vertical-align:middle}
+table.tbl tr{cursor:pointer;transition:.12s}
+table.tbl tbody tr:hover{background:var(--soft2)}
+table.tbl tr:last-child td{border-bottom:0}
+.pt{display:flex;align-items:center;gap:11px}
+.pt img,.pt .ph{width:38px;height:38px;border-radius:50%;object-fit:cover;flex:none}
+.pt .ph{background:var(--soft);color:var(--brand-dd);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px}
+.pt .pn{font-weight:600;font-size:13.5px}.pt .pmrn{font-size:12px;color:var(--faint)}
+.badge{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:600;padding:5px 10px;border-radius:20px}
+.badge.active{background:var(--ok-bg);color:var(--brand-dd)}
+.badge.review{background:var(--warn-bg);color:var(--warn)}
+.badge.new{background:var(--blue-bg);color:var(--blue)}
+.badge.inactive{background:#EEF1F0;color:var(--muted)}
+.badge i{width:6px;height:6px;border-radius:50%;background:currentColor;display:block}
+.cond{display:inline-block;font-size:11.5px;font-weight:500;background:var(--soft2);border:1px solid var(--line);color:var(--brand-dd);padding:3px 9px;border-radius:7px;margin:2px 3px 2px 0}
+
+/* filters bar */
+.toolbar{display:flex;align-items:center;gap:10px;margin-bottom:18px;flex-wrap:wrap}
+.chip{font-size:12.5px;font-weight:500;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:8px 13px;cursor:pointer;transition:.14s}
+.chip:hover{border-color:#BFE3DC}
+.chip.active{background:var(--brand);color:#fff;border-color:var(--brand)}
+.tbsearch{display:flex;align-items:center;gap:8px;background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:0 12px;height:38px;color:var(--muted);min-width:200px}
+.tbsearch input{border:0;background:transparent;outline:0;font-size:13px;width:100%;color:var(--ink);font-family:var(--sans)}
+
+/* ---------- APPOINTMENTS view ---------- */
+.apptgrid{display:grid;grid-template-columns:1fr 290px;gap:18px;align-items:start}
+.minical{padding:6px}
+.mc-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.mc-head .mt{font-family:var(--display);font-size:16px;font-weight:700}
+.mc-nav{display:flex;gap:6px}
+.mc-nav button{width:30px;height:30px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--muted);display:flex;align-items:center;justify-content:center}
+.mc-nav button:hover{color:var(--brand);border-color:#BFE3DC}
+.mc-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.mc-grid .dow{font-size:11px;font-weight:600;color:var(--faint);text-align:center;padding:5px 0}
+.mc-grid .day{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:12.5px;border-radius:9px;cursor:pointer;position:relative;color:var(--ink);transition:.12s}
+.mc-grid .day:hover{background:var(--soft2)}
+.mc-grid .day.out{color:var(--faint)}
+.mc-grid .day.today{background:var(--brand);color:#fff;font-weight:700}
+.mc-grid .day .ev{position:absolute;bottom:5px;width:4px;height:4px;border-radius:50%;background:var(--brand)}
+.mc-grid .day.today .ev{background:#fff}
+.legend{display:flex;flex-direction:column;gap:11px;margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
+.legend .lg{display:flex;align-items:center;gap:9px;font-size:12.5px;color:var(--muted)}
+.legend .lg .sw{width:11px;height:11px;border-radius:4px;flex:none}
+
+/* ---------- TELEHEALTH ---------- */
+.thgrid{display:grid;grid-template-columns:1fr 330px;gap:18px;align-items:start}
+.stage{background:#0C201C;border-radius:20px;position:relative;overflow:hidden;aspect-ratio:16/10;box-shadow:0 18px 44px rgba(15,38,32,.22)}
+.stage .feed{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.stage .scrim{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,.32),transparent 24%,transparent 64%,rgba(0,0,0,.55))}
+.stage .toprow{position:absolute;top:16px;left:16px;right:16px;display:flex;align-items:center;justify-content:space-between;color:#fff}
+.live{display:inline-flex;align-items:center;gap:7px;background:rgba(0,0,0,.4);backdrop-filter:blur(6px);padding:6px 12px;border-radius:20px;font-size:12px;font-weight:600;letter-spacing:.03em}
+.live .ld{width:8px;height:8px;border-radius:50%;background:#FF5B5B;animation:pulse 1.4s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.45;transform:scale(.8)}}
+.stage .timer{background:rgba(0,0,0,.4);backdrop-filter:blur(6px);padding:6px 12px;border-radius:20px;font-size:12.5px;font-weight:600;font-variant-numeric:tabular-nums}
+.stage .pname{position:absolute;bottom:78px;left:18px;color:#fff}
+.stage .pname .nn{font-family:var(--display);font-size:19px;font-weight:700}
+.stage .pname .nr{font-size:12.5px;color:rgba(255,255,255,.8);margin-top:2px}
+.selfview{position:absolute;bottom:78px;right:18px;width:148px;height:100px;border-radius:13px;overflow:hidden;border:2px solid rgba(255,255,255,.5);background:#16332C}
+.selfview img{width:100%;height:100%;object-fit:cover}
+.selfview .me{position:absolute;bottom:6px;left:8px;color:#fff;font-size:11px;font-weight:600;text-shadow:0 1px 4px rgba(0,0,0,.6)}
+.controls{position:absolute;bottom:14px;left:0;right:0;display:flex;align-items:center;justify-content:center;gap:12px}
+.cbtn{width:50px;height:50px;border-radius:50%;border:0;background:rgba(255,255,255,.16);backdrop-filter:blur(8px);color:#fff;display:flex;align-items:center;justify-content:center;transition:.14s}
+.cbtn:hover{background:rgba(255,255,255,.28)}
+.cbtn.off{background:#fff;color:var(--ink)}
+.cbtn.end{background:#E5484D;width:62px;border-radius:26px}
+.cbtn.end:hover{background:#C73B40}
+.cbtn .icon{width:22px;height:22px}
+.thside{display:flex;flex-direction:column;gap:16px}
+.vital{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--line)}
+.vital:last-child{border-bottom:0}
+.vital .vl{font-size:13px;color:var(--muted)}
+.vital .vv{font-family:var(--display);font-size:17px;font-weight:700}
+.vital .vv small{font-size:11px;color:var(--faint);font-weight:500;font-family:var(--sans)}
+.notesbox{width:100%;min-height:96px;border:1px solid var(--line);border-radius:12px;padding:12px;font-family:var(--sans);font-size:13px;color:var(--ink);resize:vertical;background:var(--soft2);outline:0;line-height:1.55}
+.notesbox:focus{border-color:#BFE3DC;background:#fff}
+
+/* ---------- MESSAGES ---------- */
+.msgwrap{display:grid;grid-template-columns:312px 1fr;gap:0;height:calc(100vh - 150px);min-height:520px;background:var(--panel);border:1px solid var(--line);border-radius:18px;overflow:hidden;box-shadow:0 1px 2px rgba(15,38,32,.04)}
+.msglist{border-right:1px solid var(--line);display:flex;flex-direction:column;min-width:0}
+.msglist .mlh{padding:16px 18px;border-bottom:1px solid var(--line)}
+.msglist .mlh h3{font-size:16px;font-weight:700}
+.threads{overflow-y:auto;flex:1}
+.thread{display:flex;align-items:center;gap:12px;padding:13px 18px;border-bottom:1px solid var(--line);cursor:pointer;transition:.12s}
+.thread:hover{background:var(--soft2)}
+.thread.active{background:var(--soft)}
+.thread img,.thread .ph{width:42px;height:42px;border-radius:50%;object-fit:cover;flex:none;background:var(--soft);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--brand-dd);font-size:14px}
+.thread .ti{min-width:0;flex:1}
+.thread .tn{font-size:13.5px;font-weight:600;display:flex;justify-content:space-between;gap:8px}
+.thread .tn .ts{font-size:11px;color:var(--faint);font-weight:500;flex:none}
+.thread .tp{font-size:12.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+.thread .unread{width:9px;height:9px;border-radius:50%;background:var(--brand);flex:none}
+.convo{display:flex;flex-direction:column;min-width:0}
+.convo .cvh{padding:14px 20px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px}
+.convo .cvh img,.convo .cvh .ph{width:40px;height:40px;border-radius:50%;object-fit:cover;background:var(--soft);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--brand-dd)}
+.convo .cvh .nn{font-size:14.5px;font-weight:700}.convo .cvh .nr{font-size:12px;color:var(--muted)}
+.convo .cvh .stat{margin-left:auto;font-size:12px;color:var(--ok);font-weight:600;display:flex;align-items:center;gap:6px}
+.convo .cvh .stat .d{width:8px;height:8px;border-radius:50%;background:var(--ok)}
+.bubbles{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:12px;background:var(--soft2)}
+.bb{max-width:74%;padding:11px 14px;border-radius:15px;font-size:13.5px;line-height:1.5}
+.bb.them{background:#fff;border:1px solid var(--line);border-bottom-left-radius:5px;align-self:flex-start}
+.bb.me{background:var(--brand);color:#fff;border-bottom-right-radius:5px;align-self:flex-end}
+.bb .bt{font-size:10.5px;margin-top:5px;opacity:.65}
+.daydiv{align-self:center;font-size:11px;color:var(--faint);background:#fff;border:1px solid var(--line);padding:4px 12px;border-radius:20px}
+.composer{padding:14px 18px;border-top:1px solid var(--line);display:flex;align-items:center;gap:10px}
+.composer input{flex:1;height:42px;border:1px solid var(--line);border-radius:11px;padding:0 14px;font-size:13.5px;font-family:var(--sans);outline:0;background:var(--soft2)}
+.composer input:focus{border-color:#BFE3DC;background:#fff}
+.sendb{width:42px;height:42px;border-radius:11px;background:var(--brand);color:#fff;border:0;display:flex;align-items:center;justify-content:center;flex:none}
+.sendb:hover{background:var(--brand-d)}
+
+/* ---------- DRAWER ---------- */
+.drawer-ov{position:fixed;inset:0;background:rgba(15,38,32,.42);z-index:70;opacity:0;pointer-events:none;transition:.22s}
+.drawer-ov.open{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;height:100vh;width:460px;max-width:92vw;background:var(--panel);z-index:75;transform:translateX(100%);transition:transform .28s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;box-shadow:-20px 0 50px rgba(15,38,32,.18)}
+.drawer.open{transform:none}
+.dr-head{padding:22px 24px;border-bottom:1px solid var(--line);display:flex;align-items:flex-start;gap:14px}
+.dr-head img,.dr-head .ph{width:56px;height:56px;border-radius:14px;object-fit:cover;flex:none;background:var(--soft);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--brand-dd);font-size:19px}
+.dr-head .dn{font-family:var(--display);font-size:20px;font-weight:700}
+.dr-head .dr2{font-size:13px;color:var(--muted);margin-top:3px}
+.dr-close{margin-left:auto;width:34px;height:34px;border-radius:9px;border:1px solid var(--line);background:var(--panel);color:var(--muted);display:flex;align-items:center;justify-content:center;flex:none}
+.dr-close:hover{color:var(--bad);border-color:#F0CFCB}
+.dr-body{padding:22px 24px;overflow-y:auto;flex:1}
+.dr-sect{margin-bottom:24px}
+.dr-sect h4{font-size:11.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);margin-bottom:11px}
+.demo{display:grid;grid-template-columns:1fr 1fr;gap:11px 18px}
+.demo .di .dl{font-size:11.5px;color:var(--muted)}.demo .di .dv{font-size:13.5px;font-weight:600;margin-top:1px}
+.vrow{display:grid;grid-template-columns:repeat(3,1fr);gap:11px}
+.vcard{background:var(--soft2);border:1px solid var(--line);border-radius:12px;padding:12px}
+.vcard .vl{font-size:11px;color:var(--muted)}
+.vcard .vv{font-family:var(--display);font-size:18px;font-weight:700;margin-top:3px}
+.vcard .vv small{font-size:10.5px;color:var(--faint);font-weight:500;font-family:var(--sans)}
+.med{display:flex;align-items:center;gap:11px;padding:11px 0;border-bottom:1px solid var(--line)}
+.med:last-child{border-bottom:0}
+.med .mi{width:34px;height:34px;border-radius:10px;background:var(--soft);color:var(--brand-dd);display:flex;align-items:center;justify-content:center;flex:none}
+.med .mn{font-size:13.5px;font-weight:600}.med .md{font-size:12px;color:var(--muted)}
+.vh{position:relative;padding-left:22px}
+.vh .vhi{position:relative;padding-bottom:18px}
+.vh .vhi:last-child{padding-bottom:0}
+.vh .vhi::before{content:'';position:absolute;left:-15px;top:4px;width:10px;height:10px;border-radius:50%;background:var(--brand);border:2px solid #fff;box-shadow:0 0 0 1px var(--line)}
+.vh::after{content:'';position:absolute;left:-10px;top:6px;bottom:14px;width:1px;background:var(--line)}
+.vh .vhd{font-size:12px;color:var(--brand-dd);font-weight:600}
+.vh .vht{font-size:13.5px;font-weight:600;margin-top:2px}
+.vh .vhn{font-size:12.5px;color:var(--muted);margin-top:2px;line-height:1.5}
+.dr-foot{padding:16px 24px;border-top:1px solid var(--line);display:flex;gap:10px}
+
+/* drawer appt */
+.appt-line{display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid var(--line);font-size:13.5px}
+.appt-line:last-child{border-bottom:0}
+.appt-line .all{color:var(--muted);width:96px;flex:none;font-size:12.5px}
+.appt-line .alv{font-weight:600}
+
+.sb-ov{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:55;opacity:0;pointer-events:none;transition:.2s}.sb-ov.open{opacity:1;pointer-events:auto}
+
+@media(max-width:1080px){
+  .kpis{grid-template-columns:repeat(2,1fr)}
+  .row2{grid-template-columns:1fr}
+  .apptgrid{grid-template-columns:1fr}
+  .thgrid{grid-template-columns:1fr}
+}
+@media(max-width:900px){
+  .burger{display:flex}
+  .sidebar{position:fixed;left:0;top:0;z-index:60;transform:translateX(-100%);transition:transform .25s}
+  .sidebar.open{transform:none}
+  .topbar .search{display:none}
+  .msgwrap{grid-template-columns:1fr;height:auto}
+  .msglist{max-height:280px}
+  .msgwrap.showconvo .msglist{display:none}
+  .convo{min-height:480px}
+}
+@media(max-width:560px){
+  .kpis{grid-template-columns:1fr}
+  .content{padding:18px 16px}
+  .topbar{padding:0 16px}
+  .pagesub{display:none}
+  .vrow{grid-template-columns:1fr 1fr}
+}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+</style>
+</head>
+<body>
+<h2 class="sr-only">Caretab telehealth and clinic management platform demo dashboard</h2>
+<div class="app">
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sb">
+    <div class="brand">
+      <div class="mark"><svg class="icon" viewBox="0 0 24 24"><path d="M3 12h3l2-7 4 14 2-7h2"/><path d="M16 5l5 5"/></svg></div>
+      <div class="wm">Care<span>tab</span></div>
+    </div>
+    <div class="navlbl">Clinic</div>
+    <nav class="nav" id="nav">
+      <a data-view="dashboard" class="active" onclick="go('dashboard')"><svg class="icon" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>Dashboard</a>
+      <a data-view="appointments" onclick="go('appointments')"><svg class="icon" viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9h18M8 2.5v4M16 2.5v4"/></svg>Appointments<span class="pill">14</span></a>
+      <a data-view="patients" onclick="go('patients')"><svg class="icon" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.4"/><path d="M3.5 20a5.5 5.5 0 0 1 11 0"/><path d="M16 8.5a3 3 0 0 1 0 5M18 20a5 5 0 0 0-3-4.6"/></svg>Patients</a>
+      <a data-view="telehealth" onclick="go('telehealth')"><svg class="icon" viewBox="0 0 24 24"><rect x="2.5" y="6" width="13" height="12" rx="2.5"/><path d="M15.5 10l6-3v10l-6-3z"/></svg>Telehealth</a>
+      <a data-view="messages" onclick="go('messages')"><svg class="icon" viewBox="0 0 24 24"><path d="M21 11.5a8 8 0 0 1-11.5 7.2L3 21l2.3-6.5A8 8 0 1 1 21 11.5z"/></svg>Messages<span class="pill">3</span></a>
+    </nav>
+    <div class="navlbl">Workspace</div>
+    <nav class="nav">
+      <a onclick="go('patients')"><svg class="icon" viewBox="0 0 24 24"><path d="M12 3l8 4v5c0 4.5-3.2 7.7-8 9-4.8-1.3-8-4.5-8-9V7z"/><path d="M9 12l2 2 4-4"/></svg>Billing</a>
+      <a onclick="go('dashboard')"><svg class="icon" viewBox="0 0 24 24"><path d="M4 19V5M9 19v-7M14 19v-4M19 19V9"/></svg>Reports</a>
+      <a onclick="go('dashboard')"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.1-1l2-1.6-2-3.4-2.3 1a7 7 0 0 0-1.7-1l-.3-2.5h-4l-.3 2.5a7 7 0 0 0-1.7 1l-2.3-1-2 3.4 2 1.6a7 7 0 0 0 0 2l-2 1.6 2 3.4 2.3-1a7 7 0 0 0 1.7 1l.3 2.5h4l.3-2.5a7 7 0 0 0 1.7-1l2.3 1 2-3.4-2-1.6c.1-.3.1-.7.1-1z"/></svg>Settings</a>
+    </nav>
+    <div class="sidefoot">
+      <div class="docard" onclick="go('dashboard')">
+        <img src="https://i.pravatar.cc/150?img=12" alt="" onerror="this.remove()">
+        <div><div class="dn">Dr. Elena Marsh</div><div class="dr">Family Medicine</div></div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <header class="topbar">
+      <button class="burger" onclick="toggleSide()" aria-label="Menu"><svg class="icon" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+      <div>
+        <div class="pagetitle" id="ptitle">Dashboard</div>
+        <div class="pagesub" id="psub">Monday, June 15, 2026 · West Harbor Clinic</div>
+      </div>
+      <div class="search">
+        <svg class="icon" viewBox="0 0 24 24" style="width:18px;height:18px"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>
+        <input placeholder="Search patients, appointments…">
+      </div>
+      <div class="actions">
+        <span class="demo-chip">Demo</span>
+        <button class="iconbtn" aria-label="Notifications"><svg class="icon" viewBox="0 0 24 24"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg><span class="dot"></span></button>
+        <button class="btn" onclick="go('telehealth')"><svg class="icon" viewBox="0 0 24 24"><rect x="2.5" y="6" width="13" height="12" rx="2.5"/><path d="M15.5 10l6-3v10l-6-3z"/></svg>Start visit</button>
+      </div>
+    </header>
+
+    <div class="content">
+      <!-- ============ DASHBOARD ============ -->
+      <section class="view active" id="v-dashboard">
+        <div class="kpis" id="kpiWrap"></div>
+        <div class="row2">
+          <div class="card">
+            <div class="ch"><div><h3>Today's schedule</h3><div class="csub">8 appointments · 3 video visits</div></div><span class="tablink" onclick="go('appointments')">Open calendar →</span></div>
+            <div class="cb"><div class="timeline" id="dashSched"></div></div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:18px">
+            <div class="card">
+              <div class="ch"><div><h3>Tasks & alerts</h3></div><span class="tablink">View all</span></div>
+              <div class="cb" id="taskWrap" style="padding-top:8px;padding-bottom:8px"></div>
+            </div>
+            <div class="card">
+              <div class="ch"><div><h3>Patient volume</h3><div class="csub">Last 7 days</div></div></div>
+              <div class="cb" id="volChart"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ APPOINTMENTS ============ -->
+      <section class="view" id="v-appointments">
+        <div class="apptgrid">
+          <div class="card">
+            <div class="ch"><div><h3>Monday, June 15</h3><div class="csub">14 appointments scheduled</div></div>
+              <div style="display:flex;gap:8px"><button class="btn ghost sm">Day</button><button class="btn ghost sm">Week</button><button class="btn sm">+ New</button></div>
+            </div>
+            <div class="cb"><div class="timeline" id="apptList"></div></div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:18px">
+            <div class="card"><div class="cb">
+              <div class="minical">
+                <div class="mc-head"><div class="mt">June 2026</div><div class="mc-nav"><button><svg class="icon" viewBox="0 0 24 24" style="width:15px;height:15px"><path d="M15 18l-6-6 6-6"/></svg></button><button><svg class="icon" viewBox="0 0 24 24" style="width:15px;height:15px"><path d="M9 18l6-6-6-6"/></svg></button></div></div>
+                <div class="mc-grid" id="miniCal"></div>
+              </div>
+              <div class="legend">
+                <div class="lg"><span class="sw" style="background:var(--brand)"></span>In-person visit</div>
+                <div class="lg"><span class="sw" style="background:var(--blue)"></span>Video / telehealth</div>
+                <div class="lg"><span class="sw" style="background:#EEF1F0;border:1px solid var(--line)"></span>Completed</div>
+              </div>
+            </div></div>
+            <div class="card"><div class="ch"><div><h3>Provider load</h3></div></div><div class="cb" id="loadChart"></div></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ PATIENTS ============ -->
+      <section class="view" id="v-patients">
+        <div class="toolbar">
+          <div class="tbsearch"><svg class="icon" viewBox="0 0 24 24" style="width:16px;height:16px"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg><input placeholder="Search by name or MRN…" oninput="filterPatients(this.value)"></div>
+          <button class="chip active" data-f="all" onclick="setFilter('all',this)">All patients</button>
+          <button class="chip" data-f="active" onclick="setFilter('active',this)">Active</button>
+          <button class="chip" data-f="review" onclick="setFilter('review',this)">Needs review</button>
+          <button class="chip" data-f="new" onclick="setFilter('new',this)">New</button>
+          <button class="btn sm" style="margin-left:auto"><svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Add patient</button>
+        </div>
+        <div class="card"><div class="scrollx"><table class="tbl" style="min-width:680px"><thead><tr>
+          <th>Patient</th><th>Age / Sex</th><th>Conditions</th><th>Last visit</th><th>Provider</th><th>Status</th>
+        </tr></thead><tbody id="patBody"></tbody></table></div></div>
+      </section>
+
+      <!-- ============ TELEHEALTH ============ -->
+      <section class="view" id="v-telehealth">
+        <div class="thgrid">
+          <div>
+            <div class="stage">
+              <img class="feed" src="https://i.pravatar.cc/600?img=47" alt="Patient video feed" onerror="this.style.display='none'">
+              <div class="scrim"></div>
+              <div class="toprow">
+                <div class="live"><span class="ld"></span>LIVE · Encrypted</div>
+                <div class="timer" id="callTimer">08:42</div>
+              </div>
+              <div class="pname"><div class="nn">Marcus Bell</div><div class="nr">Follow-up · Hypertension · MRN 40291</div></div>
+              <div class="selfview"><img src="https://i.pravatar.cc/300?img=12" alt="Self view" onerror="this.parentNode.style.background='#16332C'"><div class="me">Dr. Marsh</div></div>
+              <div class="controls">
+                <button class="cbtn" id="micBtn" onclick="toggleCtl('micBtn','mic')" aria-label="Mute"><svg class="icon" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>
+                <button class="cbtn" id="camBtn" onclick="toggleCtl('camBtn','cam')" aria-label="Camera"><svg class="icon" viewBox="0 0 24 24"><rect x="2.5" y="6" width="13" height="12" rx="2.5"/><path d="M15.5 10l6-3v10l-6-3z"/></svg></button>
+                <button class="cbtn end" onclick="go('dashboard')" aria-label="End call"><svg class="icon" viewBox="0 0 24 24" style="width:24px"><path d="M3 10c5-4 13-4 18 0l-2 3-4-1-1-2c-2-.6-4-.6-6 0l-1 2-4 1z"/></svg></button>
+                <button class="cbtn" aria-label="Chat" onclick="go('messages')"><svg class="icon" viewBox="0 0 24 24"><path d="M21 11.5a8 8 0 0 1-11.5 7.2L3 21l2.3-6.5A8 8 0 1 1 21 11.5z"/></svg></button>
+                <button class="cbtn" aria-label="More"><svg class="icon" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="19" cy="12" r="1.4"/></svg></button>
+              </div>
+            </div>
+          </div>
+          <div class="thside">
+            <div class="card"><div class="ch"><div><h3>Live vitals</h3><div class="csub">Synced from home device</div></div></div>
+              <div class="cb" style="padding-top:6px">
+                <div class="vital"><span class="vl">Blood pressure</span><span class="vv">138/86 <small>mmHg</small></span></div>
+                <div class="vital"><span class="vl">Heart rate</span><span class="vv">74 <small>bpm</small></span></div>
+                <div class="vital"><span class="vl">SpO₂</span><span class="vv">98 <small>%</small></span></div>
+                <div class="vital"><span class="vl">Temp</span><span class="vv">98.4 <small>°F</small></span></div>
+              </div>
+            </div>
+            <div class="card"><div class="ch"><div><h3>Visit notes</h3></div></div>
+              <div class="cb">
+                <textarea class="notesbox">Pt reports adherence to lisinopril 20mg daily. Home BP log trending down over 3 weeks. No chest pain or dizziness. Plan: continue current dose, recheck in 4 weeks, refer to nutrition counseling.</textarea>
+                <div style="display:flex;gap:9px;margin-top:12px"><button class="btn sm" style="flex:1">Save to chart</button><button class="btn ghost sm" style="flex:1">Send Rx</button></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ MESSAGES ============ -->
+      <section class="view" id="v-messages">
+        <div class="msgwrap" id="msgwrap">
+          <div class="msglist">
+            <div class="mlh"><h3>Secure messages</h3></div>
+            <div class="threads" id="threadList"></div>
+          </div>
+          <div class="convo">
+            <div class="cvh">
+              <button class="dr-close" id="backBtn" style="display:none" onclick="document.getElementById('msgwrap').classList.remove('showconvo')" aria-label="Back"><svg class="icon" viewBox="0 0 24 24" style="width:17px"><path d="M15 18l-6-6 6-6"/></svg></button>
+              <img id="convoAv" src="https://i.pravatar.cc/150?img=32" alt="" onerror="this.remove()">
+              <div><div class="nn" id="convoName">Sarah Lin</div><div class="nr" id="convoRole">Patient · MRN 40118</div></div>
+              <div class="stat"><span class="d"></span>Online</div>
+            </div>
+            <div class="bubbles" id="bubbles"></div>
+            <div class="composer">
+              <input id="msgInput" placeholder="Type a secure message…" onkeydown="if(event.key==='Enter')sendMsg()">
+              <button class="sendb" onclick="sendMsg()" aria-label="Send"><svg class="icon" viewBox="0 0 24 24" style="width:19px"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg></button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
+
+<!-- DRAWER -->
+<div class="drawer-ov" id="drawerOv" onclick="closeDrawer()"></div>
+<aside class="drawer" id="drawer">
+  <div class="dr-head" id="drHead"></div>
+  <div class="dr-body" id="drBody"></div>
+  <div class="dr-foot" id="drFoot"></div>
+</aside>
+
+<div class="sb-ov" id="sbov" onclick="toggleSide()"></div>
+
+<script>
+/* ---------------- DATA ---------------- */
+const KPIS=[
+  {lbl:"Appointments today",val:"14",ic:'<path d="M3 4.5h18v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M3 9h18M8 2.5v4M16 2.5v4"/>',cls:"",d:"+3",up:true,note:"vs. yesterday"},
+  {lbl:"Patients seen",val:"9",ic:'<circle cx="9" cy="8" r="3.4"/><path d="M3.5 20a5.5 5.5 0 0 1 11 0"/>',cls:"p",d:"On track",up:true,note:"5 remaining"},
+  {lbl:"Avg. wait time",val:"7m",ic:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',cls:"w",d:"-2m",up:true,note:"target 10m"},
+  {lbl:"Revenue today",val:"$8,420",ic:'<path d="M12 3v18M16 7H9.5a2.5 2.5 0 0 0 0 5h5a2.5 2.5 0 0 1 0 5H7"/>',cls:"b",d:"+12%",up:true,note:"vs. last Mon"},
+];
+const SCHED=[
+  {t:"08:30",n:"Marcus Bell",r:"Hypertension follow-up · Dr. Marsh",type:"video",img:47,init:"MB",done:true},
+  {t:"09:00",n:"Aisha Okafor",r:"Annual physical · Dr. Reyes",type:"person",img:5,init:"AO",done:true},
+  {t:"09:45",n:"Liam Carter",r:"Lab review · Dr. Marsh",type:"video",img:13,init:"LC",done:false},
+  {t:"10:15",n:"Priya Nair",r:"Type 2 diabetes check · Dr. Reyes",type:"person",img:48,init:"PN",done:false},
+  {t:"11:00",n:"Sarah Lin",r:"Medication adjustment · Dr. Marsh",type:"video",img:32,init:"SL",done:false},
+  {t:"11:30",n:"David Whitfield",r:"Post-op review · Dr. Cole",type:"person",img:60,init:"DW",done:false},
+];
+const TASKS=[
+  {ic:"alert",t:"Critical lab flag — Priya Nair",d:"HbA1c 9.2% · requires review",m:"5m ago"},
+  {ic:"rx",t:"Rx refill request",d:"Marcus Bell · Lisinopril 20mg",m:"22m ago"},
+  {ic:"lab",t:"New lab results posted",d:"Liam Carter · Lipid panel",m:"1h ago"},
+  {ic:"msg",t:"3 unread patient messages",d:"Sarah Lin, James Ford, +1",m:"1h ago"},
+];
+const PATIENTS=[
+  {n:"Marcus Bell",mrn:"40291",age:58,sex:"M",img:47,init:"MB",cond:["Hypertension"],last:"Today",prov:"Dr. Marsh",st:"active",
+    dob:"Mar 14, 1968",phone:"+1 (415) 555-0182",ins:"BlueCross PPO",bp:[148,145,142,140,138,136,138],
+    vitals:{bp:"138/86",hr:"74",bmi:"27.4",spo2:"98%"},
+    conds:["Hypertension (I10)","Hyperlipidemia"],
+    meds:[{n:"Lisinopril 20mg",d:"Once daily · oral"},{n:"Atorvastatin 10mg",d:"Once nightly · oral"}],
+    hist:[{d:"Jun 15, 2026",t:"Telehealth follow-up",n:"BP trending down. Continue lisinopril."},{d:"May 2, 2026",t:"In-person visit",n:"Started home BP monitoring."},{d:"Mar 18, 2026",t:"Lab panel",n:"Lipids elevated, statin started."}]},
+  {n:"Priya Nair",mrn:"40277",age:46,sex:"F",img:48,init:"PN",cond:["Type 2 Diabetes"],last:"Today",prov:"Dr. Reyes",st:"review",
+    dob:"Sep 2, 1979",phone:"+1 (617) 555-0143",ins:"Aetna HMO",bp:[132,134,130,131,128,129,130],
+    vitals:{bp:"130/82",hr:"80",bmi:"31.2",spo2:"97%"},
+    conds:["Type 2 Diabetes (E11.9)","Obesity"],
+    meds:[{n:"Metformin 1000mg",d:"Twice daily · oral"},{n:"Empagliflozin 10mg",d:"Once daily · oral"}],
+    hist:[{d:"Jun 15, 2026",t:"Diabetes check",n:"HbA1c 9.2% — escalate therapy."},{d:"Apr 10, 2026",t:"Nutrition consult",n:"Carb-counting plan started."},{d:"Feb 1, 2026",t:"Annual physical",n:"Weight stable, A1c 8.4%."}]},
+  {n:"Aisha Okafor",mrn:"40310",age:34,sex:"F",img:5,init:"AO",cond:["Asthma"],last:"Today",prov:"Dr. Reyes",st:"active",
+    dob:"Jan 22, 1992",phone:"+1 (312) 555-0199",ins:"UnitedHealth PPO",bp:[118,120,116,119,117,118,118],
+    vitals:{bp:"118/74",hr:"68",bmi:"22.8",spo2:"99%"},
+    conds:["Mild persistent asthma (J45.30)"],
+    meds:[{n:"Albuterol HFA",d:"As needed · inhaler"},{n:"Fluticasone 110mcg",d:"Twice daily · inhaler"}],
+    hist:[{d:"Jun 15, 2026",t:"Annual physical",n:"Asthma well controlled. Spirometry normal."},{d:"Dec 4, 2025",t:"Telehealth",n:"Refilled controller inhaler."}]},
+  {n:"Liam Carter",mrn:"40188",age:29,sex:"M",img:13,init:"LC",cond:["Hyperlipidemia"],last:"Today",prov:"Dr. Marsh",st:"new",
+    dob:"Jul 8, 1996",phone:"+1 (206) 555-0166",ins:"Cigna PPO",bp:[126,124,128,125,123,124,124],
+    vitals:{bp:"124/78",hr:"72",bmi:"25.1",spo2:"99%"},
+    conds:["Hyperlipidemia (E78.5)"],
+    meds:[{n:"Rosuvastatin 5mg",d:"Once nightly · oral"}],
+    hist:[{d:"Jun 15, 2026",t:"Lab review",n:"LDL 162 — initiate statin."},{d:"May 30, 2026",t:"New patient intake",n:"Family history of CAD noted."}]},
+  {n:"Sarah Lin",mrn:"40118",age:41,sex:"F",img:32,init:"SL",cond:["Migraine"],last:"Yesterday",prov:"Dr. Marsh",st:"active",
+    dob:"Nov 19, 1984",phone:"+1 (503) 555-0121",ins:"Kaiser",bp:[122,120,121,119,120,122,121],
+    vitals:{bp:"121/76",hr:"70",bmi:"23.4",spo2:"99%"},
+    conds:["Chronic migraine (G43.709)"],
+    meds:[{n:"Sumatriptan 50mg",d:"As needed · oral"},{n:"Propranolol 40mg",d:"Twice daily · oral"}],
+    hist:[{d:"Jun 14, 2026",t:"Telehealth",n:"Frequency reduced to 2/month on propranolol."},{d:"Apr 2, 2026",t:"In-person visit",n:"Started preventive therapy."}]},
+  {n:"David Whitfield",mrn:"40044",age:67,sex:"M",img:60,init:"DW",cond:["Post-op"],last:"3 days ago",prov:"Dr. Cole",st:"review",
+    dob:"Feb 11, 1959",phone:"+1 (404) 555-0177",ins:"Medicare",bp:[136,138,134,135,133,134,135],
+    vitals:{bp:"135/84",hr:"76",bmi:"28.9",spo2:"96%"},
+    conds:["S/p right knee arthroplasty","Osteoarthritis"],
+    meds:[{n:"Acetaminophen 500mg",d:"Three times daily · oral"},{n:"Apixaban 2.5mg",d:"Twice daily · oral"}],
+    hist:[{d:"Jun 12, 2026",t:"Post-op review",n:"Incision healing well. PT continuing."},{d:"May 28, 2026",t:"Surgery",n:"Right total knee arthroplasty."}]},
+  {n:"James Ford",mrn:"40402",age:52,sex:"M",img:51,init:"JF",cond:["Hypertension"],last:"1 week ago",prov:"Dr. Reyes",st:"active",
+    dob:"Aug 30, 1973",phone:"+1 (713) 555-0150",ins:"Humana PPO",bp:[142,140,139,141,138,140,139],
+    vitals:{bp:"139/88",hr:"78",bmi:"29.7",spo2:"97%"},
+    conds:["Hypertension (I10)","Prediabetes"],
+    meds:[{n:"Amlodipine 5mg",d:"Once daily · oral"}],
+    hist:[{d:"Jun 8, 2026",t:"In-person visit",n:"BP slightly elevated, increased dose."},{d:"Mar 15, 2026",t:"Lab panel",n:"Fasting glucose 108."}]},
+  {n:"Nina Alvarez",mrn:"40355",age:38,sex:"F",img:9,init:"NA",cond:["Hypothyroidism"],last:"2 weeks ago",prov:"Dr. Marsh",st:"new",
+    dob:"Apr 5, 1988",phone:"+1 (305) 555-0188",ins:"Aetna PPO",bp:[114,116,115,113,114,115,114],
+    vitals:{bp:"114/72",hr:"66",bmi:"21.9",spo2:"99%"},
+    conds:["Hypothyroidism (E03.9)"],
+    meds:[{n:"Levothyroxine 75mcg",d:"Once daily · oral"}],
+    hist:[{d:"Jun 1, 2026",t:"New patient intake",n:"TSH 6.8, started levothyroxine."}]},
+];
+const THREADS=[
+  {n:"Sarah Lin",r:"Patient · MRN 40118",img:32,init:"SL",p:"Thank you, I'll try the new dosage tonight.",ts:"9:14",unread:false,on:true},
+  {n:"James Ford",r:"Patient · MRN 40402",img:51,init:"JF",p:"My BP this morning was 138/88.",ts:"8:47",unread:true,on:false},
+  {n:"Priya Nair",r:"Patient · MRN 40277",img:48,init:"PN",p:"Should I keep taking metformin before the lab?",ts:"Yesterday",unread:true,on:true},
+  {n:"Lab — Quest Diagnostics",r:"Results channel",img:0,init:"QD",p:"Lipid panel results for L. Carter posted.",ts:"Yesterday",unread:true,on:false},
+  {n:"Dr. Reyes",r:"Colleague · Internal Med",img:33,init:"AR",p:"Can you cover my 2pm telehealth slot?",ts:"Mon",unread:false,on:false},
+];
+const CONVOS={
+  "Sarah Lin":[
+    {who:"day",t:"Today"},
+    {who:"them",t:"Hi Dr. Marsh, the migraines are still hitting around twice a week.",ts:"9:02"},
+    {who:"me",t:"Thanks for the update, Sarah. Let's increase the propranolol to 40mg twice daily and keep a headache log.",ts:"9:08"},
+    {who:"them",t:"Got it. Any side effects I should watch for?",ts:"9:11"},
+    {who:"me",t:"Mild fatigue or lightheadedness at first — message me if it persists past a week.",ts:"9:13"},
+    {who:"them",t:"Thank you, I'll try the new dosage tonight.",ts:"9:14"},
+  ],
+};
+/* ---------------- RENDER ---------------- */
+function el(id){return document.getElementById(id)}
+function avatar(img,init,cls){
+  if(img&&img>0)return '<img class="'+(cls||'')+'" src="https://i.pravatar.cc/150?img='+img+'" alt="" onerror="this.outerHTML=\'<div class=&quot;ph '+(cls||'')+'&quot;>'+init+'</div>\'">';
+  return '<div class="ph '+(cls||'')+'">'+init+'</div>';
+}
+function renderKPI(){
+  el('kpiWrap').innerHTML=KPIS.map(k=>`
+    <div class="kpi">
+      <div class="top"><span class="lbl">${k.lbl}</span><span class="ic ${k.cls}"><svg class="icon" viewBox="0 0 24 24" style="width:20px;height:20px">${k.ic}</svg></span></div>
+      <div class="val">${k.val}</div>
+      <div class="delta ${k.up?'up':'down'}"><svg class="icon" viewBox="0 0 24 24"><path d="${k.up?'M7 14l5-5 5 5':'M7 10l5 5 5-5'}"/></svg>${k.d} <b>${k.note}</b></div>
+    </div>`).join('');
+}
+function schedRow(a){
+  return `<div class="tl-row"><div class="tl-time">${a.t}</div>
+    <div class="appt ${a.type==='video'?'video':''}" onclick='openAppt(${JSON.stringify(a).replace(/'/g,"&#39;")})'>
+      ${avatar(a.img,a.init,'av')}
+      <div class="ainfo"><div class="an">${a.n}</div><div class="ar">${a.r}</div></div>
+      ${a.done?'<span class="tag done">Done</span>':'<span class="tag '+(a.type==='video'?'video">Video':'person">In-person')+'</span>'}
+    </div></div>`;
+}
+function renderDash(){
+  el('dashSched').innerHTML=SCHED.map(schedRow).join('');
+  el('taskWrap').innerHTML=TASKS.map(t=>`
+    <div class="task"><div class="tic ${t.ic}">${taskIcon(t.ic)}</div>
+      <div><div class="tt">${t.t}</div><div class="td">${t.d}</div></div><span class="tm">${t.m}</span></div>`).join('');
+  el('volChart').innerHTML=areaChart([62,71,58,80,74,90,68]);
+}
+function taskIcon(k){
+  const m={alert:'<path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 2 18a2 2 0 0 0 1.7 3h16.6a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/>',
+    rx:'<rect x="4" y="4" width="9" height="11" rx="2"/><path d="M6.5 7.5h4M8.5 9v6l5 5 3-3z"/>',
+    lab:'<path d="M9 3v6L4.5 17a2 2 0 0 0 1.8 3h11.4a2 2 0 0 0 1.8-3L15 9V3M8 3h8"/>',
+    msg:'<path d="M21 11.5a8 8 0 0 1-11.5 7.2L3 21l2.3-6.5A8 8 0 1 1 21 11.5z"/>'};
+  return '<svg class="icon" viewBox="0 0 24 24" style="width:18px;height:18px">'+m[k]+'</svg>';
+}
+/* area chart */
+function areaChart(data){
+  const w=420,h=150,p=14,max=Math.max(...data)*1.15,min=Math.min(...data)*.7;
+  const xs=i=>p+i*(w-2*p)/(data.length-1);
+  const ys=v=>h-p-(v-min)/(max-min)*(h-2*p);
+  let line='',area='';
+  data.forEach((v,i)=>{const x=xs(i).toFixed(1),y=ys(v).toFixed(1);line+=(i?'L':'M')+x+' '+y+' ';if(i===0)area='M'+x+' '+y+' ';else area+='L'+x+' '+y+' '});
+  area+='L'+xs(data.length-1).toFixed(1)+' '+(h-p)+' L'+p+' '+(h-p)+' Z';
+  const dots=data.map((v,i)=>`<circle cx="${xs(i).toFixed(1)}" cy="${ys(v).toFixed(1)}" r="3.5" fill="#fff" stroke="#0D9488" stroke-width="2"/>`).join('');
+  const labels=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map((d,i)=>`<text x="${xs(i).toFixed(1)}" y="${h-1}" font-size="9.5" fill="#9DB2AD" text-anchor="middle" font-family="Inter">${d}</text>`).join('');
+  return `<svg viewBox="0 0 ${w} ${h+6}" width="100%" style="overflow:visible"><defs><linearGradient id="ag" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0D9488" stop-opacity=".22"/><stop offset="1" stop-color="#0D9488" stop-opacity="0"/></linearGradient></defs>
+    <path d="${area}" fill="url(#ag)"/><path d="${line}" fill="none" stroke="#0D9488" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>${dots}${labels}</svg>`;
+}
+/* bar chart */
+function barChart(data,labels,colors){
+  const w=290,h=160,p=18,max=Math.max(...data)*1.18,bw=(w-2*p)/data.length*.56;
+  const bars=data.map((v,i)=>{const x=p+i*(w-2*p)/data.length+(w-2*p)/data.length*.22;const bh=(v/max)*(h-2*p-14);const y=h-p-bh-14;
+    return `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${bh.toFixed(1)}" rx="5" fill="${colors[i%colors.length]}"/>
+      <text x="${(x+bw/2).toFixed(1)}" y="${(y-5).toFixed(1)}" font-size="10" font-weight="700" fill="#0F2620" text-anchor="middle" font-family="'Plus Jakarta Sans'">${v}</text>
+      <text x="${(x+bw/2).toFixed(1)}" y="${h-2}" font-size="9.5" fill="#9DB2AD" text-anchor="middle" font-family="Inter">${labels[i]}</text>`}).join('');
+  return `<svg viewBox="0 0 ${w} ${h}" width="100%">${bars}</svg>`;
+}
+/* sparkline for BP */
+function spark(data,color){
+  const w=120,h=38,p=4,max=Math.max(...data),min=Math.min(...data);
+  const xs=i=>p+i*(w-2*p)/(data.length-1),ys=v=>h-p-(v-min)/((max-min)||1)*(h-2*p);
+  let d='';data.forEach((v,i)=>d+=(i?'L':'M')+xs(i).toFixed(1)+' '+ys(v).toFixed(1)+' ');
+  return `<svg viewBox="0 0 ${w} ${h}" width="${w}" height="${h}"><path d="${d}" fill="none" stroke="${color||'#0D9488'}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="${xs(data.length-1).toFixed(1)}" cy="${ys(data[data.length-1]).toFixed(1)}" r="3" fill="${color||'#0D9488'}"/></svg>`;
+}
+/* APPOINTMENTS */
+function renderAppts(){
+  el('apptList').innerHTML=SCHED.concat([
+    {t:"13:00",n:"James Ford",r:"BP recheck · Dr. Reyes",type:"person",img:51,init:"JF",done:false},
+    {t:"14:00",n:"Nina Alvarez",r:"Thyroid follow-up · Dr. Marsh",type:"video",img:9,init:"NA",done:false},
+  ]).map(schedRow).join('');
+  el('loadChart').innerHTML=barChart([6,5,3],['Marsh','Reyes','Cole'],['#0D9488','#2C6E9B','#6D5BB5']);
+  renderMiniCal();
+}
+function renderMiniCal(){
+  const dow=['S','M','T','W','T','F','S'];
+  let html=dow.map(d=>`<div class="dow">${d}</div>`).join('');
+  const first=1,offset=0,days=30,today=15;const evDays=[3,5,9,12,15,15,18,22,24,27];
+  for(let i=0;i<offset;i++)html+='<div class="day out"></div>';
+  for(let d=first;d<=days;d++){
+    const ev=evDays.includes(d);
+    html+=`<div class="day ${d===today?'today':''}" onclick="go('appointments')">${d}${ev?'<span class="ev"></span>':''}</div>`;
+  }
+  el('miniCal').innerHTML=html;
+}
+/* PATIENTS */
+let curFilter='all',curSearch='';
+function renderPatients(){
+  const rows=PATIENTS.filter(p=>(curFilter==='all'||p.st===curFilter)&&(p.n.toLowerCase().includes(curSearch)||p.mrn.includes(curSearch)));
+  el('patBody').innerHTML=rows.map((p,idx)=>`
+    <tr onclick="openPatient(${PATIENTS.indexOf(p)})">
+      <td><div class="pt">${avatar(p.img,p.init)}<div><div class="pn">${p.n}</div><div class="pmrn">MRN ${p.mrn}</div></div></div></td>
+      <td>${p.age} · ${p.sex}</td>
+      <td>${p.cond.map(c=>'<span class="cond">'+c+'</span>').join('')}</td>
+      <td>${p.last}</td>
+      <td>${p.prov}</td>
+      <td>${stBadge(p.st)}</td>
+    </tr>`).join('')||'<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:32px">No patients match.</td></tr>';
+}
+function stBadge(s){
+  const m={active:['active','Active'],review:['review','Needs review'],new:['new','New'],inactive:['inactive','Inactive']};
+  return `<span class="badge ${m[s][0]}"><i></i>${m[s][1]}</span>`;
+}
+function setFilter(f,btn){curFilter=f;document.querySelectorAll('.chip[data-f]').forEach(c=>c.classList.remove('active'));btn.classList.add('active');renderPatients();}
+function filterPatients(v){curSearch=v.toLowerCase();renderPatients();}
+/* DRAWER */
+function openPatient(i){
+  const p=PATIENTS[i];
+  el('drHead').innerHTML=`${avatar(p.img,p.init)}
+    <div><div class="dn">${p.n}</div><div class="dr2">MRN ${p.mrn} · ${stBadge(p.st)}</div></div>
+    <button class="dr-close" onclick="closeDrawer()" aria-label="Close"><svg class="icon" viewBox="0 0 24 24" style="width:18px"><path d="M6 6l12 12M18 6L6 18"/></svg></button>`;
+  el('drBody').innerHTML=`
+    <div class="dr-sect"><h4>Demographics</h4><div class="demo">
+      <div class="di"><div class="dl">Date of birth</div><div class="dv">${p.dob} (${p.age})</div></div>
+      <div class="di"><div class="dl">Sex</div><div class="dv">${p.sex==='M'?'Male':'Female'}</div></div>
+      <div class="di"><div class="dl">Phone</div><div class="dv">${p.phone}</div></div>
+      <div class="di"><div class="dl">Insurance</div><div class="dv">${p.ins}</div></div>
+      <div class="di"><div class="dl">Primary provider</div><div class="dv">${p.prov}</div></div>
+      <div class="di"><div class="dl">Last visit</div><div class="dv">${p.last}</div></div>
+    </div></div>
+    <div class="dr-sect"><h4>Vitals</h4>
+      <div class="vrow">
+        <div class="vcard"><div class="vl">Blood pressure</div><div class="vv">${p.vitals.bp} <small>mmHg</small></div>${spark(p.bp,'#C4453B')}</div>
+        <div class="vcard"><div class="vl">Heart rate</div><div class="vv">${p.vitals.hr} <small>bpm</small></div></div>
+        <div class="vcard"><div class="vl">BMI</div><div class="vv">${p.vitals.bmi}</div></div>
+      </div>
+      <div style="font-size:11.5px;color:var(--muted);margin-top:9px">Systolic BP trend · last 7 readings</div>
+    </div>
+    <div class="dr-sect"><h4>Conditions</h4><div>${p.conds.map(c=>'<span class="cond">'+c+'</span>').join('')}</div></div>
+    <div class="dr-sect"><h4>Current medications</h4>${p.meds.map(m=>`
+      <div class="med"><div class="mi"><svg class="icon" viewBox="0 0 24 24" style="width:18px"><rect x="3" y="9" width="18" height="6" rx="3" transform="rotate(45 12 12)"/></svg></div>
+      <div><div class="mn">${m.n}</div><div class="md">${m.d}</div></div></div>`).join('')}</div>
+    <div class="dr-sect"><h4>Visit history</h4><div class="vh">${p.hist.map(h=>`
+      <div class="vhi"><div class="vhd">${h.d}</div><div class="vht">${h.t}</div><div class="vhn">${h.n}</div></div>`).join('')}</div></div>`;
+  el('drFoot').innerHTML=`<button class="btn" style="flex:1" onclick="go('telehealth');closeDrawer()"><svg class="icon" viewBox="0 0 24 24" style="width:17px"><rect x="2.5" y="6" width="13" height="12" rx="2.5"/><path d="M15.5 10l6-3v10l-6-3z"/></svg>Start visit</button>
+    <button class="btn ghost" style="flex:1" onclick="go('messages');closeDrawer()">Message</button>`;
+  showDrawer();
+}
+function openAppt(a){
+  el('drHead').innerHTML=`${avatar(a.img,a.init)}
+    <div><div class="dn">${a.n}</div><div class="dr2">${a.t} · ${a.type==='video'?'Video visit':'In-person'}</div></div>
+    <button class="dr-close" onclick="closeDrawer()" aria-label="Close"><svg class="icon" viewBox="0 0 24 24" style="width:18px"><path d="M6 6l12 12M18 6L6 18"/></svg></button>`;
+  el('drBody').innerHTML=`
+    <div class="dr-sect"><h4>Appointment</h4>
+      <div class="appt-line"><span class="all">Time</span><span class="alv">${a.t} – ${addMin(a.t,30)}</span></div>
+      <div class="appt-line"><span class="all">Reason</span><span class="alv">${a.r.split(' · ')[0]}</span></div>
+      <div class="appt-line"><span class="all">Provider</span><span class="alv">${a.r.split(' · ')[1]||'Dr. Marsh'}</span></div>
+      <div class="appt-line"><span class="all">Type</span><span class="alv">${a.type==='video'?'<span class="tag video">Video</span>':'<span class="tag person">In-person</span>'}</span></div>
+      <div class="appt-line"><span class="all">Status</span><span class="alv">${a.done?'Completed':'Confirmed'}</span></div>
+    </div>
+    <div class="dr-sect"><h4>Intake notes</h4>
+      <div style="background:var(--soft2);border:1px solid var(--line);border-radius:12px;padding:13px;font-size:13px;color:var(--muted);line-height:1.6">Patient completed pre-visit questionnaire. Reports symptoms stable since last visit. No new allergies. Reviewed current medication list — no changes reported.</div></div>
+    <div class="dr-sect"><h4>Quick actions</h4>
+      <div class="vrow"><button class="btn ghost sm">Reschedule</button><button class="btn ghost sm">Add note</button><button class="btn ghost sm">Cancel</button></div></div>`;
+  el('drFoot').innerHTML=`<button class="btn" style="flex:1" onclick="go('telehealth');closeDrawer()">${a.type==='video'?'Join video visit':'Check in patient'}</button>`;
+  showDrawer();
+}
+function addMin(t,m){let[h,mm]=t.split(':').map(Number);mm+=m;h+=Math.floor(mm/60);mm%=60;return (h<10?'0':'')+h+':'+(mm<10?'0':'')+mm;}
+function showDrawer(){el('drawer').classList.add('open');el('drawerOv').classList.add('open');}
+function closeDrawer(){el('drawer').classList.remove('open');el('drawerOv').classList.remove('open');}
+/* MESSAGES */
+let curThread="Sarah Lin";
+function renderThreads(){
+  el('threadList').innerHTML=THREADS.map(t=>`
+    <div class="thread ${t.n===curThread?'active':''}" onclick="openThread('${t.n.replace(/'/g,"")}')">
+      ${avatar(t.img,t.init)}
+      <div class="ti"><div class="tn">${t.n}<span class="ts">${t.ts}</span></div><div class="tp">${t.p}</div></div>
+      ${t.unread?'<span class="unread"></span>':''}
+    </div>`).join('');
+}
+function openThread(n){
+  const t=THREADS.find(x=>x.n===n)||THREADS[0];curThread=n;
+  el('convoName').textContent=t.n;el('convoRole').textContent=t.r;
+  el('convoAv').src='https://i.pravatar.cc/150?img='+(t.img||32);
+  renderBubbles(n);renderThreads();
+  if(window.innerWidth<=900){el('msgwrap').classList.add('showconvo');el('backBtn').style.display='flex';}
+}
+function renderBubbles(n){
+  const c=CONVOS[n]||[{who:"day",t:"Today"},{who:"them",t:"Hi doctor, I had a quick question about my care plan.",ts:"8:30"},{who:"me",t:"Of course — happy to help. What's on your mind?",ts:"8:34"}];
+  el('bubbles').innerHTML=c.map(b=>{
+    if(b.who==='day')return `<div class="daydiv">${b.t}</div>`;
+    return `<div class="bb ${b.who}">${b.t}<div class="bt">${b.ts}</div></div>`;
+  }).join('');
+  el('bubbles').scrollTop=el('bubbles').scrollHeight;
+}
+function sendMsg(){
+  const i=el('msgInput'),v=i.value.trim();if(!v)return;
+  if(!CONVOS[curThread])CONVOS[curThread]=[];
+  CONVOS[curThread].push({who:'me',t:v,ts:'now'});
+  i.value='';renderBubbles(curThread);
+}
+/* TELEHEALTH controls */
+function toggleCtl(id,k){const b=el(id);b.classList.toggle('off');}
+/* NAV */
+function go(view){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  el('v-'+view).classList.add('active');
+  document.querySelectorAll('#nav a').forEach(a=>a.classList.toggle('active',a.dataset.view===view));
+  const titles={dashboard:['Dashboard','Monday, June 15, 2026 · West Harbor Clinic'],appointments:['Appointments','Day view · 14 scheduled'],patients:['Patients','1,284 active records'],telehealth:['Telehealth','Live video visit in progress'],messages:['Messages','Secure · HIPAA compliant']};
+  el('ptitle').textContent=titles[view][0];el('psub').textContent=titles[view][1];
+  el('sb').classList.remove('open');el('sbov').classList.remove('open');
+  window.scrollTo(0,0);
+  if(view==='messages'){el('msgwrap').classList.remove('showconvo');el('backBtn').style.display='none';}
+}
+function toggleSide(){const s=el('sb'),o=el('sbov');const op=s.classList.toggle('open');o.classList.toggle('open',op);}
+/* call timer */
+function startTimer(){
+  let s=8*60+42;
+  setInterval(()=>{s++;const m=Math.floor(s/60),ss=s%60;el('callTimer').textContent=(m<10?'0':'')+m+':'+(ss<10?'0':'')+ss;},1000);
+}
+/* INIT */
+function render(){
+  renderKPI();renderDash();renderAppts();renderPatients();renderThreads();renderBubbles(curThread);startTimer();
+}
+render();
+</script>
+</body>
+</html>

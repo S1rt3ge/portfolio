@@ -1,0 +1,10 @@
+{
+  "files": {
+    "main.js": "/portfolio/walters/static/js/main.eaf2700d.js",
+    "index.html": "/portfolio/walters/index.html",
+    "main.eaf2700d.js.map": "/portfolio/walters/static/js/main.eaf2700d.js.map"
+  },
+  "entrypoints": [
+    "static/js/main.eaf2700d.js"
+  ]
+}

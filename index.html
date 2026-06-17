@@ -66,7 +66,7 @@ footer b{color:var(--ink);font-family:Fraunces,serif;font-weight:600}
     <h1>Alex B — <span class="g">AI Engineer</span><br>& Fullstack Developer</h1>
     <p class="lead">I build production-grade GenAI systems — multi-agent pipelines, RAG, and the full product around them. Below are interactive demo products I designed and engineered end-to-end.</p>
     <div class="stats">
-      <div class="stat"><div class="n">22</div><div class="l">Live demos</div></div>
+      <div class="stat"><div class="n">23</div><div class="l">Live demos</div></div>
       <div class="stat"><div class="n">AI-first</div><div class="l">Agents · RAG · LLM systems</div></div>
       <div class="stat"><div class="n">Fullstack</div><div class="l">Next.js · React · FastAPI · Postgres</div></div>
     </div>
@@ -85,6 +85,7 @@ footer b{color:var(--ink);font-family:Fraunces,serif;font-weight:600}
 <script>
 const SECTIONS = [
   { title:"Production builds", label:"real, shipped", note:"Real products I designed and engineered end-to-end. These run on sample data so you can click through the whole app — no sign-up, no backend.", items:[
+    {live:true, url:"trading-bot/", img:"_gig-screens/trading-bot.png", t:"SentryTrade — News-Sentiment Trading Bot", d:"A real-time algorithmic trading cockpit: a multi-stage LLM funnel (local gate → Haiku pre-screener → Sonnet signal agent) turns financial news into BUY/SELL signals with confidence scoring, paper-traded on a $10k account. Live-updating P&L and signal feed, positions, A/B prompt testing, a streaming bot console, and START/STOP controls.", tg:["Algo trading","Multi-LLM","Live feed","React"]},
     {live:true, url:"seb-hpc/", img:"_gig-screens/seb-hpc.png", t:"Meridian Treasury — SME Cash-Flow Forecasting", d:"An ML treasury tool that classifies each business into a behavioral segment from its transaction patterns, routes it to that segment's best model (KNN / LSTM / GRU / Transformer), forecasts 4 weeks of cash flow, and turns it into a concrete treasury action — \"transfer €90,650 to savings\" or secure financing. Includes a live model-comparison (RMSE) view; trained on HPC (4× L40S GPUs).", tg:["ML forecasting","PyTorch","HPC","React"]},
     {live:true, url:"business-agent/", img:"_gig-screens/business-agent.png", t:"Phantom Pipeline — Autonomous AI SDR", d:"A product for autonomous B2B outbound: detect buying signals, auto-generate a personalized \"Pipeline Autopsy\" report + AI video, and deliver it before the prospect ever hears from sales. Cinematic scroll landing with an interactive WebGL globe and a live \"cost of waiting\" counter, over a full authenticated app (dashboard, prospects, admin).", tg:["AI SDR","React","TanStack","WebGL"]},
     {live:true, external:true, url:"https://holomate.org", img:"_gig-screens/holomate.png", t:"HoloMate — Real-time AI Hologram Companion", d:"A real-time conversational AI \"hologram\" you can see and talk to — a live voice + vision avatar (Next.js · FastAPI · Gemini). This one is a shipped product, so the card opens the official site.", tg:["Real-time AI","Voice + Vision","Next.js","Live product"]},

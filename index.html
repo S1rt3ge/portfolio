@@ -44,8 +44,11 @@ a{color:inherit;text-decoration:none}
 @media(max-width:600px){.grid{grid-template-columns:1fr}}
 .card{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease}
 .card:hover{transform:translateY(-4px);border-color:rgba(124,140,255,.42);box-shadow:0 18px 42px -22px rgba(0,0,0,.85)}
-.shot{aspect-ratio:1280/769;overflow:hidden;background:#0b0e14;border-bottom:1px solid var(--line)}
+.shot{position:relative;aspect-ratio:1280/769;overflow:hidden;background:#0b0e14;border-bottom:1px solid var(--line)}
 .shot img{width:100%;height:100%;object-fit:cover;object-position:top center;display:block}
+.badge-live{position:absolute;top:10px;left:10px;z-index:2;display:inline-flex;align-items:center;gap:6px;background:rgba(10,12,16,.74);backdrop-filter:blur(6px);border:1px solid rgba(57,208,196,.5);color:#d7fff8;font-size:11px;font-weight:600;letter-spacing:.02em;padding:4px 10px;border-radius:999px}
+.badge-live .dot{width:7px;height:7px;border-radius:50%;background:var(--acc2);animation:pulse 2s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(57,208,196,.55)}70%{box-shadow:0 0 0 7px rgba(57,208,196,0)}100%{box-shadow:0 0 0 0 rgba(57,208,196,0)}}
 .cbody{padding:16px 16px 18px;display:flex;flex-direction:column;gap:10px;flex:1}
 .cbody h3{font-family:Fraunces,serif;font-size:18px;font-weight:600;margin:0}
 .cbody p{color:var(--mut);font-size:13.5px;margin:0;flex:1}
@@ -63,12 +66,12 @@ footer b{color:var(--ink);font-family:Fraunces,serif;font-weight:600}
     <h1>Alex B — <span class="g">AI Engineer</span><br>& Fullstack Developer</h1>
     <p class="lead">I build production-grade GenAI systems — multi-agent pipelines, RAG, and the full product around them. Below are interactive demo products I designed and engineered end-to-end.</p>
     <div class="stats">
-      <div class="stat"><div class="n">15</div><div class="l">Demo products</div></div>
+      <div class="stat"><div class="n">16</div><div class="l">Live demos</div></div>
       <div class="stat"><div class="n">AI-first</div><div class="l">Agents · RAG · LLM systems</div></div>
       <div class="stat"><div class="n">Fullstack</div><div class="l">Next.js · React · FastAPI · Postgres</div></div>
     </div>
     <div class="cta"><a class="btn p" href="#work">Explore the work ↓</a></div>
-    <div class="note">Each card opens a live, clickable demo. These are concept products built to show design + engineering range — desktop and mobile responsive.</div>
+    <div class="note">Each card opens a live, clickable demo. The first section is real products I built and shipped end-to-end (running on sample data, no backend needed); the rest are concept products that show design + engineering range — desktop and mobile responsive.</div>
   </header>
 
   <main id="work"></main>
@@ -81,6 +84,9 @@ footer b{color:var(--ink);font-family:Fraunces,serif;font-weight:600}
 
 <script>
 const SECTIONS = [
+  { title:"Production builds", label:"real, shipped", note:"Real products I designed and engineered end-to-end. These run on sample data so you can click through the whole app — no sign-up, no backend.", items:[
+    {live:true, url:"code-review-agent/", img:"_gig-screens/code-review-agent.png", t:"Code Review Agent — Multi-agent PR review", d:"Four specialized AI agents (security, performance, style, logic) review a pull request, then a \"Review Passport\" gates merge-readiness with evidence, anti-AI-slop signals and QA steps.", tg:["Multi-agent","FastAPI","React","Merge gate"]},
+  ]},
   { title:"AI & Automation", note:"Autonomous agents, RAG, and AI-native workflows.", items:[
     {f:"05-replai-ai",  s:"05-replai-ai",  t:"Replai — AI Support Platform", d:"AI drafts customer replies from your knowledge base, with cited sources, automations and analytics.", tg:["RAG","LLM","React"]},
     {f:"10-outboundly", s:"10-outboundly", t:"Outboundly — AI SDR",          d:"AI scores leads and writes personalized cold emails; full outreach sequences and analytics.", tg:["AI","Next.js"]},
@@ -105,17 +111,17 @@ const SECTIONS = [
 ];
 document.getElementById('work').innerHTML = SECTIONS.map(sec=>`
   <section class="sec">
-    <h2>${sec.title} <span class="c">${sec.items.length} demos</span></h2>
+    <h2>${sec.title} <span class="c">${sec.label ? sec.label : sec.items.length + ' demos'}</span></h2>
     <p class="sub">${sec.note}</p>
     <div class="grid">
       ${sec.items.map(it=>`
-        <a class="card" href="${it.f}/index.html" target="_blank" rel="noopener">
-          <div class="shot"><img src="_gig-screens/${it.s}.jpg" alt="${it.t}"></div>
+        <a class="card" href="${it.url || it.f + '/index.html'}" target="_blank" rel="noopener">
+          <div class="shot">${it.live ? '<span class="badge-live"><span class="dot"></span>Live build</span>' : ''}<img src="${it.img || '_gig-screens/' + it.s + '.jpg'}" alt="${it.t}"></div>
           <div class="cbody">
             <h3>${it.t}</h3>
             <p>${it.d}</p>
             <div class="tags">${it.tg.map(t=>`<span class="tag">${t}</span>`).join('')}</div>
-            <span class="open">Open live demo →</span>
+            <span class="open">${it.live ? 'Open live app →' : 'Open live demo →'}</span>
           </div>
         </a>`).join('')}
     </div>

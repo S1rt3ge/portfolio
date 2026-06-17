@@ -66,7 +66,7 @@ footer b{color:var(--ink);font-family:Fraunces,serif;font-weight:600}
     <h1>Alex B — <span class="g">AI Engineer</span><br>& Fullstack Developer</h1>
     <p class="lead">I build production-grade GenAI systems — multi-agent pipelines, RAG, and the full product around them. Below are interactive demo products I designed and engineered end-to-end.</p>
     <div class="stats">
-      <div class="stat"><div class="n">18</div><div class="l">Live demos</div></div>
+      <div class="stat"><div class="n">19</div><div class="l">Live demos</div></div>
       <div class="stat"><div class="n">AI-first</div><div class="l">Agents · RAG · LLM systems</div></div>
       <div class="stat"><div class="n">Fullstack</div><div class="l">Next.js · React · FastAPI · Postgres</div></div>
     </div>
@@ -85,6 +85,7 @@ footer b{color:var(--ink);font-family:Fraunces,serif;font-weight:600}
 <script>
 const SECTIONS = [
   { title:"Production builds", label:"real, shipped", note:"Real products I designed and engineered end-to-end. These run on sample data so you can click through the whole app — no sign-up, no backend.", items:[
+    {live:true, url:"ds-ai/", img:"_gig-screens/ds-ai.png", t:"Research Assistant — Multi-agent RAG + smart routing", d:"Answers research questions by routing each query across local Ollama and cloud LLMs based on complexity — toggle Balanced / Cost / Quality / Ultra-Fast and watch the chosen model change live. Runs a Planner → Retrieval → Synthesis agent crew, grounds answers in a cited RAG corpus, and tracks cost savings vs. always using GPT-4o.", tg:["Multi-agent","RAG","LLM routing","React"]},
     {live:true, url:"walters/", img:"_gig-screens/walters.png", t:"Walter's — Smart Restaurant Platform", d:"A multi-role restaurant OS in one clickable demo: diners browse a photo menu with AI picks and track orders live; plus a real-time kitchen display, a waiter floor view, and a manager dashboard with analytics, AI dynamic pricing and a live demand simulation. Pick any of the four roles.", tg:["Multi-role","React","WebSocket","Recharts"]},
     {live:true, url:"agentic-platform/", img:"_gig-screens/agentic-platform.png", t:"Agentic Workflow Platform — Visual builder", d:"Multi-tenant no-code platform: drag-and-drop agent graph builder, then watch a run stream live — agents light up node-by-node while tokens and cost tick up — plus a cost & usage analytics dashboard.", tg:["Multi-agent","Vite/React","WebSocket","SaaS"]},
     {live:true, url:"code-review-agent/", img:"_gig-screens/code-review-agent.png", t:"Code Review Agent — Multi-agent PR review", d:"Four specialized AI agents (security, performance, style, logic) review a pull request, then a \"Review Passport\" gates merge-readiness with evidence, anti-AI-slop signals and QA steps.", tg:["Multi-agent","FastAPI","React","Merge gate"]},

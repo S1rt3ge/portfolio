@@ -1,0 +1,1 @@
+import{p as r,j as e}from"./index-KQJ0eIhQ.js";function n(){const{user:s}=r();return e.jsx("div",{children:e.jsxs("div",{children:[e.jsxs("h1",{className:"text-2xl truncate max-w-sm",children:["Hi, ",s?.full_name||s?.email," 👋"]}),e.jsx("p",{className:"text-muted-foreground",children:"Welcome back, nice to see you again!!!"})]})})}export{n as component};

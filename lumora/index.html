@@ -9,6 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="preload" as="image" href="https://api.getlayers.ai/storage/v1/object/public/public/assets/lumora-e8b711fc68/hero/after.jpg">
 <script>document.documentElement.classList.add('js');</script>
 <style>
 /* ===== Reset / base ===== */
@@ -95,7 +96,7 @@ html.js .words.in .w{ transform:none; opacity:1 }
 @media (hover:hover){ .alink--legal:hover span{ transform:translateX(3px); opacity:1 } }
 
 /* ===== Loader ===== */
-.loader{ position:fixed; inset:0; z-index:120; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2rem; background:#0a0a0a; color:#fff; border-radius:0 0 2rem 2rem; transform:translateY(0); transition:transform .7s cubic-bezier(.22,1,.36,1); will-change:transform }
+.loader{ position:fixed; inset:0; z-index:120; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2rem; background-color:#0a0a0a; background-image:linear-gradient(180deg, rgba(10,10,10,.68) 0%, rgba(10,10,10,.82) 45%, rgba(10,10,10,.72) 100%), url('https://api.getlayers.ai/storage/v1/object/public/public/assets/lumora-e8b711fc68/hero/after.jpg'); background-size:cover; background-position:center; background-repeat:no-repeat; color:#fff; border-radius:0 0 2rem 2rem; transform:translateY(0); transition:transform .7s cubic-bezier(.22,1,.36,1); will-change:transform }
 .loader--exit{ transform:translateY(-100%) }
 .loader-center{ display:flex; flex-direction:column; align-items:center; gap:1.25rem; text-align:center; transition:opacity .45s cubic-bezier(.22,1,.36,1), transform .45s cubic-bezier(.22,1,.36,1) }
 .loader--exit .loader-center{ opacity:0; transform:translateY(-12px) }

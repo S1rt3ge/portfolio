@@ -1,0 +1,939 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Closer — AI Voice Sales Agent that dials, talks & closes</title>
+<meta name="description" content="An autonomous AI voice sales agent: it calls the lead, holds a human-indistinguishable conversation, handles objections and closes. Live call simulation, real voice samples, provider-agnostic stack.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#07080d; --panel:#0d0f17; --panel2:#12141f; --line:#1c1f2e; --line2:#262a3d;
+  --txt:#e9eaf2; --mut:#8a90a6; --dim:#5b6075;
+  --acc:#8b7bff; --acc2:#b7adff; --accbg:rgba(139,123,255,.12);
+  --ok:#34d399; --okbg:rgba(52,211,153,.12); --warn:#fbbf24; --warnbg:rgba(251,191,36,.12);
+  --bad:#f87171; --blue:#60a5fa;
+  --r:14px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--txt);font:15px/1.55 'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased;min-height:100vh}
+::selection{background:var(--acc);color:#0b0b12}
+button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+.num,.sg{font-family:'Space Grotesk',monospace}
+
+/* ---------- top bar ---------- */
+.top{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:20px;padding:0 22px;height:60px;
+  background:rgba(7,8,13,.86);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:17px;letter-spacing:-.02em;white-space:nowrap}
+.brand .logo{width:28px;height:28px;border-radius:9px;background:linear-gradient(135deg,var(--acc),#5f4bd8);display:grid;place-items:center;font-size:14px}
+.brand small{font-weight:500;color:var(--mut);font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;margin-top:2px}
+.tabs{display:flex;gap:4px;margin-left:8px;overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{padding:8px 14px;border-radius:10px;color:var(--mut);font-weight:600;font-size:13.5px;white-space:nowrap;transition:.18s}
+.tab:hover{color:var(--txt)}
+.tab.on{background:var(--accbg);color:var(--acc2)}
+.top .right{margin-left:auto;display:flex;align-items:center;gap:12px}
+.pill{display:inline-flex;align-items:center;gap:7px;padding:6px 12px;border:1px solid var(--line2);border-radius:99px;font-size:12px;color:var(--mut);white-space:nowrap}
+.pill .dot{width:7px;height:7px;border-radius:50%;background:var(--ok);box-shadow:0 0 8px var(--ok);animation:pulse 2s infinite}
+@keyframes pulse{50%{opacity:.4}}
+.cta{background:var(--acc);color:#0b0b12;font-weight:700;font-size:13px;padding:9px 16px;border-radius:10px;white-space:nowrap;transition:.18s}
+.cta:hover{background:var(--acc2)}
+
+main{max-width:1340px;margin:0 auto;padding:26px 22px 80px}
+.view{display:none}
+.view.on{display:block;animation:vin .35s ease}
+@keyframes vin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* ---------- shared ---------- */
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:18px}
+.card h3{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:99px;font-size:11.5px;font-weight:600;background:var(--panel2);border:1px solid var(--line2);color:var(--mut)}
+.chip.acc{background:var(--accbg);border-color:transparent;color:var(--acc2)}
+.chip.ok{background:var(--okbg);border-color:transparent;color:var(--ok)}
+.chip.warn{background:var(--warnbg);border-color:transparent;color:var(--warn)}
+.hero{margin:6px 0 24px}
+.hero h1{font-size:clamp(22px,3vw,30px);font-weight:800;letter-spacing:-.03em;line-height:1.2}
+.hero h1 em{font-style:normal;color:var(--acc2)}
+.hero p{color:var(--mut);max-width:760px;margin-top:8px;font-size:14.5px}
+.hero .chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+
+/* ---------- live call layout ---------- */
+.callgrid{display:grid;grid-template-columns:290px 1fr 300px;gap:16px;align-items:start}
+
+.lead-ava{width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,#2b2f45,#1b1e2e);display:grid;place-items:center;font-weight:700;font-size:17px;color:var(--acc2);border:1px solid var(--line2)}
+.leadrow{display:flex;gap:13px;align-items:center;margin-bottom:14px}
+.leadrow b{font-size:16px;display:block;letter-spacing:-.01em}
+.leadrow span{font-size:12.5px;color:var(--mut)}
+.kv{display:flex;justify-content:space-between;font-size:13px;padding:8px 0;border-top:1px solid var(--line)}
+.kv span{color:var(--mut)} .kv b{font-weight:600}
+.score{color:var(--ok)}
+.srcchips{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+
+.callstate{margin-top:16px}
+.status{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.status .st{font-weight:700;font-size:15px;display:flex;align-items:center;gap:9px}
+.stdot{width:9px;height:9px;border-radius:50%;background:var(--dim)}
+.stdot.live{background:var(--ok);box-shadow:0 0 10px var(--ok);animation:pulse 1.4s infinite}
+.timer{font-family:'Space Grotesk',monospace;font-size:15px;color:var(--mut)}
+.ctrl{display:flex;gap:8px}
+.btn{flex:1;padding:11px 10px;border-radius:11px;font-weight:700;font-size:13.5px;border:1px solid var(--line2);background:var(--panel2);transition:.18s;text-align:center}
+.btn:hover{border-color:var(--acc)}
+.btn.p{background:var(--acc);border-color:var(--acc);color:#0b0b12}
+.btn.p:hover{background:var(--acc2)}
+.btn.sm{flex:0 0 auto;padding:11px 14px}
+.hint{font-size:11.5px;color:var(--dim);margin-top:10px;text-align:center}
+
+/* transcript */
+.tr-card{padding:0;overflow:hidden;display:flex;flex-direction:column;min-height:640px}
+.tr-head{display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid var(--line)}
+.tr-head b{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--mut)}
+.rec{display:none;align-items:center;gap:6px;font-size:11px;color:var(--bad);font-weight:700;letter-spacing:.1em}
+.rec.on{display:inline-flex}
+.rec i{width:8px;height:8px;border-radius:50%;background:var(--bad);animation:pulse 1s infinite}
+.wave-wrap{padding:10px 18px 4px}
+canvas#wave{width:100%;height:56px;display:block}
+.speaker{font-size:11px;color:var(--dim);letter-spacing:.08em;text-transform:uppercase;padding:0 18px 8px;height:24px}
+.speaker b{color:var(--acc2)}
+.tr-body{flex:1;overflow-y:auto;padding:8px 18px 18px;display:flex;flex-direction:column;gap:10px;scroll-behavior:smooth}
+.tr-body::-webkit-scrollbar{width:8px}
+.tr-body::-webkit-scrollbar-thumb{background:var(--line2);border-radius:4px}
+.empty{margin:auto;text-align:center;color:var(--dim);padding:40px 20px}
+.empty .big{font-size:40px;margin-bottom:12px}
+.msg{max-width:78%;padding:11px 15px;border-radius:15px;font-size:14px;line-height:1.5;animation:min .25s ease}
+@keyframes min{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.msg.a{align-self:flex-start;background:var(--accbg);border:1px solid rgba(139,123,255,.25);border-bottom-left-radius:5px}
+.msg.l{align-self:flex-end;background:var(--panel2);border:1px solid var(--line2);border-bottom-right-radius:5px}
+.msg .who{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px}
+.msg.a .who{color:var(--acc2)} .msg.l .who{color:var(--mut)}
+.ev{align-self:center;font-size:11.5px;font-weight:600;padding:5px 12px;border-radius:99px;animation:min .25s ease;text-align:center}
+.ev.info{background:var(--panel2);border:1px solid var(--line2);color:var(--mut)}
+.ev.obj{background:var(--warnbg);color:var(--warn)}
+.ev.ok{background:var(--okbg);color:var(--ok)}
+.ev.win{background:var(--okbg);color:var(--ok);border:1px solid rgba(52,211,153,.4);font-weight:700}
+.ev.barge{background:rgba(248,113,113,.12);color:var(--bad)}
+.think{align-self:flex-start;display:none;align-items:center;gap:10px;font-size:11.5px;color:var(--dim);padding:4px 2px}
+.think.on{display:inline-flex}
+.tdots i{display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--acc);margin-right:3px;animation:td 1s infinite}
+.tdots i:nth-child(2){animation-delay:.15s}.tdots i:nth-child(3){animation-delay:.3s}
+@keyframes td{30%{transform:translateY(-4px)}}
+
+/* right col */
+.gauge-wrap{display:flex;align-items:center;gap:16px}
+.gauge{position:relative;width:110px;height:110px;flex:0 0 auto}
+.gauge svg{transform:rotate(-90deg)}
+.gauge .val{position:absolute;inset:0;display:grid;place-items:center;font-family:'Space Grotesk',monospace;font-weight:700;font-size:24px}
+.gauge-side{font-size:12.5px;color:var(--mut)}
+.gauge-side b{display:block;color:var(--txt);font-size:13.5px;margin-bottom:3px}
+.lat{display:flex;flex-direction:column;gap:9px}
+.lat .row{display:grid;grid-template-columns:88px 1fr 58px;align-items:center;gap:10px;font-size:12.5px}
+.lat .row span{color:var(--mut)}
+.lat .bar{height:5px;border-radius:3px;background:var(--panel2);overflow:hidden}
+.lat .bar i{display:block;height:100%;border-radius:3px;background:var(--acc);width:0;transition:width .5s ease}
+.lat .ms{font-family:'Space Grotesk',monospace;text-align:right;color:var(--txt)}
+.lat .row.tot .ms{color:var(--acc2);font-weight:700}
+.objlist{display:flex;flex-direction:column;gap:8px;min-height:44px}
+.objlist .o{display:flex;align-items:center;gap:9px;font-size:13px;padding:9px 12px;border-radius:10px;background:var(--panel2);border:1px solid var(--line2)}
+.objlist .o .ic{width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font-size:11px;flex:0 0 auto}
+.objlist .o.pend .ic{background:var(--warnbg);color:var(--warn)}
+.objlist .o.done .ic{background:var(--okbg);color:var(--ok)}
+.objlist .none{font-size:12.5px;color:var(--dim);padding:4px 2px}
+.outcome{display:none;background:linear-gradient(160deg,rgba(52,211,153,.14),rgba(52,211,153,.03));border:1px solid rgba(52,211,153,.35)}
+.outcome.on{display:block;animation:min .4s ease}
+.outcome .big{font-size:17px;font-weight:800;color:var(--ok);margin-bottom:10px;display:flex;gap:9px;align-items:center}
+.outcome ul{list-style:none;display:flex;flex-direction:column;gap:7px;font-size:13px;color:var(--txt)}
+.outcome li::before{content:"✓";color:var(--ok);font-weight:700;margin-right:8px}
+.rightcol{display:flex;flex-direction:column;gap:16px}
+
+/* ---------- dashboard ---------- */
+.kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:16px}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:16px}
+.kpi .l{font-size:11.5px;color:var(--mut);letter-spacing:.05em;text-transform:uppercase;font-weight:600}
+.kpi .v{font-family:'Space Grotesk',monospace;font-size:24px;font-weight:700;margin-top:6px;letter-spacing:-.02em}
+.kpi .d{font-size:11.5px;margin-top:4px;color:var(--ok);font-weight:600}
+.kpi .d.dn{color:var(--bad)}
+.dashgrid{display:grid;grid-template-columns:1.1fr .9fr 1fr;gap:16px;margin-bottom:16px}
+.funnel{display:flex;flex-direction:column;gap:10px}
+.funnel .f{display:grid;grid-template-columns:86px 1fr 74px;gap:10px;align-items:center;font-size:12.5px}
+.funnel .f span{color:var(--mut)}
+.funnel .fb{height:22px;border-radius:6px;background:var(--panel2);overflow:hidden}
+.funnel .fb i{display:block;height:100%;border-radius:6px;background:linear-gradient(90deg,#5f4bd8,var(--acc));width:0;transition:width .8s cubic-bezier(.2,.8,.2,1)}
+.funnel .n{font-family:'Space Grotesk',monospace;text-align:right}
+.funnel .n small{color:var(--dim)}
+.donut-wrap{display:flex;gap:18px;align-items:center}
+.legend{display:flex;flex-direction:column;gap:8px;font-size:12.5px;flex:1}
+.legend .lg{display:flex;align-items:center;gap:8px;color:var(--mut)}
+.legend .sw{width:10px;height:10px;border-radius:3px;flex:0 0 auto}
+.legend b{margin-left:auto;font-family:'Space Grotesk',monospace;color:var(--txt)}
+.hours{display:flex;align-items:flex-end;gap:6px;height:140px;padding-top:10px}
+.hours .h{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end}
+.hours .hb{width:100%;border-radius:5px 5px 2px 2px;background:linear-gradient(180deg,var(--acc),#4c3ab8);opacity:.85;min-height:4px;transition:height .8s cubic-bezier(.2,.8,.2,1)}
+.hours .hl{font-size:10px;color:var(--dim)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--dim);font-weight:600;text-align:left;padding:8px 10px;border-bottom:1px solid var(--line)}
+td{padding:11px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+td .nm{font-weight:600}
+td .sub{font-size:11.5px;color:var(--dim)}
+.badge{display:inline-block;padding:4px 10px;border-radius:99px;font-size:11.5px;font-weight:700}
+.badge.win{background:var(--okbg);color:var(--ok)}
+.badge.dep{background:var(--accbg);color:var(--acc2)}
+.badge.fu{background:rgba(96,165,250,.12);color:var(--blue)}
+.badge.no{background:var(--panel2);color:var(--mut)}
+.badge.dnc{background:rgba(248,113,113,.1);color:var(--bad)}
+.mono{font-family:'Space Grotesk',monospace}
+
+/* ---------- voice lab ---------- */
+.vgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:16px}
+.vcard .tag{margin-bottom:12px}
+.vcard h4{font-size:16px;font-weight:700;letter-spacing:-.01em;margin-bottom:6px}
+.vcard p{font-size:13px;color:var(--mut);margin-bottom:16px;min-height:60px}
+.player{display:flex;align-items:center;gap:12px;background:var(--panel2);border:1px solid var(--line2);border-radius:12px;padding:10px 14px}
+.pbtn{width:38px;height:38px;border-radius:50%;background:var(--acc);color:#0b0b12;display:grid;place-items:center;font-size:14px;flex:0 0 auto;transition:.18s}
+.pbtn:hover{background:var(--acc2)}
+.ptrack{flex:1;height:5px;border-radius:3px;background:var(--line2);cursor:pointer;position:relative}
+.ptrack i{position:absolute;left:0;top:0;bottom:0;border-radius:3px;background:var(--acc);width:0}
+.ptime{font-family:'Space Grotesk',monospace;font-size:11.5px;color:var(--mut);flex:0 0 auto;min-width:66px;text-align:right}
+.vnote{border-style:dashed;color:var(--mut);font-size:13.5px;display:flex;gap:12px;align-items:flex-start}
+.vnote b{color:var(--txt)}
+
+/* ---------- stack ---------- */
+.pipe{display:flex;align-items:stretch;gap:0;flex-wrap:wrap;margin:6px 0 4px}
+.node{background:var(--panel2);border:1px solid var(--line2);border-radius:12px;padding:12px 16px;text-align:center;min-width:120px}
+.node b{display:block;font-size:13.5px}
+.node span{font-size:11px;color:var(--mut)}
+.node.hl{border-color:rgba(139,123,255,.5);background:var(--accbg)}
+.arr{align-self:center;color:var(--dim);padding:0 10px;font-size:16px}
+.stackgrid{display:grid;grid-template-columns:1.2fr .8fr;gap:16px;margin-top:16px}
+.selrow{margin-bottom:18px}
+.selrow .lbl{font-size:12px;color:var(--mut);font-weight:600;letter-spacing:.05em;text-transform:uppercase;margin-bottom:8px}
+.pills{display:flex;gap:8px;flex-wrap:wrap}
+.pillbtn{padding:9px 14px;border-radius:11px;border:1px solid var(--line2);background:var(--panel2);font-size:13px;font-weight:600;color:var(--mut);transition:.18s;text-align:left}
+.pillbtn small{display:block;font-weight:500;font-size:11px;color:var(--dim);margin-top:2px}
+.pillbtn:hover{border-color:var(--acc)}
+.pillbtn.on{border-color:var(--acc);background:var(--accbg);color:var(--txt)}
+.pillbtn.on small{color:var(--acc2)}
+.costrow{display:flex;justify-content:space-between;font-size:13.5px;padding:9px 0;border-bottom:1px solid var(--line)}
+.costrow span{color:var(--mut)} .costrow b{font-family:'Space Grotesk',monospace;font-weight:600}
+.costrow.tot{border-bottom:none;padding-top:13px}
+.costrow.tot span{color:var(--txt);font-weight:700}
+.costrow.tot b{color:var(--acc2);font-size:17px;font-weight:700}
+.costsub{font-size:12px;color:var(--dim);margin-top:8px}
+.code{background:#0a0c13;border:1px solid var(--line);border-radius:12px;padding:16px 18px;font-family:'Space Grotesk',monospace;font-size:12.5px;line-height:1.75;color:var(--mut);overflow-x:auto;white-space:pre}
+.code .k{color:#7dd3fc}.code .v{color:#fbbf24}.code .hl2{color:var(--acc2);font-weight:700}
+.code .cm{color:#3f465e}
+.brainrow{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:16px}
+.brain{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:16px}
+.brain .fn{font-family:'Space Grotesk',monospace;font-size:12.5px;color:var(--acc2);margin-bottom:8px}
+.brain p{font-size:12.5px;color:var(--mut)}
+
+/* ---------- compliance ---------- */
+.compgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.comp h4{font-size:15.5px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:10px}
+.comp p{font-size:13.5px;color:var(--mut)}
+.comp .ic2{width:34px;height:34px;border-radius:10px;background:var(--accbg);display:grid;place-items:center;font-size:15px;flex:0 0 auto}
+.switchrow{display:flex;align-items:center;gap:12px;margin:14px 0 12px}
+.sw2{position:relative;width:44px;height:24px;border-radius:99px;background:var(--line2);transition:.2s;flex:0 0 auto}
+.sw2.on{background:var(--ok)}
+.sw2 i{position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:.2s}
+.sw2.on i{left:23px}
+.switchrow span{font-size:13.5px;font-weight:600}
+.saybox{background:var(--panel2);border:1px solid var(--line2);border-left:3px solid var(--ok);border-radius:10px;padding:12px 15px;font-size:13.5px;font-style:italic;color:var(--txt)}
+.saybox.off{border-left-color:var(--warn)}
+
+footer{border-top:1px solid var(--line);margin-top:30px;padding:26px 22px;text-align:center;color:var(--dim);font-size:12.5px;line-height:1.8}
+footer b{color:var(--mut)}
+
+/* ---------- responsive ---------- */
+@media(max-width:1120px){
+  .callgrid{grid-template-columns:260px 1fr}
+  .rightcol{grid-column:1/-1;display:grid;grid-template-columns:repeat(2,1fr)}
+  .kpis{grid-template-columns:repeat(3,1fr)}
+  .dashgrid{grid-template-columns:1fr 1fr}
+  .vgrid,.brainrow{grid-template-columns:repeat(2,1fr)}
+  .stackgrid{grid-template-columns:1fr}
+}
+@media(max-width:760px){
+  .top{gap:10px;padding:0 14px}
+  .brand small,.top .pill,.cta{display:none}
+  main{padding:18px 14px 60px}
+  .callgrid{grid-template-columns:1fr}
+  .rightcol{grid-template-columns:1fr}
+  .tr-card{min-height:480px}
+  .msg{max-width:88%}
+  .kpis{grid-template-columns:repeat(2,1fr)}
+  .dashgrid{grid-template-columns:1fr}
+  .vgrid,.brainrow,.compgrid{grid-template-columns:1fr}
+  .vcard p{min-height:0}
+  .table-wrap{overflow-x:auto}
+  table{min-width:640px}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="brand"><span class="logo">◎</span>Closer <small>AI voice sales</small></div>
+  <nav class="tabs" id="tabs">
+    <button class="tab on" data-v="call">Live Call</button>
+    <button class="tab" data-v="dash">Dashboard</button>
+    <button class="tab" data-v="voice">Voice Lab</button>
+    <button class="tab" data-v="stack">Stack &amp; Cost</button>
+    <button class="tab" data-v="comp">Compliance</button>
+  </nav>
+  <div class="right">
+    <span class="pill"><span class="dot"></span>Agent online · US-East</span>
+    <button class="cta" onclick="go('voice')">Hear the voice</button>
+  </div>
+</header>
+
+<main>
+
+<!-- ================= LIVE CALL ================= -->
+<section class="view on" id="view-call">
+  <div class="hero">
+    <h1>The AI that <em>calls your lead</em>, sounds human — and closes.</h1>
+    <p>Sarah is an autonomous voice sales agent. She dials warm leads, runs consultative discovery, handles objections from a playbook and drives to a deposit — with sub-second turn-taking and real barge-in. Press <b>Simulate call</b> to watch a real scripted deal unfold.</p>
+    <div class="chips">
+      <span class="chip acc">▸ Outbound · warm leads</span>
+      <span class="chip">Deepgram STT</span>
+      <span class="chip">Gemini 2.5 Flash brain</span>
+      <span class="chip">ElevenLabs voice</span>
+      <span class="chip">Twilio telephony</span>
+      <span class="chip ok">Barge-in native</span>
+    </div>
+  </div>
+
+  <div class="callgrid">
+    <!-- left -->
+    <div>
+      <div class="card">
+        <h3>Lead</h3>
+        <div class="leadrow">
+          <div class="lead-ava">MR</div>
+          <div><b>Michael Reeves</b><span>+1 (415) •••-2841 · PST</span></div>
+        </div>
+        <div class="kv"><span>Lead score</span><b class="score num">82 / 100</b></div>
+        <div class="kv"><span>Campaign</span><b>Apex AI Academy</b></div>
+        <div class="kv"><span>Offer</span><b>Bootcamp · $2,400</b></div>
+        <div class="kv"><span>Best window</span><b>2 – 5 pm local</b></div>
+        <div class="srcchips">
+          <span class="chip">🎓 Webinar attended</span>
+          <span class="chip">📦 Starter kit ↓</span>
+          <span class="chip warn">Didn't buy</span>
+        </div>
+      </div>
+
+      <div class="card callstate">
+        <h3>Call control</h3>
+        <div class="status">
+          <span class="st"><i class="stdot" id="stdot"></i><span id="stlabel">Idle</span></span>
+          <span class="timer" id="timer">00:00</span>
+        </div>
+        <div class="ctrl">
+          <button class="btn p" id="btnPlay">▶ Simulate call</button>
+          <button class="btn sm" id="btnRe" title="Restart">↺</button>
+          <button class="btn sm" id="btnSpd" title="Playback speed">×1</button>
+        </div>
+        <div class="hint">Scripted simulation of a real call flow — same persona, playbook &amp; pipeline as production.</div>
+      </div>
+    </div>
+
+    <!-- center: transcript -->
+    <div class="card tr-card">
+      <div class="tr-head">
+        <b>Live transcript</b>
+        <span class="rec" id="rec"><i></i>REC</span>
+        <span class="chip" style="margin-left:auto" id="consentChip">Consent: pending</span>
+      </div>
+      <div class="wave-wrap"><canvas id="wave"></canvas></div>
+      <div class="speaker" id="speaker">&nbsp;</div>
+      <div class="tr-body" id="trbody">
+        <div class="empty" id="empty">
+          <div class="big">☎</div>
+          <b>No active call</b>
+          <p style="font-size:13px;margin-top:6px">Hit <b>Simulate call</b> — Sarah will dial Michael,<br>a warm lead who watched yesterday's webinar but didn't buy.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- right -->
+    <div class="rightcol">
+      <div class="card">
+        <h3>Close probability</h3>
+        <div class="gauge-wrap">
+          <div class="gauge">
+            <svg width="110" height="110" viewBox="0 0 110 110">
+              <circle cx="55" cy="55" r="48" fill="none" stroke="#1c1f2e" stroke-width="9"/>
+              <circle id="garc" cx="55" cy="55" r="48" fill="none" stroke="url(#gg)" stroke-width="9" stroke-linecap="round" stroke-dasharray="301.6" stroke-dashoffset="301.6"/>
+              <defs><linearGradient id="gg" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#8b7bff"/><stop offset="1" stop-color="#34d399"/>
+              </linearGradient></defs>
+            </svg>
+            <div class="val"><span id="gval">—</span></div>
+          </div>
+          <div class="gauge-side"><b id="gstage">Waiting</b><span id="gnote">Model re-scores intent after every turn.</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Pipeline latency <span class="chip" style="margin-left:auto">per turn</span></h3>
+        <div class="lat">
+          <div class="row"><span>STT · Deepgram</span><div class="bar"><i id="b-stt"></i></div><span class="ms" id="m-stt">—</span></div>
+          <div class="row"><span>LLM · Gemini</span><div class="bar"><i id="b-llm"></i></div><span class="ms" id="m-llm">—</span></div>
+          <div class="row"><span>TTS · ElevenLabs</span><div class="bar"><i id="b-tts"></i></div><span class="ms" id="m-tts">—</span></div>
+          <div class="row tot"><span>Voice-to-voice</span><div class="bar"><i id="b-tot" style="background:linear-gradient(90deg,#8b7bff,#34d399)"></i></div><span class="ms" id="m-tot">—</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Objections</h3>
+        <div class="objlist" id="objlist"><div class="none">None detected yet.</div></div>
+      </div>
+
+      <div class="card outcome" id="outcome">
+        <div class="big">✅ Deposit secured — $300</div>
+        <ul>
+          <li>Seat held · cohort starts Monday</li>
+          <li>SMS sent: payment link + one-pager</li>
+          <li>2 objections handled (price, spouse)</li>
+          <li>CRM updated · follow-up logged</li>
+          <li>Call cost: <b class="mono">$0.44</b> · 3:47 min</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= DASHBOARD ================= -->
+<section class="view" id="view-dash">
+  <div class="hero">
+    <h1>One agent. <em>142 dials today.</em> Zero coffee breaks.</h1>
+    <p>Campaign: Apex AI Academy — warm webinar follow-ups. Every number below updates live in production; here it runs on a frozen sample snapshot.</p>
+  </div>
+
+  <div class="kpis">
+    <div class="kpi"><div class="l">Dials today</div><div class="v">142</div><div class="d">▲ 12% vs yest.</div></div>
+    <div class="kpi"><div class="l">Connect rate</div><div class="v">61%</div><div class="d">▲ 4 pts</div></div>
+    <div class="kpi"><div class="l">Commit rate</div><div class="v">19%</div><div class="d">▲ 2.5 pts</div></div>
+    <div class="kpi"><div class="l">Revenue booked</div><div class="v">$27.0k</div><div class="d">9 paid · 18 deposits</div></div>
+    <div class="kpi"><div class="l">Avg call cost</div><div class="v">$0.38</div><div class="d dn">▼ $0.06 (Cartesia A/B)</div></div>
+    <div class="kpi"><div class="l">Avg duration</div><div class="v">3:12</div><div class="d">sweet spot 3–5 min</div></div>
+  </div>
+
+  <div class="dashgrid">
+    <div class="card">
+      <h3>Funnel · today</h3>
+      <div class="funnel" id="funnel">
+        <div class="f"><span>Dials</span><div class="fb"><i data-w="100"></i></div><b class="n">142</b></div>
+        <div class="f"><span>Connected</span><div class="fb"><i data-w="61"></i></div><b class="n">87 <small>61%</small></b></div>
+        <div class="f"><span>Qualified</span><div class="fb"><i data-w="38"></i></div><b class="n">54 <small>38%</small></b></div>
+        <div class="f"><span>Pitched</span><div class="fb"><i data-w="32"></i></div><b class="n">46 <small>32%</small></b></div>
+        <div class="f"><span>Committed</span><div class="fb"><i data-w="19" style="background:linear-gradient(90deg,#34d399,#8b7bff)"></i></div><b class="n">27 <small>19%</small></b></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Outcomes</h3>
+      <div class="donut-wrap">
+        <svg width="130" height="130" viewBox="0 0 130 130" id="donut" style="transform:rotate(-90deg);flex:0 0 auto"></svg>
+        <div class="legend" id="dleg"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Connects by hour</h3>
+      <div class="hours" id="hours"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Recent calls</h3>
+    <div class="table-wrap">
+    <table>
+      <thead><tr><th>Lead</th><th>Time</th><th>Duration</th><th>Objections</th><th>Outcome</th><th style="text-align:right">Cost</th></tr></thead>
+      <tbody>
+        <tr><td><span class="nm">Michael Reeves</span><div class="sub">webinar · starter kit</div></td><td>2:41 pm</td><td class="mono">3:47</td><td>price, spouse <span class="chip ok">2/2 ✓</span></td><td><span class="badge dep">Deposit $300</span></td><td class="mono" style="text-align:right">$0.44</td></tr>
+        <tr><td><span class="nm">Dana Kowalski</span><div class="sub">webinar</div></td><td>2:28 pm</td><td class="mono">4:12</td><td>time <span class="chip ok">1/1 ✓</span></td><td><span class="badge win">Enrolled $2,400</span></td><td class="mono" style="text-align:right">$0.51</td></tr>
+        <tr><td><span class="nm">Priya Shah</span><div class="sub">starter kit</div></td><td>2:16 pm</td><td class="mono">2:03</td><td>think it over</td><td><span class="badge fu">Follow-up · Thu 10 am</span></td><td class="mono" style="text-align:right">$0.26</td></tr>
+        <tr><td><span class="nm">James O'Neil</span><div class="sub">webinar</div></td><td>2:04 pm</td><td class="mono">0:00</td><td>—</td><td><span class="badge no">No answer · retry 6 pm</span></td><td class="mono" style="text-align:right">$0.01</td></tr>
+        <tr><td><span class="nm">Sofia Marino</span><div class="sub">webinar · starter kit</div></td><td>1:52 pm</td><td class="mono">5:26</td><td>price, trust, time <span class="chip ok">3/3 ✓</span></td><td><span class="badge win">Enrolled 3×$890</span></td><td class="mono" style="text-align:right">$0.62</td></tr>
+        <tr><td><span class="nm">Tom Becker</span><div class="sub">starter kit</div></td><td>1:41 pm</td><td class="mono">1:12</td><td>not interested</td><td><span class="badge dnc">Opt-out · DNC honored</span></td><td class="mono" style="text-align:right">$0.15</td></tr>
+        <tr><td><span class="nm">Aiko Tanaka</span><div class="sub">webinar</div></td><td>1:30 pm</td><td class="mono">3:05</td><td>not technical <span class="chip ok">1/1 ✓</span></td><td><span class="badge dep">Deposit $300</span></td><td class="mono" style="text-align:right">$0.37</td></tr>
+        <tr><td><span class="nm">Leo Fischer</span><div class="sub">webinar</div></td><td>1:18 pm</td><td class="mono">0:38</td><td>—</td><td><span class="badge no">Voicemail dropped</span></td><td class="mono" style="text-align:right">$0.06</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+</section>
+
+<!-- ================= VOICE LAB ================= -->
+<section class="view" id="view-voice">
+  <div class="hero">
+    <h1>Don't take our word for it — <em>listen.</em></h1>
+    <p>These are real recordings produced by the actual pipeline (ElevenLabs turbo v2.5, conversational preset, low stability for liveliness) — not studio audio. Pauses, fillers and warmth are part of the persona spec.</p>
+  </div>
+
+  <div class="vgrid">
+    <div class="card vcard">
+      <div class="tag"><span class="chip acc">Opener</span></div>
+      <h4>The first 8 seconds</h4>
+      <p>Sarah's cold-open line — the moment that decides whether the call lives. Warm, unhurried, permission-based.</p>
+      <div class="player" data-src="audio/opener.mp3">
+        <button class="pbtn">▶</button>
+        <div class="ptrack"><i></i></div>
+        <span class="ptime">0:00 / --:--</span>
+      </div>
+    </div>
+    <div class="card vcard">
+      <div class="tag"><span class="chip acc">Dialogue</span></div>
+      <h4>Objection handling, live</h4>
+      <p>A full exchange: acknowledge → clarify the real reason → answer → re-close. Note the turn-taking speed.</p>
+      <div class="player" data-src="audio/convo.mp3">
+        <button class="pbtn">▶</button>
+        <div class="ptrack"><i></i></div>
+        <span class="ptime">0:00 / --:--</span>
+      </div>
+    </div>
+    <div class="card vcard">
+      <div class="tag"><span class="chip acc">Multilingual</span></div>
+      <h4>Same persona, EN ↔ RU</h4>
+      <p>One config line switches the market. Same warmth, same playbook — different language, native-level delivery.</p>
+      <div class="player" data-src="audio/multilingual.mp3">
+        <button class="pbtn">▶</button>
+        <div class="ptrack"><i></i></div>
+        <span class="ptime">0:00 / --:--</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card vnote">
+    <span style="font-size:22px">🎛</span>
+    <div><b>A/B tested per campaign.</b> Showcase default is ElevenLabs (max realism); at scale we swap to Cartesia Sonic — ~93% of the realism at roughly a third of the TTS cost. The swap is one line in <span class="mono" style="color:var(--acc2)">config.yaml</span> — see <b>Stack &amp; Cost</b>.</div>
+  </div>
+</section>
+
+<!-- ================= STACK ================= -->
+<section class="view" id="view-stack">
+  <div class="hero">
+    <h1>Provider-agnostic by design. <em>Swap any brick, live.</em></h1>
+    <p>Cascaded architecture (STT → LLM → TTS) on Python + Pipecat: best-of-breed at every stage, barge-in handled by the framework, and every provider is a config line — not a rewrite. Toggle providers below and watch the per-minute economics update.</p>
+  </div>
+
+  <div class="card">
+    <h3>Call pipeline</h3>
+    <div class="pipe">
+      <div class="node"><b>📞 Lead's phone</b><span>PSTN</span></div>
+      <div class="arr">⇄</div>
+      <div class="node"><b>Twilio</b><span>Media Streams</span></div>
+      <div class="arr">⇄</div>
+      <div class="node hl"><b>Pipecat</b><span>orchestrator · barge-in · smart-turn</span></div>
+      <div class="arr">→</div>
+      <div class="node"><b>Deepgram</b><span>STT · nova-3 phonecall</span></div>
+      <div class="arr">→</div>
+      <div class="node hl"><b id="pipeLLM">Gemini 2.5 Flash</b><span>the brain</span></div>
+      <div class="arr">→</div>
+      <div class="node"><b id="pipeTTS">ElevenLabs</b><span>TTS · turbo v2.5</span></div>
+    </div>
+  </div>
+
+  <div class="stackgrid">
+    <div class="card">
+      <h3>Pick the bricks</h3>
+      <div class="selrow">
+        <div class="lbl">LLM — the brain</div>
+        <div class="pills" id="llmPills">
+          <button class="pillbtn on" data-k="gemini">Gemini 2.5 Flash<small>default · fastest + cheapest</small></button>
+          <button class="pillbtn" data-k="sonnet">Claude Sonnet<small>showcase · sharpest objections</small></button>
+          <button class="pillbtn" data-k="gpt">GPT-4.1<small>co-leader alternative</small></button>
+        </div>
+      </div>
+      <div class="selrow">
+        <div class="lbl">TTS — the voice</div>
+        <div class="pills" id="ttsPills">
+          <button class="pillbtn on" data-k="el">ElevenLabs turbo v2.5<small>max realism · demo default</small></button>
+          <button class="pillbtn" data-k="cartesia">Cartesia Sonic<small>~93% realism · 3× cheaper</small></button>
+        </div>
+      </div>
+      <div class="selrow">
+        <div class="lbl">STT + telephony</div>
+        <div class="pills">
+          <span class="pillbtn on" style="cursor:default">Deepgram nova-3<small>~$0.005/min · best $/quality</small></span>
+          <span class="pillbtn on" style="cursor:default">Twilio Voice<small>~$0.014/min outbound US</small></span>
+        </div>
+      </div>
+      <div class="code" id="cfg"></div>
+    </div>
+
+    <div>
+      <div class="card" style="margin-bottom:16px">
+        <h3>Unit economics · per minute</h3>
+        <div class="costrow"><span>Twilio voice (US outbound)</span><b>$0.014</b></div>
+        <div class="costrow"><span>Deepgram STT</span><b>$0.005</b></div>
+        <div class="costrow"><span>LLM — <i id="costLLMName">Gemini 2.5 Flash</i></span><b id="costLLM">$0.012</b></div>
+        <div class="costrow"><span>TTS — <i id="costTTSName">ElevenLabs</i></span><b id="costTTS">$0.090</b></div>
+        <div class="costrow tot"><span>Total / minute</span><b id="costTot">$0.121</b></div>
+        <div class="costsub" id="costSub">≈ $0.48 per 4-min call · $484 per 1,000 calls. A human SDR: ~$15–25 per connected call.</div>
+      </div>
+      <div class="card">
+        <h3>Why cascaded, not speech-to-speech</h3>
+        <p style="font-size:13.5px;color:var(--mut)">S2S (OpenAI Realtime / Gemini Live) is one locked box. Cascaded wins where it matters for sales: the most human TTS on the market, full control over the script, and freedom to swap any stage as the market moves. Prompt caching keeps the knowledge base cheap; transcripts feed analytics.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="brainrow">
+    <div class="brain"><div class="fn">agent/system-prompt.md</div><p>Persona, humanity rules (pauses, fillers, one question at a time), sales method, guardrails.</p></div>
+    <div class="brain"><div class="fn">agent/knowledge-product.md</div><p>The only source of truth. The agent may not state a fact that isn't in this file.</p></div>
+    <div class="brain"><div class="fn">agent/objections.md</div><p>Playbook: acknowledge → find the real reason → answer → re-close. In Sarah's voice.</p></div>
+    <div class="brain"><div class="fn">agent/call-flow.md</div><p>Call skeleton — opener, discovery, pitch, close. A skeleton, not a rail.</p></div>
+  </div>
+  <p style="font-size:12.5px;color:var(--dim);margin-top:12px">Re-skinning for a new client = editing these four files + <span class="mono">config.yaml</span>. Zero code changes.</p>
+</section>
+
+<!-- ================= COMPLIANCE ================= -->
+<section class="view" id="view-comp">
+  <div class="hero">
+    <h1>Closes hard. <em>Plays clean.</em></h1>
+    <p>US/EU outbound AI calling is regulated territory. Compliance isn't a checkbox here — it's wired into the pipeline.</p>
+  </div>
+
+  <div class="compgrid">
+    <div class="card comp">
+      <h4><span class="ic2">🤖</span>AI disclosure</h4>
+      <p>If the lead asks "are you a real person?" — the agent never lies. Configurable per jurisdiction: honest-on-ask or proactive disclosure at call start.</p>
+      <div class="switchrow"><button class="sw2 on" id="swDisc"><i></i></button><span>Disclose when asked</span></div>
+      <div class="saybox" id="discSay">"Good catch — I'm Apex's AI assistant. I can keep going, or have a human advisor call you back. What do you prefer?"</div>
+    </div>
+    <div class="card comp">
+      <h4><span class="ic2">⏺</span>Recording consent</h4>
+      <p>Two-party-consent states (CA, WA, FL…) are detected from the lead's number; the consent line is injected automatically before discovery starts. Recordings encrypted at rest.</p>
+      <div style="margin-top:14px"><span class="chip ok">Auto per-state</span> <span class="chip">AES-256 at rest</span> <span class="chip">Retention 90d</span></div>
+    </div>
+    <div class="card comp">
+      <h4><span class="ic2">🚫</span>TCPA · DNC · quiet hours</h4>
+      <p>Every list is scrubbed against the National DNC registry before dialing. Calls only within 8 am – 9 pm local. An opt-out mid-call is executed instantly and logged.</p>
+      <div style="margin-top:14px"><span class="chip ok">DNC scrub pre-dial</span> <span class="chip">8am–9pm local</span> <span class="chip">Instant opt-out</span></div>
+    </div>
+    <div class="card comp">
+      <h4><span class="ic2">🛡</span>Hard guardrails</h4>
+      <p>The agent may only state facts from the knowledge file: no invented discounts, no income guarantees, no fake scarcity. Every claim in every transcript is traceable to a line in <span class="mono" style="color:var(--acc2)">knowledge-product.md</span>.</p>
+      <div style="margin-top:14px"><span class="chip ok">Fact-locked</span> <span class="chip">Full transcripts</span> <span class="chip">Claim audit</span></div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <b>Closer</b> — autonomous AI voice sales agent · a portfolio demo by Alex B<br>
+  UI runs on scripted sample data; the voice recordings are real pipeline output.
+  Production stack: Python · Pipecat · Deepgram · Gemini 2.5 Flash / Claude · ElevenLabs / Cartesia · Twilio.
+</footer>
+
+<script>
+/* ---------- tabs ---------- */
+const views = ['call','dash','voice','stack','comp'];
+function go(v){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('on', t.dataset.v===v));
+  views.forEach(x=>document.getElementById('view-'+x).classList.toggle('on', x===v));
+  if(v==='dash') animDash();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+document.getElementById('tabs').addEventListener('click', e=>{
+  const b = e.target.closest('.tab'); if(b) go(b.dataset.v);
+});
+
+/* ---------- call sim ---------- */
+const SCRIPT = [
+ {w:'a', t:"Hey — is this Michael? …Hi Michael, it's Sarah calling from Apex AI Academy — I hope I'm not catching you at a terrible time?", p:14},
+ {w:'l', t:"Uh — no, it's fine. Sorry, who's this again?", p:16},
+ {w:'a', t:"You grabbed our AI Automation Starter Kit yesterday and hopped on the webinar — I just wanted to personally check you got everything, and see if you had any questions.", p:22,
+   ev:[{k:'info', txt:'🧠 Context recall — source: webinar + starter kit, signed up yesterday'}]},
+ {w:'l', t:"Oh, right. Yeah, I watched most of it.", p:24},
+ {w:'a', t:"Nice! So what made you sign up in the first place — what're you hoping AI could take off your plate?", p:28,
+   ev:[{k:'info', txt:'🎯 Discovery started — one question at a time'}]},
+ {w:'l', t:"Honestly? The reporting at work. It eats my evenings. Figured maybe I could automate some of it.", p:38,
+   ev:[{k:'ok', txt:'💡 Pain identified: weekly reporting · evenings lost'}]},
+ {w:'a', t:"So since reporting's eating your evenings — that's basically exactly what we build in the bootcamp. You'd ship your first working automation by week two, with a mentor walking you—", p:44, cut:true},
+ {w:'l', t:"Wait — a mentor, like an actual human?", p:44,
+   pre:[{k:'barge', txt:'⚡ Barge-in — lead interrupted, TTS halted in 138 ms'}]},
+ {w:'a', t:"Yep — a real human mentor, weekly one-on-one, and the cohort's capped at twenty. So by the end you've built five automations, plus a capstone for your own reporting. Honestly, it sounds like a really good fit — how're you feeling about it so far?", p:55},
+ {w:'l', t:"It sounds cool. But… twenty-four hundred is a lot for me right now.", p:50,
+   ev:[{k:'obj', txt:'⚠ Objection detected: price', obj:'price', lbl:'Price — "$2,400 is a lot"'}]},
+ {w:'a', t:"Yeah, I hear you — it's a real investment. Can I ask — is it the total number, or more the timing of it?", p:56},
+ {w:'l', t:"The timing, mostly.", p:60},
+ {w:'a', t:"Gotcha. 'Cause we do a three-month plan at eight-ninety — and honestly, most folks have it pay for itself with the first automation they ship. Which would feel easier for you?", p:68,
+   ev:[{k:'ok', txt:'✓ Objection handled: price → 3×$890 plan', objDone:'price'}]},
+ {w:'l', t:"The plan sounds doable… I should probably talk to my wife first, though.", p:63,
+   ev:[{k:'obj', txt:'⚠ Objection detected: needs partner buy-in', obj:'spouse', lbl:'Partner — "talk to my wife"'}]},
+ {w:'a', t:"Hundred percent — you should. Tell you what: I'll text you a one-pager you two can look at together, and I'll hold one of the three seats till tomorrow with the refundable three-hundred-dollar deposit, so the cohort doesn't fill up. That way you're not deciding under pressure. Fair?", p:74,
+   ev:[{k:'ok', txt:'✓ Objection handled: partner → one-pager + held seat', objDone:'spouse'}]},
+ {w:'l', t:"…Yeah, okay. That's fair. Let's do the deposit.", p:88,
+   ev:[{k:'win', txt:'🏁 Verbal commit — $300 refundable deposit'}]},
+ {w:'a', t:"Perfect — you're in. Cohort starts Monday at six; I just texted you the payment link and the welcome doc. You're gonna do great with this, Michael. Talk soon!", p:93,
+   ev:[{k:'info', txt:'📲 SMS sent: payment link + one-pager · CRM updated'}]},
+];
+
+const $ = id => document.getElementById(id);
+const trbody=$('trbody'), stlabel=$('stlabel'), stdot=$('stdot'), timerEl=$('timer'),
+      btnPlay=$('btnPlay'), btnSpd=$('btnSpd'), garc=$('garc'), gval=$('gval'), gstage=$('gstage');
+let runId=0, running=false, paused=false, speed=1, callSec=0, timerIv=null;
+let speaking=null; // 'a' | 'l' | null
+const speeds=[1,1.5,2];
+const sleep = ms => new Promise(r=>{
+  const t0=Date.now(), id=runId;
+  (function tick(){ if(id!==runId) return r();
+    if(paused){ return setTimeout(tick,80); }
+    if(Date.now()-t0 >= ms/speed) return r(); setTimeout(tick,40); })();
+});
+
+function setStatus(txt, live){ stlabel.textContent=txt; stdot.classList.toggle('live', !!live); }
+function fmt(s){ return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0'); }
+function startTimer(){ timerIv=setInterval(()=>{ if(!paused && running){ callSec+=speed>1.5?2:1; timerEl.textContent=fmt(callSec);} },1000); }
+function stopTimer(){ clearInterval(timerIv); timerIv=null; }
+
+function setGauge(p){
+  const c=301.6;
+  garc.style.transition='stroke-dashoffset .8s cubic-bezier(.2,.8,.2,1)';
+  garc.style.strokeDashoffset = c - c*p/100;
+  gval.textContent = p+'%';
+  gstage.textContent = p<25?'Opening':p<40?'Discovery':p<58?'Pitch':p<75?'Objections':'Closing';
+}
+function addMsg(w, txt){
+  const d=document.createElement('div');
+  d.className='msg '+w;
+  d.innerHTML='<div class="who">'+(w==='a'?'Sarah · AI':'Michael · lead')+'</div><span class="tt"></span>';
+  trbody.appendChild(d); scrollTr();
+  return d.querySelector('.tt');
+}
+function addEv(k, txt){
+  const d=document.createElement('div'); d.className='ev '+k; d.textContent=txt;
+  trbody.appendChild(d); scrollTr();
+}
+function scrollTr(){ trbody.scrollTop=trbody.scrollHeight; }
+function addObj(id,lbl){
+  const list=$('objlist'); const none=list.querySelector('.none'); if(none) none.remove();
+  const d=document.createElement('div'); d.className='o pend'; d.dataset.obj=id;
+  d.innerHTML='<span class="ic">!</span><span>'+lbl+'</span>';
+  list.appendChild(d);
+}
+function doneObj(id){
+  const d=document.querySelector('.o[data-obj="'+id+'"]');
+  if(d){ d.classList.remove('pend'); d.classList.add('done'); d.querySelector('.ic').textContent='✓'; }
+}
+function flashLatency(){
+  const stt=95+Math.random()*45|0, llm=360+Math.random()*140|0, tts=68+Math.random()*26|0, net=55+Math.random()*20|0;
+  const tot=stt+llm+tts+net;
+  $('m-stt').textContent=stt+' ms'; $('m-llm').textContent=llm+' ms';
+  $('m-tts').textContent=tts+' ms'; $('m-tot').textContent=tot+' ms';
+  $('b-stt').style.width=(stt/6)+'%'; $('b-llm').style.width=(llm/6)+'%';
+  $('b-tts').style.width=(tts/6)+'%'; $('b-tot').style.width=Math.min(tot/8,100)+'%';
+}
+async function stream(el, txt, wps){
+  const words=txt.split(' ');
+  for(let i=0;i<words.length;i++){
+    if(runId!==curRun) return false;
+    el.textContent = words.slice(0,i+1).join(' ');
+    scrollTr();
+    await sleep(wps + Math.random()*40);
+  }
+  return true;
+}
+let curRun=0;
+async function runSim(){
+  curRun=++runId; running=true; paused=false;
+  btnPlay.textContent='⏸ Pause';
+  trbody.innerHTML=''; $('outcome').classList.remove('on');
+  $('objlist').innerHTML='<div class="none">None detected yet.</div>';
+  callSec=0; timerEl.textContent='00:00'; setGauge(8); gstage.textContent='Dialing';
+  $('consentChip').textContent='Consent: pending';
+  const id=curRun;
+
+  setStatus('Dialing…', false); await sleep(1100); if(id!==curRun) return;
+  setStatus('Ringing…', false); addEv('info','📞 Outbound call → +1 (415) •••-2841 · DNC-scrubbed · 2:41 pm local');
+  await sleep(1400); if(id!==curRun) return;
+  setStatus('Connected', true); $('rec').classList.add('on');
+  $('consentChip').textContent='Consent: CA two-party ✓';
+  addEv('info','🔴 Recording — two-party consent handled (CA)');
+  startTimer();
+
+  for(const step of SCRIPT){
+    if(id!==curRun) return;
+    if(step.pre) for(const e of step.pre){ addEv(e.k, e.txt); await sleep(500); }
+    if(step.w==='a'){
+      speaking=null;
+      const th=document.createElement('div'); th.className='think on';
+      th.innerHTML='<span class="tdots"><i></i><i></i><i></i></span> Sarah is responding…';
+      trbody.appendChild(th); scrollTr();
+      await sleep(750); th.remove(); if(id!==curRun) return;
+      flashLatency();
+      speaking='a'; $('speaker').innerHTML='● <b>Sarah speaking</b>';
+    } else {
+      await sleep(550); if(id!==curRun) return;
+      speaking='l'; $('speaker').innerHTML='● Michael speaking';
+    }
+    const el=addMsg(step.w, '');
+    const done = await stream(el, step.t, step.w==='a'?105:88);
+    if(!done) return;
+    speaking=null; $('speaker').innerHTML='&nbsp;';
+    setGauge(step.p);
+    if(step.ev) for(const e of step.ev){
+      await sleep(420); if(id!==curRun) return;
+      addEv(e.k, e.txt);
+      if(e.obj) addObj(e.obj, e.lbl);
+      if(e.objDone) doneObj(e.objDone);
+    }
+    await sleep(step.cut?120:650);
+  }
+  if(id!==curRun) return;
+  await sleep(600);
+  setStatus('Call ended · '+fmt(callSec), false);
+  $('rec').classList.remove('on'); stopTimer();
+  addEv('win','✅ Outcome: deposit secured · seat held · summary written to CRM');
+  $('outcome').classList.add('on');
+  running=false; btnPlay.textContent='▶ Replay call';
+}
+btnPlay.addEventListener('click', ()=>{
+  if(!running){ runSim(); return; }
+  paused=!paused;
+  btnPlay.textContent = paused?'▶ Resume':'⏸ Pause';
+  setStatus(paused?'Paused':'Connected', !paused);
+});
+$('btnRe').addEventListener('click', ()=>{ stopTimer(); runSim(); });
+btnSpd.addEventListener('click', ()=>{
+  const i=(speeds.indexOf(speed)+1)%speeds.length; speed=speeds[i];
+  btnSpd.textContent='×'+speed;
+});
+
+/* ---------- waveform ---------- */
+const wv=$('wave'), wc=wv.getContext('2d');
+const BARS=72; let amps=new Array(BARS).fill(2);
+function sizeWave(){ const r=wv.getBoundingClientRect(); wv.width=r.width*devicePixelRatio; wv.height=56*devicePixelRatio; }
+sizeWave(); addEventListener('resize', sizeWave);
+const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+(function draw(){
+  const W=wv.width, H=wv.height, bw=W/BARS;
+  wc.clearRect(0,0,W,H);
+  for(let i=0;i<BARS;i++){
+    const target = speaking && !paused ? (6+Math.random()*40*Math.abs(Math.sin(i*.4+Date.now()/180))) : 2;
+    amps[i]+= (target-amps[i])*.25;
+    const h=amps[i]*devicePixelRatio;
+    wc.fillStyle = speaking==='a' ? '#8b7bff' : speaking==='l' ? '#5b6075' : '#262a3d';
+    wc.beginPath();
+    wc.roundRect(i*bw+bw*.22, H/2-h/2, bw*.56, Math.max(h,2*devicePixelRatio), 3);
+    wc.fill();
+  }
+  if(!reduceMotion) requestAnimationFrame(draw); else setTimeout(draw, 250);
+})();
+
+/* ---------- dashboard ---------- */
+let dashDone=false;
+function animDash(){
+  document.querySelectorAll('#funnel .fb i').forEach(i=> i.style.width=i.dataset.w+'%');
+  if(dashDone) return; dashDone=true;
+  // donut
+  const data=[ ['Committed',27,'#34d399'], ['Follow-up',19,'#60a5fa'], ['Callback asked',17,'#8b7bff'], ['Not interested',24,'#3a3f55'], ['No answer / VM',55,'#20233296'] ];
+  const total=data.reduce((s,d)=>s+d[1],0), C=2*Math.PI*52;
+  const svg=$('donut'); let off=0, html='';
+  data.forEach(d=>{
+    const len=C*d[1]/total;
+    html+='<circle cx="65" cy="65" r="52" fill="none" stroke="'+d[2]+'" stroke-width="16" stroke-dasharray="'+(len-2)+' '+(C-len+2)+'" stroke-dashoffset="'+(-off)+'"/>';
+    off+=len;
+  });
+  svg.innerHTML=html;
+  $('dleg').innerHTML = data.map(d=>'<div class="lg"><span class="sw" style="background:'+d[2]+'"></span>'+d[0]+'<b>'+d[1]+'</b></div>').join('');
+  // hours
+  const hrs=[[9,4],[10,7],[11,9],[12,6],[1,5],[2,11],[3,13],[4,12],[5,10],[6,10]];
+  const mx=Math.max(...hrs.map(h=>h[1]));
+  $('hours').innerHTML = hrs.map(h=>'<div class="h"><div class="hb" style="height:'+(h[1]/mx*100)+'%"></div><span class="hl">'+h[0]+'</span></div>').join('');
+}
+
+/* ---------- voice lab players ---------- */
+document.querySelectorAll('.player').forEach(p=>{
+  const audio=new Audio(p.dataset.src);
+  const btn=p.querySelector('.pbtn'), bar=p.querySelector('.ptrack i'),
+        track=p.querySelector('.ptrack'), time=p.querySelector('.ptime');
+  const f=s=>isFinite(s)?Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0'):'--:--';
+  audio.addEventListener('loadedmetadata', ()=> time.textContent='0:00 / '+f(audio.duration));
+  audio.addEventListener('timeupdate', ()=>{
+    bar.style.width=(audio.currentTime/audio.duration*100)+'%';
+    time.textContent=f(audio.currentTime)+' / '+f(audio.duration);
+  });
+  audio.addEventListener('ended', ()=> btn.textContent='▶');
+  btn.addEventListener('click', ()=>{
+    if(audio.paused){
+      document.querySelectorAll('.player').forEach(o=>{ if(o!==p && o._audio && !o._audio.paused){ o._audio.pause(); o.querySelector('.pbtn').textContent='▶'; }});
+      audio.play(); btn.textContent='❚❚';
+    } else { audio.pause(); btn.textContent='▶'; }
+  });
+  track.addEventListener('click', e=>{
+    const r=track.getBoundingClientRect();
+    if(isFinite(audio.duration)) audio.currentTime=(e.clientX-r.left)/r.width*audio.duration;
+  });
+  p._audio=audio;
+});
+
+/* ---------- stack: provider swap ---------- */
+const LLMS={ gemini:{n:'Gemini 2.5 Flash', c:.012, cfg:'gemini-2.5-flash'},
+             sonnet:{n:'Claude Sonnet',    c:.045, cfg:'claude-sonnet-4-6'},
+             gpt:   {n:'GPT-4.1',          c:.035, cfg:'gpt-4.1'} };
+const TTSS={ el:{n:'ElevenLabs', c:.09, cfg:'elevenlabs', m:'eleven_turbo_v2_5'},
+             cartesia:{n:'Cartesia Sonic', c:.035, cfg:'cartesia', m:'sonic-2'} };
+let selLLM='gemini', selTTS='el';
+function money(x){ return '$'+x.toFixed(3); }
+function renderStack(){
+  const L=LLMS[selLLM], T=TTSS[selTTS];
+  $('pipeLLM').textContent=L.n; $('pipeTTS').textContent=T.n;
+  $('costLLMName').textContent=L.n; $('costTTSName').textContent=T.n;
+  $('costLLM').textContent=money(L.c); $('costTTS').textContent=money(T.c);
+  const tot=.014+.005+L.c+T.c;
+  $('costTot').textContent=money(tot);
+  $('costSub').innerHTML='≈ $'+(tot*4).toFixed(2)+' per 4-min call · $'+Math.round(tot*4*1000).toLocaleString('en-US')+' per 1,000 calls. A human SDR: ~$15–25 per connected call.';
+  $('cfg').innerHTML =
+'<span class="cm"># config.yaml — the only thing you edit</span>\n'+
+'<span class="k">persona:</span>   <span class="v">sarah</span>          <span class="cm"># agent/*.md</span>\n'+
+'<span class="k">language:</span>  <span class="v">en-US</span>\n'+
+'<span class="k">llm:</span>\n'+
+'  <span class="k">model:</span>   <span class="hl2">'+L.cfg+'</span>\n'+
+'<span class="k">stt:</span>\n'+
+'  <span class="k">model:</span>   <span class="v">nova-3-phonecall</span>\n'+
+'<span class="k">tts:</span>\n'+
+'  <span class="k">provider:</span> <span class="hl2">'+T.cfg+'</span>\n'+
+'  <span class="k">model:</span>    <span class="hl2">'+T.m+'</span>\n'+
+'<span class="k">telephony:</span> <span class="v">twilio</span>';
+}
+$('llmPills').addEventListener('click', e=>{
+  const b=e.target.closest('.pillbtn'); if(!b) return;
+  selLLM=b.dataset.k;
+  document.querySelectorAll('#llmPills .pillbtn').forEach(x=>x.classList.toggle('on',x===b));
+  renderStack();
+});
+$('ttsPills').addEventListener('click', e=>{
+  const b=e.target.closest('.pillbtn'); if(!b) return;
+  selTTS=b.dataset.k;
+  document.querySelectorAll('#ttsPills .pillbtn').forEach(x=>x.classList.toggle('on',x===b));
+  renderStack();
+});
+renderStack();
+
+/* ---------- autostart (thumbnails / deep links): ?sim=8 ---------- */
+const q=new URLSearchParams(location.search);
+if(q.has('sim')){ const s=parseFloat(q.get('sim')); if(s>0) speed=s; runSim(); }
+
+/* ---------- compliance toggle ---------- */
+$('swDisc').addEventListener('click', ()=>{
+  const s=$('swDisc'); s.classList.toggle('on');
+  const on=s.classList.contains('on');
+  $('discSay').textContent = on
+    ? '"Good catch — I\'m Apex\'s AI assistant. I can keep going, or have a human advisor call you back. What do you prefer?"'
+    : '"This call may use automated assistance…" — proactive disclosure at call start (stricter jurisdictions).';
+  $('discSay').classList.toggle('off', !on);
+});
+</script>
+</body>
+</html>

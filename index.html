@@ -96,7 +96,12 @@ body.curon,body.curon *{cursor:none}
   opacity:0;filter:blur(14px);transition:opacity 1.5s var(--ease2),filter 1.5s var(--ease2)}
 .field.ready{opacity:1;filter:blur(0)}
 .wall{position:absolute;left:50%;top:50%;width:0;height:0;transform-style:preserve-3d;will-change:transform}
-.shard{position:absolute;width:22rem;margin:-7rem 0 0 -11rem;border:1px solid var(--line);
+/* Card size is a continuous function of viewport width (fit to the old hand-picked sizes
+   at 393px and 1280px, then capped) instead of a hard swap at one breakpoint — so a tablet
+   or a laptop mid-resize gets an in-between size instead of jumping between two presets. */
+.shard{position:absolute;--sw:clamp(200px, 14.3vw + 169px, 460px);
+  width:var(--sw);margin:calc(var(--sw) * -.316) 0 0 calc(var(--sw) * -.5);
+  border:1px solid var(--line);
   border-radius:.6rem;overflow:hidden;background:#141110;
   box-shadow:0 2.5rem 5rem -2rem rgba(0,0,0,.9);will-change:transform,opacity}
 .shard img{width:100%;aspect-ratio:1280/769;object-fit:cover;object-position:top center;
@@ -302,7 +307,6 @@ footer{border-top:1px solid var(--line);padding:2.4rem 0 3.4rem;color:var(--mut2
   .sec{padding:5rem 0 1rem}
   .sechead{flex-direction:column;align-items:flex-start;gap:.6rem}
   #spacer{height:200vh}
-  .shard{width:15rem;margin:-4.7rem 0 0 -7.5rem}
   #contact{padding:6rem 0 4rem;margin-top:5rem}
 }
 
@@ -701,7 +705,6 @@ document.getElementById('filters').addEventListener('click', e=>{
    off for performance) can opt back in — otherwise this page reads as completely dead. */
 const RM = window.__RM;          // resolved in <head>, before first paint
 const TOUCH = matchMedia('(hover: none)').matches;
-const SMALL = innerWidth < 820;
 
 /* split headline into masked words */
 function split(el){
@@ -821,45 +824,64 @@ WALL_IMGS.forEach(src=>{
 
 let shards = [];
 const wall = document.getElementById('wall');
-const PERSPECTIVE = 1000; // keep in sync with .field { perspective }
+const PERSPECTIVE = 1000;   // keep in sync with .field { perspective }
+const TUNNEL_DEPTH = 3200;  // total z-span of the tunnel; independent of shard count
+
+// There is deliberately no per-device table here (no "if tablet then...", no breakpoint
+// list to keep adding to). Every size below is a continuous function of the viewport's own
+// diagonal, width and height, recomputed live on resize — so a 2K monitor, a tablet, or a
+// browser window being dragged narrower all fall out of the same formula instead of needing
+// their own entry. The two constants baked into each formula are just the old hand-picked
+// desktop (1280x769) and mobile (393x852) values, used as calibration anchors so nothing
+// jumps at those two points; everything in between and beyond is interpolated/extrapolated.
+function midRadius(){
+  const diag = Math.hypot(innerWidth, innerHeight);
+  return Math.max(260, Math.min(620, 144 + 0.198*diag));
+}
+
+// Recomputes every shard's screen position from its fixed "recipe" (angle, depth, and a
+// random size ratio, none of which depend on viewport size) against the CURRENT viewport.
+// Called once after building, and again on every resize — that's what makes the wall
+// reflow live instead of freezing whatever shape it had when the page first loaded.
+function layoutWall(){
+  const midR = midRadius();
+  const xMul = 0.9625 * (innerWidth/2)  / midR;
+  const yMul = 0.9384 * (innerHeight/2) / midR;
+  for(const s of shards){
+    const screenR = midR * s.screenRRatio;
+    const rad = screenR * (PERSPECTIVE + s.dist) / PERSPECTIVE;
+    const x = Math.cos(s.ang)*rad*xMul, y = Math.sin(s.ang)*rad*yMul;
+    s.el.style.transform = `translate3d(${x.toFixed(0)}px,${y.toFixed(0)}px,${-s.dist}px) rotate(${s.rot}deg)`;
+  }
+}
 
 function buildWall(){
   let seed = 1337;
   const rnd = () => (seed = (seed * 1664525 + 1013904223) % 4294967296) / 4294967296;
-  const n = SMALL ? 16 : WALL_IMGS.length * 2; // two passes through the shot list keeps the stream dense
-  // screenR is (after the perspective-compensation above) the shard's true apparent radius
-  // in screen pixels, so the x/y multipliers below are the only thing standing between "fits
-  // the viewport" and "flies off both edges". The old flat 1.4 / .82 constants were reverse-
-  // engineered from one specific viewport (1280x769 desktop) and never revisited for anything
-  // else — on a narrow phone the x radius alone (screenR*1.4, several hundred px) is bigger
-  // than the whole half-width, so almost every shard lands off-screen and only the handful
-  // near the ellipse's top/bottom point (where x≈0) survive. That's the "empty middle,
-  // sparse cluster at the edges" bug. Derive both multipliers from the viewport's own half-
-  // dimensions instead, calibrated so they reduce to exactly 1.4 / .82 at 1280x769.
-  const midR = SMALL ? (250+410)/2 : (300+580)/2;
-  const xMul = 0.9625 * (innerWidth/2)  / midR;
-  const yMul = 0.9384 * (innerHeight/2) / midR;
+  // Shard count scales with viewport diagonal (more room, more cards) but is capped well
+  // short of "one per source image squared" so a 4K monitor doesn't spawn hundreds of nodes.
+  const n = Math.round(Math.max(14, Math.min(44, Math.hypot(innerWidth, innerHeight) / 34)));
+  const distStep = TUNNEL_DEPTH / n;
   const frag = document.createDocumentFragment();
   for(let i=0;i<n;i++){
-    const ang = (i/n)*Math.PI*2 + rnd()*.6;
-    // A tunnel, not a cylinder: the world radius scales with distance so every shard
-    // lands at roughly the same *screen* radius, leaving the headline a clear centre.
-    // PERSPECTIVE must match the .field perspective for the projection to hold.
-    const dist = 240 + i*(SMALL?200:88) + rnd()*140;
-    const screenR = (SMALL?250:300) + rnd()*(SMALL?160:280);
-    const rad = screenR * (PERSPECTIVE + dist) / PERSPECTIVE;
-    const x = Math.cos(ang)*rad*xMul, y = Math.sin(ang)*rad*yMul;
-    const z = -dist;
     const el = document.createElement('div');
     el.className = 'shard';
-    el.style.transform = `translate3d(${x.toFixed(0)}px,${y.toFixed(0)}px,${z.toFixed(0)}px) rotate(${((rnd()-.5)*12).toFixed(1)}deg)`;
     // no loading="lazy" here: the shards sit far outside the viewport in 3D, so a lazy
     // image would never be fetched. The wall is only built after the loader, so it costs nothing up front.
     el.innerHTML = `<img src="_gig-screens/${WALL_IMGS[i % WALL_IMGS.length]}" alt="" decoding="async">`;
-    shards.push({el, z});
+    shards.push({
+      el,
+      ang: (i/n)*Math.PI*2 + rnd()*.6,
+      // A tunnel, not a cylinder: dist scales the world radius so every shard lands at
+      // roughly the same *screen* radius regardless of depth, leaving the headline clear.
+      dist: 240 + i*distStep + rnd()*140,
+      screenRRatio: 0.7 + rnd()*0.6,   // ±30% around midRadius() — replaces the old fixed range
+      rot: +((rnd()-.5)*12).toFixed(1),
+    });
     frag.appendChild(el);
   }
   wall.appendChild(frag);
+  layoutWall();
   // hold the wall hidden until every shot is decoded, so it arrives whole instead of
   // popping in as empty slabs — but never let a stalled decode() hide it forever
   // the class goes on .field, not .wall — see the CSS note about 3D flattening
@@ -867,6 +889,15 @@ function buildWall(){
   Promise.all([...wall.querySelectorAll('img')].map(im => im.decode().catch(()=>{}))).then(reveal);
   setTimeout(reveal, 2500);
 }
+
+// Reflow the wall on resize — including a DevTools responsive-mode drag, an actual browser
+// window resize, or a phone rotation — instead of leaving it frozen at whatever shape it
+// had on first paint. rAF-coalesced so a fast drag doesn't re-layout more than once a frame.
+let wallResizeRaf = null;
+addEventListener('resize', ()=>{
+  if(wallResizeRaf || !shards.length) return;
+  wallResizeRaf = requestAnimationFrame(()=>{ wallResizeRaf = null; layoutWall(); });
+});
 
 /* ---- scroll drive ---- */
 const stage = document.getElementById('stage');
@@ -883,14 +914,21 @@ function readScroll(){
 // true once the hero has fully faded — used to idle the per-frame work
 function stageHidden(){ return cur > .95 && target > .95; }
 
+// How far the camera travels through the tunnel over the full scroll range. Continuous in
+// viewport diagonal (same reasoning as midRadius()) rather than a mobile/desktop toggle.
+function flightDistance(){
+  const diag = Math.hypot(innerWidth, innerHeight);
+  return Math.max(1800, Math.min(3200, 748 + 1.441*diag));
+}
+
 function frame(){
   if(stageHidden()){ requestAnimationFrame(frame); return; }
   cur += (target - cur) * .075;
-  const z = cur * (SMALL ? 2100 : 2900);
+  const z = cur * flightDistance();
   wall.style.transform = `translateZ(${z.toFixed(1)}px)`;
   for(const s of shards){
     // fade a shard out as it approaches and passes the camera
-    const eff = s.z + z;
+    const eff = -s.dist + z;
     s.el.style.opacity = String(Math.max(0, Math.min(1, (-eff - 40) / 260)));
   }
   const t = Math.min(1, cur / .55);

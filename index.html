@@ -3,148 +3,975 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Alex B — AI Engineer & Fullstack Developer · Selected Work</title>
-<meta name="description" content="Interactive demo products by Alex B — production GenAI, multi-agent systems, and fullstack apps built end-to-end.">
+<title>Oleksii (Alex) — Full-Stack AI Engineer · Selected Work</title>
+<meta name="description" content="Selected work by Oleksii (Alex) — full-stack AI engineer in Riga. Production multi-agent GenAI, real-time platforms and shipped SaaS. 33 interactive builds, every one opens live.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#0a0c10; --card:#12151c; --line:rgba(255,255,255,.08);
-  --ink:#eef1f6; --mut:#9aa3b2; --mut2:#6b7480;
-  --acc:#7c8cff; --acc2:#39d0c4; --warm:#ffb37a;
+  --bg:#0a0908;
+  --bg2:#100e0c;
+  --ink:#f5f1ea;
+  --mut:#98908a;
+  --mut2:#6a635e;
+  --acc:#d97706;
+  --acc-lt:#f0a44a;
+  --line:rgba(245,241,234,.09);
+  --line2:rgba(217,119,6,.22);
+  --serif:'Instrument Serif',Georgia,serif;
+  --sans:'General Sans',-apple-system,system-ui,sans-serif;
+  --mono:ui-monospace,'SF Mono',Menlo,monospace;
+  --ease:cubic-bezier(.05,.9,.1,1);
+  --ease2:cubic-bezier(.16,1,.3,1);
 }
 *{box-sizing:border-box}
-html,body{margin:0}
+html{font-size:16px}
+@media(min-width:1600px){html{font-size:17.5px}}
+@media(max-width:640px){html{font-size:15px}}
+html,body{margin:0;padding:0}
+html.lenis,html.lenis body{height:auto}
+.lenis.lenis-smooth{scroll-behavior:auto!important}
 body{
-  background:radial-gradient(1200px 700px at 72% -12%, #161b27 0%, var(--bg) 55%) no-repeat, var(--bg);
-  color:var(--ink); font-family:Inter,system-ui,sans-serif; line-height:1.5;
-  -webkit-font-smoothing:antialiased;
+  background:var(--bg);color:var(--ink);
+  font-family:var(--sans);line-height:1.55;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+  overflow-x:hidden;
 }
 a{color:inherit;text-decoration:none}
-.wrap{max-width:1180px;margin:0 auto;padding:0 24px}
-.hero{padding:90px 0 38px}
-.eyebrow{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--acc2);font-weight:600}
-.hero h1{font-family:Fraunces,serif;font-weight:600;font-size:clamp(34px,5vw,60px);line-height:1.05;margin:18px 0 0;letter-spacing:-.01em}
-.hero h1 .g{background:linear-gradient(100deg,var(--acc),var(--acc2) 60%,var(--warm));-webkit-background-clip:text;background-clip:text;color:transparent}
-.hero p.lead{color:var(--mut);font-size:clamp(16px,2vw,20px);max-width:640px;margin:20px 0 0}
-.stats{display:flex;gap:34px;flex-wrap:wrap;margin-top:32px}
-.stat .n{font-family:Fraunces,serif;font-size:24px;font-weight:600}
-.stat .l{color:var(--mut2);font-size:12.5px;margin-top:2px}
-.cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:34px}
-.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 22px;border-radius:999px;font-weight:600;font-size:14px}
-.btn.p{background:linear-gradient(100deg,var(--acc),var(--acc2));color:#08131a}
-.note{margin-top:14px;color:var(--mut2);font-size:13px;max-width:640px}
-.sec{padding:32px 0}
-.sec h2{font-family:Fraunces,serif;font-weight:600;font-size:24px;margin:0 0 4px;display:flex;align-items:baseline;gap:12px}
-.sec h2 .c{color:var(--mut2);font-family:Inter,sans-serif;font-size:13px;font-weight:500}
-.sec .sub{color:var(--mut);font-size:14px;margin:0 0 22px}
-.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
-@media(max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:600px){.grid{grid-template-columns:1fr}}
-.card{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease}
-.card:hover{transform:translateY(-4px);border-color:rgba(124,140,255,.42);box-shadow:0 18px 42px -22px rgba(0,0,0,.85)}
-.shot{position:relative;aspect-ratio:1280/769;overflow:hidden;background:#0b0e14;border-bottom:1px solid var(--line)}
-.shot img{width:100%;height:100%;object-fit:cover;object-position:top center;display:block}
-.badge-live{position:absolute;top:10px;left:10px;z-index:2;display:inline-flex;align-items:center;gap:6px;background:rgba(10,12,16,.74);backdrop-filter:blur(6px);border:1px solid rgba(57,208,196,.5);color:#d7fff8;font-size:11px;font-weight:600;letter-spacing:.02em;padding:4px 10px;border-radius:999px}
-.badge-live .dot{width:7px;height:7px;border-radius:50%;background:var(--acc2);animation:pulse 2s infinite}
-@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(57,208,196,.55)}70%{box-shadow:0 0 0 7px rgba(57,208,196,0)}100%{box-shadow:0 0 0 0 rgba(57,208,196,0)}}
-.cbody{padding:16px 16px 18px;display:flex;flex-direction:column;gap:10px;flex:1}
-.cbody h3{font-family:Fraunces,serif;font-size:18px;font-weight:600;margin:0}
-.cbody p{color:var(--mut);font-size:13.5px;margin:0;flex:1}
-.tags{display:flex;gap:6px;flex-wrap:wrap}
-.tag{font-size:11px;color:var(--mut2);border:1px solid var(--line);border-radius:999px;padding:3px 9px}
-.open{color:var(--acc2);font-weight:600;font-size:13px;display:inline-flex;align-items:center;gap:6px}
-footer{border-top:1px solid var(--line);margin-top:40px;padding:34px 0 64px;color:var(--mut2);font-size:13px;line-height:1.7}
-footer b{color:var(--ink);font-family:Fraunces,serif;font-weight:600}
+img{display:block;max-width:100%}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+::selection{background:var(--acc);color:#0a0908}
+
+/* ---------- shared bits ---------- */
+.wrap{width:min(100% - 2.5rem,84rem);margin-inline:auto}
+.lbl{font-family:var(--mono);font-size:.68rem;letter-spacing:.22em;text-transform:uppercase;color:var(--acc);font-weight:500}
+.lbl.q{color:var(--mut2)}
+.rw{display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:.06em}
+.ri{display:inline-block;transform:translateY(115%);filter:blur(18px);opacity:0;
+    transition:transform 1.25s var(--ease),filter 1.25s var(--ease),opacity 1.1s var(--ease);
+    transition-delay:var(--d,0s)}
+.on .ri{transform:none;filter:blur(0);opacity:1}
+.rise{opacity:0;transform:translateY(2.2rem);filter:blur(10px);
+      transition:opacity .95s var(--ease2),transform .95s var(--ease2),filter .95s var(--ease2);
+      transition-delay:var(--d,0s)}
+.rise.on{opacity:1;transform:none;filter:blur(0)}
+
+/* ---------- cursor ---------- */
+.cur,.curdot{position:fixed;top:0;left:0;z-index:9990;pointer-events:none;border-radius:50%;
+  mix-blend-mode:difference;opacity:0;transition:opacity .4s}
+.cur{width:2.1rem;height:2.1rem;border:1px solid rgba(245,241,234,.55);margin:-1.05rem 0 0 -1.05rem;
+  transition:width .35s var(--ease2),height .35s var(--ease2),margin .35s var(--ease2),opacity .4s,border-color .35s}
+.curdot{width:.3rem;height:.3rem;background:var(--ink);margin:-.15rem 0 0 -.15rem}
+body.curon .cur,body.curon .curdot{opacity:1}
+body.curhot .cur{width:4.2rem;height:4.2rem;margin:-2.1rem 0 0 -2.1rem;border-color:var(--acc-lt)}
+/* hide the native pointer everywhere, not just on links — otherwise it shows through
+   next to the custom cursor over text and images */
+body.curon,body.curon *{cursor:none}
+@media(hover:none){.cur,.curdot{display:none}}
+
+/* ---------- loader ---------- */
+#loader{position:fixed;inset:0;z-index:10000;background:var(--bg);display:grid;place-items:center;
+  transition:opacity .9s var(--ease2),visibility .9s}
+#loader.off{opacity:0;visibility:hidden}
+#loader .grid-lines{position:absolute;inset:0;opacity:.5}
+#loader .grid-lines i{position:absolute;top:0;bottom:0;width:1px;background:var(--line)}
+#loader .num{font-family:var(--serif);font-size:clamp(4rem,16vw,13rem);line-height:.85;color:var(--ink);
+  font-variant-numeric:tabular-nums;position:relative}
+#loader .num sup{font-family:var(--mono);font-size:.7rem;vertical-align:top;color:var(--acc);letter-spacing:.2em}
+#loader .bar{position:absolute;left:0;bottom:0;height:1px;width:0;background:var(--acc);transition:width .2s linear}
+#loader .cap{position:absolute;left:0;right:0;bottom:2.5rem;text-align:center}
+
+/* ---------- stage / 3d wall ---------- */
+#stage{position:fixed;inset:0;z-index:1;overflow:hidden;background:
+  radial-gradient(120% 90% at 50% 42%,#16120d 0%,var(--bg) 62%)}
+#stage.gone{opacity:0;pointer-events:none}
+/* The reveal lives here, NOT on .wall: opacity < 1 and any filter are "grouping"
+   properties, and applying either to the preserve-3d element flattens its 3D context —
+   which kills the perspective and renders every shard at the same flat size.
+   .field only carries the perspective, so it is safe to fade and blur. */
+.field{position:absolute;inset:0;perspective:1000px;perspective-origin:50% 48%;
+  opacity:0;filter:blur(14px);transition:opacity 1.5s var(--ease2),filter 1.5s var(--ease2)}
+.field.ready{opacity:1;filter:blur(0)}
+.wall{position:absolute;left:50%;top:50%;width:0;height:0;transform-style:preserve-3d;will-change:transform}
+.shard{position:absolute;width:22rem;margin:-7rem 0 0 -11rem;border:1px solid var(--line);
+  border-radius:.6rem;overflow:hidden;background:#141110;
+  box-shadow:0 2.5rem 5rem -2rem rgba(0,0,0,.9);will-change:transform,opacity}
+.shard img{width:100%;aspect-ratio:1280/769;object-fit:cover;object-position:top center;
+  filter:grayscale(.18) contrast(1.05) brightness(1.06) sepia(.14)}
+.shard::after{content:"";position:absolute;inset:0;background:linear-gradient(160deg,rgba(217,119,6,.14),transparent 72%)}
+#grain{position:absolute;inset:0;pointer-events:none;opacity:.05;mix-blend-mode:overlay}
+.vig{position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(125% 95% at 50% 50%,transparent 52%,rgba(10,9,8,.62) 100%)}
+
+/* hero type over the wall */
+.heroType{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:0 1.25rem;
+  will-change:transform,opacity,filter}
+/* scrim so the headline stays legible over the brighter wall */
+.heroType::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(50% 42% at 50% 47%,rgba(10,9,8,.9),rgba(10,9,8,.58) 58%,transparent 84%)}
+.heroType > div{position:relative;z-index:1}
+.heroType h1{font-family:var(--serif);font-weight:400;margin:.7rem 0 0;
+  font-size:clamp(3.4rem,11.5vw,11rem);line-height:.86;letter-spacing:-.02em}
+.heroType h1 em{font-style:italic;color:var(--acc-lt)}
+.heroType .sub{color:var(--mut);max-width:34rem;margin:1.9rem auto 0;font-size:clamp(.92rem,1.2vw,1.06rem)}
+.hstats{display:flex;gap:2.4rem;justify-content:center;flex-wrap:wrap;margin-top:2.2rem}
+.hstats div{font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;color:var(--mut2)}
+.hstats b{color:var(--ink);font-weight:500}
+.mark{position:absolute;left:1.6rem;bottom:1.4rem;font-family:var(--mono);font-size:.66rem;
+  letter-spacing:.24em;text-transform:uppercase;color:var(--mut2)}
+.cue{position:absolute;right:1.6rem;bottom:1.4rem;display:flex;align-items:center;gap:.7rem;
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.2em;text-transform:uppercase;color:var(--mut2)}
+.cue i{display:block;width:2.6rem;height:1px;background:var(--line);position:relative;overflow:hidden}
+.cue i::after{content:"";position:absolute;inset:0;background:var(--acc);transform:translateX(-100%);
+  animation:sweep 2.4s var(--ease2) infinite}
+@keyframes sweep{0%{transform:translateX(-100%)}60%,100%{transform:translateX(100%)}}
+#spacer{height:280vh;position:relative;z-index:0}
+
+/* ---------- content ---------- */
+main{position:relative;z-index:2;background:var(--bg);border-top:1px solid var(--line)}
+
+/* The work sections invert to warm paper. Every rule below is written against these
+   variables, so re-declaring them here flips the whole block light in one place —
+   and gives the page a dark → light → dark rhythm instead of one endless black scroll. */
+.lite{
+  --bg:#f0eae0; --bg2:#fbf8f2;
+  --ink:#15120f; --mut:#5d554c; --mut2:#8a8076;
+  --line:rgba(21,18,15,.14); --line2:rgba(180,83,9,.4);
+  --acc:#b45309; --acc-lt:#8f4108;
+  --shot-bg:#e4ddd2; --over-bg:rgba(250,247,242,.94); --fade:rgba(251,248,242,.72);
+  background:var(--bg);color:var(--ink);
+}
+.lite ::selection{background:var(--acc);color:#fbf8f2}
+/* on paper the cards need real elevation instead of a lighter fill to separate */
+.lite .card,.lite .fcard{box-shadow:0 1px 2px rgba(21,18,15,.05),0 12px 30px -18px rgba(21,18,15,.28)}
+.lite .card:hover,.lite .fcard:hover{box-shadow:0 2px 4px rgba(21,18,15,.06),0 26px 50px -22px rgba(21,18,15,.4)}
+.lite .fshot img{filter:saturate(.98)}
+.lite .fcard:hover .fshot img{filter:saturate(1.04)}
+.lite .chip[aria-pressed="true"]{color:#fbf8f2}
+.lite .go{color:var(--acc)}
+.sec{padding:7rem 0 1rem}
+.sechead{display:flex;align-items:flex-end;justify-content:space-between;gap:2rem;
+  padding-bottom:1.6rem;border-bottom:1px solid var(--line);margin-bottom:3.2rem}
+.sechead h2{font-family:var(--serif);font-weight:400;font-size:clamp(2rem,4.4vw,3.4rem);
+  line-height:1;margin:.8rem 0 0;letter-spacing:-.01em}
+.sechead p{color:var(--mut);font-size:.93rem;max-width:32rem;margin:.9rem 0 0}
+.sechead .cnt{font-family:var(--mono);font-size:.68rem;letter-spacing:.2em;color:var(--mut2);white-space:nowrap}
+
+/* about */
+.abt{display:grid;grid-template-columns:1.25fr .75fr;gap:3.5rem;align-items:start}
+.abt-lead p{font-size:clamp(1.02rem,1.5vw,1.25rem);color:var(--ink);margin:0 0 1.1rem;max-width:38rem}
+.abt-lead p+p{color:var(--mut);font-size:clamp(.95rem,1.25vw,1.05rem)}
+.abt-facts{display:flex;flex-direction:column;gap:0}
+.fact{display:flex;flex-direction:column;gap:.3rem;padding:1rem 0;border-top:1px solid var(--line)}
+.fact:last-child{border-bottom:1px solid var(--line)}
+.fact b{font-family:var(--mono);font-size:.63rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--acc);font-weight:500}
+.fact span{color:var(--mut);font-size:.9rem}
+
+.nums{display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;margin:4.5rem 0 0;
+  padding:2.4rem 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+/* scoped to .nums on purpose — the loader also has a .num element, and an unscoped
+   `.num span` rule was shrinking its digits to label size */
+.nums .num b{display:block;font-family:var(--serif);font-weight:400;font-size:clamp(2.4rem,5vw,4rem);
+  line-height:.95;color:var(--ink);font-variant-numeric:tabular-nums}
+.nums .num span{display:block;margin-top:.5rem;font-family:var(--mono);font-size:.63rem;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--mut2)}
+
+.tl{margin-top:4rem;display:flex;flex-direction:column}
+.tl-row{display:grid;grid-template-columns:15rem 1fr;gap:2.5rem;padding:2.2rem 0;
+  border-top:1px solid var(--line);position:relative}
+.tl-row::after{content:"";position:absolute;left:0;top:-1px;height:1px;width:0;background:var(--acc);
+  transition:width 1.1s var(--ease2)}
+.tl-row.on::after{width:100%}
+.tl-when{font-family:var(--mono);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--mut2);padding-top:.3rem}
+.tl-what h4{font-family:var(--serif);font-weight:400;font-size:clamp(1.25rem,2.2vw,1.7rem);
+  margin:0 0 .7rem;line-height:1.15}
+.tl-what p{color:var(--mut);font-size:.92rem;margin:0 0 1rem;max-width:44rem}
+
+/* skills marquee */
+.mq{padding:1rem 0 0;overflow:hidden;border-top:1px solid var(--line);margin-top:6rem}
+.mq-row{overflow:hidden;padding:.7rem 0;white-space:nowrap}
+.mq-in{display:inline-block;will-change:transform}
+.mq-in i{font-style:normal;font-family:var(--serif);font-size:clamp(1.4rem,3vw,2.4rem);
+  color:var(--mut2);opacity:.55;padding:0 1.4rem;transition:color .4s}
+.mq-in i.hot{color:var(--acc)}
+
+/* featured */
+.feat{display:flex;flex-direction:column;gap:2.6rem}
+.fcard{position:relative;display:grid;grid-template-columns:1.15fr .85fr;gap:0;
+  border:1px solid var(--line);border-radius:1rem;overflow:hidden;background:var(--bg2);
+  transition:border-color .5s var(--ease2),transform .5s var(--ease2)}
+.fcard:nth-child(even){grid-template-columns:.85fr 1.15fr}
+.fcard:nth-child(even) .fshot{order:2}
+.fcard:hover{border-color:var(--line2);transform:translateY(-.3rem)}
+.fshot{position:relative;overflow:hidden;background:var(--shot-bg,#0f0d0c);min-height:19rem}
+/* transform is written every frame by the parallax loop — keep it out of the
+   transition list or each update would smear over 1.1s */
+.fshot img{width:100%;height:100%;object-fit:cover;object-position:top center;
+  transition:filter .7s;filter:saturate(.9);transform:scale(1.09)}
+.fcard:hover .fshot img{filter:saturate(1.06) brightness(1.04)}
+/* blend the shot into the text panel it sits next to — so the fade has to follow the
+   side the panel is on, which flips on every other card */
+.fshot::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(to right,transparent 74%,var(--fade,rgba(16,14,12,.7)))}
+.fcard:nth-child(even) .fshot::after{
+  background:linear-gradient(to left,transparent 74%,var(--fade,rgba(16,14,12,.7)))}
+.fbody{padding:2.6rem 2.4rem;display:flex;flex-direction:column;justify-content:center;gap:1rem}
+.fbody h3{font-family:var(--serif);font-weight:400;font-size:clamp(1.6rem,2.7vw,2.3rem);
+  line-height:1.06;margin:.5rem 0 0;letter-spacing:-.01em}
+.fbody p{color:var(--mut);font-size:.93rem;margin:0}
+.fnote{color:var(--mut2);font-size:.82rem;border-left:1px solid var(--line2);padding-left:.9rem;margin:0}
+.tags{display:flex;gap:.4rem;flex-wrap:wrap}
+.tag{font-family:var(--mono);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--mut2);border:1px solid var(--line);border-radius:2rem;padding:.32rem .7rem}
+.go{display:inline-flex;align-items:center;gap:.55rem;color:var(--acc-lt);font-weight:500;font-size:.86rem;margin-top:.3rem}
+.go i{display:block;width:1.6rem;height:1px;background:currentColor;transition:width .45s var(--ease2)}
+.fcard:hover .go i,.card:hover .go i{width:2.8rem}
+.livedot{display:inline-flex;align-items:center;gap:.45rem;font-family:var(--mono);font-size:.62rem;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--acc)}
+.livedot s{width:.4rem;height:.4rem;border-radius:50%;background:var(--acc);text-decoration:none;
+  animation:pulse 2.4s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(217,119,6,.5)}70%{box-shadow:0 0 0 .5rem rgba(217,119,6,0)}100%{box-shadow:0 0 0 0 rgba(217,119,6,0)}}
+
+/* filters */
+.filters{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:2.4rem}
+.chip{font-family:var(--mono);font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;
+  border:1px solid var(--line);border-radius:2rem;padding:.55rem 1.1rem;color:var(--mut);
+  transition:color .35s,border-color .35s,background .35s}
+.chip:hover{color:var(--ink);border-color:var(--line2)}
+.chip[aria-pressed="true"]{background:var(--acc);border-color:var(--acc);color:#0a0908}
+
+/* grid */
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2.4rem 2rem}
+@media(max-width:1000px){.grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:620px){.grid{grid-template-columns:1fr}}
+.card{position:relative;border:1px solid var(--line);border-radius:.85rem;overflow:hidden;
+  background:var(--bg2);display:flex;flex-direction:column;
+  transition:border-color .45s var(--ease2),transform .45s var(--ease2)}
+.card:hover{border-color:var(--line2);transform:translateY(-.35rem)}
+.shot{position:relative;aspect-ratio:1280/769;overflow:hidden;background:var(--shot-bg,#0f0d0c);
+  border-bottom:1px solid var(--line)}
+.shot img{width:100%;height:100%;object-fit:cover;object-position:top center;
+  filter:saturate(.92);transition:transform 1s var(--ease2),filter .6s}
+.card:hover .shot img{transform:scale(1.05);filter:saturate(1.04)}
+.over{position:absolute;inset:0;background:var(--over-bg,rgba(8,7,6,.9));backdrop-filter:blur(3px);
+  padding:1.4rem;display:flex;align-items:center;color:var(--mut);font-size:.84rem;line-height:1.5;
+  opacity:0;transition:opacity .45s var(--ease2)}
+.card:hover .over{opacity:1}
+.cbody{padding:1.25rem 1.3rem 1.4rem;display:flex;flex-direction:column;gap:.7rem;flex:1}
+.cbody h3{font-family:var(--serif);font-weight:400;font-size:1.32rem;line-height:1.15;margin:0;letter-spacing:-.005em}
+.cbody p{color:var(--mut);font-size:.86rem;margin:0;flex:1}
+.grid[data-f]:not([data-f="all"]) .card:not(.hit){display:none}
+@media(hover:none){.over{display:none}}
+
+/* contact */
+#contact{padding:9rem 0 5rem;border-top:1px solid var(--line);margin-top:7rem;position:relative}
+#contact h2{font-family:var(--serif);font-weight:400;font-size:clamp(2.6rem,8vw,6.5rem);
+  line-height:.92;margin:1rem 0 0;letter-spacing:-.02em}
+#contact h2 em{font-style:italic;color:var(--acc-lt)}
+#contact .lead{color:var(--mut);max-width:30rem;margin:1.8rem 0 0;font-size:1rem}
+.links{display:flex;gap:.7rem;flex-wrap:wrap;margin-top:2.6rem}
+.lnk{display:inline-flex;align-items:center;gap:.7rem;border:1px solid var(--line);border-radius:2rem;
+  padding:.85rem 1.5rem;font-size:.88rem;font-weight:500;
+  transition:border-color .4s,background .4s,color .4s,transform .4s var(--ease2)}
+.lnk:hover{border-color:var(--acc);background:var(--acc);color:#0a0908;transform:translateY(-.15rem)}
+.lnk span{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;opacity:.6}
+footer{border-top:1px solid var(--line);padding:2.4rem 0 3.4rem;color:var(--mut2);font-size:.78rem;
+  display:flex;justify-content:space-between;gap:1.5rem;flex-wrap:wrap;font-family:var(--mono);
+  letter-spacing:.08em;text-transform:uppercase}
+
+/* progress rail */
+#rail{position:fixed;left:0;top:0;height:2px;width:100%;z-index:9000;background:transparent}
+#rail i{display:block;height:100%;width:0;background:var(--acc)}
+
+@media(max-width:900px){
+  .abt{grid-template-columns:1fr;gap:2.2rem}
+  .nums{grid-template-columns:repeat(2,1fr);gap:2rem 1.5rem;margin-top:3rem}
+  .tl-row{grid-template-columns:1fr;gap:.8rem}
+  .mq{margin-top:4rem}
+}
+@media(max-width:820px){
+  .fcard,.fcard:nth-child(even){grid-template-columns:1fr}
+  .fcard:nth-child(even) .fshot{order:0}
+  .fshot{min-height:0;aspect-ratio:1280/769}
+  .fbody{padding:1.8rem 1.5rem}
+  .sec{padding:5rem 0 1rem}
+  .sechead{flex-direction:column;align-items:flex-start;gap:.6rem}
+  #spacer{height:200vh}
+  .shard{width:15rem;margin:-4.7rem 0 0 -7.5rem}
+  #contact{padding:6rem 0 4rem;margin-top:5rem}
+}
+
+/* Reduced motion hangs off a class, not the media query directly, so the on-page motion
+   toggle can override it — a media query alone would keep forcing the static layout even
+   after a visitor opts in. The class is set by the inline script in <head>. */
+html.rm *,html.rm *::after,html.rm *::before{
+  animation-duration:.01ms!important;animation-iteration-count:1!important;
+  transition-duration:.01ms!important}
+html.rm .ri{transform:none;filter:none;opacity:1}
+html.rm .rise{opacity:1;transform:none;filter:none}
+/* no scroll-driven flight: the hero becomes a normal full-height block, and the wall
+   is shown outright rather than faded in — a transition can't be relied on here */
+html.rm #stage{position:relative;min-height:100svh}
+html.rm #spacer{display:none}
+html.rm .field{opacity:1;filter:none;transition:none}
+html.rm .cur,html.rm .curdot{display:none}
 </style>
+<script>
+// Decide motion before first paint so the layout never flips after render.
+// The OS setting is the default; an explicit choice from the on-page toggle wins.
+(function(){
+  // Motion is on by default. The OS signal is deliberately NOT used as the default:
+  // on Windows it is just the "Animation effects" toggle, which plenty of people switch
+  // off for performance, and honouring it left this page completely static for them.
+  // Escape hatch for anyone who genuinely needs it: ?motion=off (remembered afterwards).
+  var c = null;
+  try {
+    var q = new URLSearchParams(location.search).get('motion');
+    if(q === 'off' || q === 'on') localStorage.setItem('motion', q);
+    c = localStorage.getItem('motion');
+  } catch(e) {}
+  window.__RM = c === 'off';
+  if(window.__RM) document.documentElement.classList.add('rm');
+})();
+</script>
 </head>
 <body>
-<div class="wrap">
-  <header class="hero">
-    <div class="eyebrow">Selected Work</div>
-    <h1>Alex B — <span class="g">AI Engineer</span><br>& Fullstack Developer</h1>
-    <p class="lead">I build production-grade GenAI systems — multi-agent pipelines, RAG, and the full product around them. Below are interactive demo products I designed and engineered end-to-end.</p>
-    <div class="stats">
-      <div class="stat"><div class="n">33</div><div class="l">Live demos</div></div>
-      <div class="stat"><div class="n">AI-first</div><div class="l">Agents · RAG · LLM systems</div></div>
-      <div class="stat"><div class="n">Fullstack</div><div class="l">Next.js · React · FastAPI · Postgres</div></div>
-    </div>
-    <div class="cta"><a class="btn p" href="#work">Explore the work ↓</a></div>
-    <div class="note">Each card opens a live, clickable demo. The first section is real products I built and shipped end-to-end (running on sample data, no backend needed); the rest are concept products that show design + engineering range — desktop and mobile responsive.</div>
-  </header>
 
-  <main id="work"></main>
+<div class="cur"></div><div class="curdot"></div>
+<div id="rail"><i></i></div>
 
-  <footer>
-    <b>Alex B</b> — AI Engineer &amp; Fullstack Developer · Riga, Latvia<br>
-    Production GenAI · Multi-agent systems · Next.js / React / FastAPI / PostgreSQL · Available for freelance.
-  </footer>
+<div id="loader">
+  <div class="grid-lines" aria-hidden="true"></div>
+  <div class="num"><span id="lnum">000</span><sup>%</sup><span class="bar" id="lbar"></span></div>
+  <div class="cap lbl q">Oleksii (Alex) — Selected Work</div>
 </div>
 
-<script>
-const SECTIONS = [
-  { title:"Production builds", label:"real, shipped", note:"Real products I designed and engineered end-to-end. These run on sample data so you can click through the whole app — no sign-up, no backend.", items:[
-    {live:true, external:true, url:"https://terocode.live", img:"_gig-screens/trading-platform.png", t:"TradeX — Real-time Trading Platform", d:"A production trading platform I built end-to-end: real-time market data over WebSocket, professional charting (lightweight-charts), a full order terminal with positions & live P&L across crypto, forex and metals, installable PWA — on Next.js + Fastify. This is the live product, so the card opens it.", tg:["Next.js","Fastify","Real-time","Trading"]},
-    {live:true, external:true, url:"https://holomate.org", img:"_gig-screens/holomate.png", t:"HoloMate — Real-time AI Hologram Companion", d:"A real-time conversational AI \"hologram\" you can see and talk to — a live voice + vision avatar (Next.js · FastAPI · Gemini). This one is a shipped product, so the card opens the official site.", tg:["Real-time AI","Voice + Vision","Next.js","Live product"]},
-    {live:true, external:true, url:"https://nokarto.lv/", img:"_gig-screens/nokarto.jpg", t:"Nokārto — Latvian State Exam Trainer", d:"A live SaaS product: a trainer for the Latvian state language exam (valsts valodas prasmes pārbaude), where 61% fail on the first try. A free 19-question readiness test in the real exam's formats — grammar, vocabulary, reading and listening with audio — maps weak spots per section and builds a prep plan; AI grades essays and spoken answers against the official criteria, the two parts where most points are lost. Trilingual UI (RU / UK / EN). The card opens the live site.", tg:["Live product","EdTech","AI grading","Exam prep"]},
-    {live:true, url:"quorum/", img:"_gig-screens/quorum.png", t:"Quorum — Multi-Agent AI Advisory Board", d:"An orchestrator convenes five role-specialized AI advisors (CFO, CMO, COO, Strategy, Risk) who deliberate a business decision in real time — a streamed round-robin debate with differing stances, then a synthesized board recommendation with a vote and a decision scorecard. A clean original take on agentic advisory + real-time orchestration.", tg:["Multi-agent","Orchestration","Real-time","React"]},
-    {live:true, url:"business-agent/", img:"_gig-screens/business-agent.png", t:"Phantom Pipeline — Autonomous AI SDR", d:"A product for autonomous B2B outbound: detect buying signals, auto-generate a personalized \"Pipeline Autopsy\" report + AI video, and deliver it before the prospect ever hears from sales. Cinematic scroll landing with an interactive WebGL globe and a live \"cost of waiting\" counter, over a full authenticated app (dashboard, prospects, admin).", tg:["AI SDR","React","TanStack","WebGL"]},
-    {live:true, url:"ai-closer/", img:"_gig-screens/ai-closer.jpg", t:"AI Sales Closer — Voice Agent that Calls & Closes", d:"An outbound AI voice sales agent from a real client engagement: it dials the lead itself, talks with a human-indistinguishable voice — thinking pauses, backchannel fillers (\"mm-hm\"), office room tone, barge-in — handles objections and closes. Tap the call button and hear the actual demo call: the AI manager re-activates a website lead for a Riga residential complex and books a viewing, with the full transcript alongside. Python + Pipecat + Deepgram + Gemini + ElevenLabs + Twilio; any provider swaps via one config line.", tg:["Voice AI","Pipecat","Sales agent","Twilio"]},
-    {live:true, url:"seb-hpc/", img:"_gig-screens/seb-hpc.png", t:"Meridian Treasury — SME Cash-Flow Forecasting", d:"An ML treasury tool that classifies each business into a behavioral segment from its transaction patterns, routes it to that segment's best model (KNN / LSTM / GRU / Transformer), forecasts 4 weeks of cash flow, and turns it into a concrete treasury action — \"transfer €90,650 to savings\" or secure financing. Includes a live model-comparison (RMSE) view; trained on HPC (4× L40S GPUs).", tg:["ML forecasting","PyTorch","HPC","React"]},
-    {live:true, url:"trading-bot/", img:"_gig-screens/trading-bot.png", t:"SentryTrade — News-Sentiment Trading Bot", d:"A real-time algorithmic trading cockpit: a multi-stage LLM funnel (local gate → Haiku pre-screener → Sonnet signal agent) turns financial news into BUY/SELL signals with confidence scoring, paper-traded on a $10k account. Live-updating P&L and signal feed, positions, A/B prompt testing, a streaming bot console, and START/STOP controls.", tg:["Algo trading","Multi-LLM","Live feed","React"]},
-    {live:true, url:"ds-ai/", img:"_gig-screens/ds-ai.png", t:"Research Assistant — Multi-agent RAG + smart routing", d:"Answers research questions by routing each query across local Ollama and cloud LLMs based on complexity — toggle Balanced / Cost / Quality / Ultra-Fast and watch the chosen model change live. Runs a Planner → Retrieval → Synthesis agent crew, grounds answers in a cited RAG corpus, and tracks cost savings vs. always using GPT-4o.", tg:["Multi-agent","RAG","LLM routing","React"]},
-    {live:true, url:"agentic-platform/", img:"_gig-screens/agentic-platform.png", t:"Agentic Workflow Platform — Visual builder", d:"Multi-tenant no-code platform: drag-and-drop agent graph builder, then watch a run stream live — agents light up node-by-node while tokens and cost tick up — plus a cost & usage analytics dashboard.", tg:["Multi-agent","Vite/React","WebSocket","SaaS"]},
-    {live:true, url:"walters/", img:"_gig-screens/walters.png", t:"Walter's — Smart Restaurant Platform", d:"A multi-role restaurant OS in one clickable demo: diners browse a photo menu with AI picks and track orders live; plus a real-time kitchen display, a waiter floor view, and a manager dashboard with analytics, AI dynamic pricing and a live demand simulation. Pick any of the four roles.", tg:["Multi-role","React","WebSocket","Recharts"]},
-    {live:true, url:"code-review-agent/", img:"_gig-screens/code-review-agent.png", t:"Code Review Agent — Multi-agent PR review", d:"Four specialized AI agents (security, performance, style, logic) review a pull request, then a \"Review Passport\" gates merge-readiness with evidence, anti-AI-slop signals and QA steps.", tg:["Multi-agent","FastAPI","React","Merge gate"]},
-  ]},
-  { title:"AI agents & automation", note:"Autonomous agents, RAG, and AI-native workflows.", items:[
-    {f:"05-replai-ai", s:"05-replai-ai", t:"Replai — AI Support Platform", d:"AI drafts customer replies from your knowledge base, with cited sources, automations and analytics.", tg:["RAG","LLM","React"]},
-    {f:"10-outboundly", s:"10-outboundly", t:"Outboundly — AI SDR", d:"AI scores leads and writes personalized cold emails; full outreach sequences and analytics.", tg:["AI","Next.js"]},
-    {f:"14-flowforge", s:"14-flowforge", t:"Flowforge — Automation", d:"Visual flow-builder canvas with branching logic, run history and a template gallery.", tg:["Automation"]},
-    {f:"11-botpilot", s:"11-botpilot", t:"Botpilot — Telegram Bot", d:"Order → pay → AI support inside Telegram, with a full bot admin (flows, broadcasts, payments).", tg:["Bot API","Payments"]},
-  ]},
-  { title:"Creative & interactive", note:"Front-end craft: WebGL/Three.js, generative shaders, scroll-driven motion and custom cursors — each a single self-contained file, no framework.", items:[
-    {f:"aether", s:"aether", t:"Aether — Particles in Motion", d:"A generative WebGL field of 25,600 GPU particles that emerge from the void and morph through a sphere, a torus, a rippling field and a spiral galaxy as you scroll — neon on black, custom GLSL shaders, masked text reveals and a custom cursor.", tg:["Three.js","GPU particles","GLSL"]},
-    {f:"laocoon", s:"laocoon", t:"Laocoön — Bronze & Time", d:"A cinematic, scroll-driven WebGL stage: a glowing bronze horse you orbit a full 360° as you scroll, molten forge sparks, a liquid-bronze wave shader migrating bronze→sapphire, per-letter blur-up titles and a custom double-ring cursor.", tg:["Three.js","WebGL","GLSL"]},
-    {f:"lumora", s:"lumora", t:"Lumora — Studio Site", d:"Independent studio landing site: a dark intro loader, a cursor-driven 'liquid' before/after hero painted on canvas, scroll reveals, count-up stats and a request modal.", tg:["Landing","Canvas FX","Lenis"]},
-    {f:"loopstack", s:"loopstack", t:"Loopstack — Footer Hero", d:"A full-screen black 'footer hero' moment: a looping flower video fading into the page, a serif headline that reveals word-by-word, a giant letter-by-letter wordmark, a pulsing neon CTA and a custom lagging glass cursor.", tg:["Video","Custom cursor","Vanilla JS"]},
-  ]},
-  { title:"SaaS & product UIs", note:"End-to-end product UIs with real dashboards and flows.", items:[
-    {f:"onyx", s:"onyx", t:"Onyx — Crypto Exchange App", d:"A crypto exchange in your pocket, presented as a real native app — App-Store framing inside an iPhone on desktop, full-screen on mobile. Every action is a working flow driven by native bottom-sheets: QR deposits, withdrawals, buy/sell order confirmations, Simple Earn subscriptions, tap-through coin detail, a searchable transaction history and a real light/dark theme toggle. Candlestick charts, a live order book, dense markets with sparklines and leveraged futures — Bybit-grade UI with an amber accent.", tg:["Crypto","Trading","Mobile app"]},
-    {f:"ember", s:"ember", t:"Ember — Fragrance Store", d:"A production-grade fragrance storefront in a calm, editorial palette: hand-rendered glass flacons, star ratings & reviews, a featured bestseller and a fully working cart — add to bag, quantities, live subtotal, a free-shipping progress bar and a slide-out drawer.", tg:["E-commerce","Cart","Lenis"]},
-    {f:"01-pulse-crm", s:"01-pulse-crm", t:"Pulse — SaaS CRM", d:"Deals kanban, contacts, inbox, an AI assistant, automations and reports.", tg:["SaaS","React"]},
-    {f:"02-crema-shop", s:"02-crema-shop", t:"Crema — E-commerce", d:"Storefront and a full merchant admin for a specialty coffee brand.", tg:["E-commerce"]},
-    {f:"08-caretab", s:"08-caretab", t:"Caretab — Telehealth", d:"Clinic platform: appointments, patient records, a telehealth video screen and messaging.", tg:["Healthtech"]},
-    {f:"09-nest", s:"09-nest", t:"Nest — Real Estate", d:"Property marketplace and agent CRM: listings, property detail and a sales pipeline.", tg:["Marketplace"]},
-    {f:"06-finly", s:"06-finly", t:"Finly — Spend & Cards", d:"Corporate spend management: virtual cards, approvals, transactions and analytics.", tg:["Fintech"]},
-    {f:"07-stride", s:"07-stride", t:"Stride — Issue Tracker", d:"Project management with a kanban board, sprints and a burndown chart.", tg:["SaaS"]},
-    {f:"03-lumi-booking", s:"03-lumi-booking", t:"Lumi — Booking", d:"Beauty & services booking: an interactive calendar flow plus a provider admin.", tg:["Booking"]},
-    {f:"04-rute-ops", s:"04-rute-ops", t:"Rute — Logistics Ops", d:"Delivery operations: live map, orders, couriers and analytics.", tg:["Ops","Dashboard"]},
-  ]},
-  { title:"Backend, APIs & data", note:"Developer-facing platforms and data tooling.", items:[
-    {f:"12-forge-api", s:"12-forge", t:"Forge — API Platform", d:"Stripe-style developer portal: API reference, keys, request logs, webhooks and architecture.", tg:["FastAPI","API design"]},
-    {f:"13-harvest", s:"13-harvest", t:"Harvest — Data Pipelines", d:"Web scraping, pipelines and automated reports: scrapers, datasets and a pipeline diagram.", tg:["Data Eng"]},
-    {f:"15-triage", s:"15-triage", t:"Triage — Site Rescue", d:"Website audit and rescue report: before→after Lighthouse gauges, performance and security.", tg:["Performance"]},
-  ]},
-];
-document.getElementById('work').innerHTML = SECTIONS.map(sec=>`
-  <section class="sec">
-    <h2>${sec.title} <span class="c">${sec.label ? sec.label : sec.items.length + ' demos'}</span></h2>
-    <p class="sub">${sec.note}</p>
-    <div class="grid">
-      ${sec.items.map(it=>`
-        <a class="card" href="${it.url || it.f + '/index.html'}" target="_blank" rel="noopener">
-          <div class="shot">${it.live ? `<span class="badge-live"><span class="dot"></span>${it.external ? 'Live product' : 'Live build'}</span>` : ''}<img src="${it.img || '_gig-screens/' + it.s + '.jpg'}" alt="${it.t}"></div>
-          <div class="cbody">
-            <h3>${it.t}</h3>
-            <p>${it.d}</p>
-            <div class="tags">${it.tg.map(t=>`<span class="tag">${t}</span>`).join('')}</div>
-            <span class="open">${it.external ? 'Visit live product ↗' : (it.live ? 'Open live app →' : 'Open live demo →')}</span>
-          </div>
-        </a>`).join('')}
+<div id="stage">
+  <div class="field"><div class="wall" id="wall"></div></div>
+  <canvas id="grain"></canvas>
+  <div class="vig"></div>
+  <div class="heroType" id="heroType">
+    <div>
+      <div class="lbl rise">Oleksii (Alex) — Full-Stack AI Engineer</div>
+      <h1 id="h1">Selected <em>Work</em></h1>
+      <p class="sub rise">Thirty-three interactive products — AI agents, production SaaS, and front-end craft. Every card opens a live build, no sign-up, no backend.</p>
+      <div class="hstats rise">
+        <div><b>33</b> Builds</div>
+        <div><b>3</b> Live products</div>
+        <div><b>Riga</b> Latvia</div>
+      </div>
     </div>
-  </section>`).join('');
+  </div>
+  <div class="mark">Oleksii (Alex) · Riga</div>
+  <div class="cue"><i></i>Scroll</div>
+</div>
+
+<div id="spacer"></div>
+
+<main>
+ <div class="lite">
+  <section class="sec wrap" id="about">
+    <div class="sechead">
+      <div>
+        <div class="lbl rise">00 — About</div>
+        <h2 class="hsplit">Full-stack AI engineer</h2>
+      </div>
+      <div class="cnt rise" style="--d:.2s">Riga, Latvia</div>
+    </div>
+
+    <div class="abt">
+      <div class="abt-lead">
+        <p class="rise">I'm 20, based in Riga, and I ship production systems end to end — from
+        LangGraph multi-agent backends to React and Next.js frontends. Not prototypes: things
+        with real users, real money moving through them, and real uptime to defend.</p>
+        <p class="rise" style="--d:.08s">I spent the past year at Accenture building production
+        multi-agent GenAI on the Azure AI stack, and before that led a 10-engineer team that took a
+        white-label derivatives trading platform from zero to a client-ready product. Right now I'm
+        building two products of my own — HoloMate, an AI startup backed by external investors, and
+        Nokārto, a live exam-prep SaaS with real paying customers — alongside select contract work
+        while I finish my degree.</p>
+      </div>
+      <div class="abt-facts">
+        <div class="fact rise"><b>Now</b><span>Building HoloMate &amp; Nokārto · open to contract &amp; full-time work</span></div>
+        <div class="fact rise" style="--d:.06s"><b>Most recently</b><span>GenAI Engineer, Accenture Baltics (2025 — 2026)</span></div>
+        <div class="fact rise" style="--d:.12s"><b>Studying</b><span>B.Eng. Computer Systems, Riga Technical University — Dec 2026</span></div>
+        <div class="fact rise" style="--d:.18s"><b>Speaks</b><span>Russian &amp; Ukrainian native · English advanced · Latvian beginner</span></div>
+      </div>
+    </div>
+
+    <div class="nums" id="nums">
+      <div class="num rise"><b data-to="10">0</b><span>Engineers led</span></div>
+      <div class="num rise" style="--d:.07s"><b data-to="10000" data-fmt="k">0</b><span>Peak concurrent users</span></div>
+      <div class="num rise" style="--d:.14s"><b data-to="3">0</b><span>Live products shipped</span></div>
+      <div class="num rise" style="--d:.21s"><b data-to="33">0</b><span>Builds in this portfolio</span></div>
+    </div>
+
+    <div class="tl">
+      <div class="tl-row rise">
+        <div class="tl-when">Nov 2025 — May 2026</div>
+        <div class="tl-what">
+          <h4>GenAI Engineer — Accenture Baltics</h4>
+          <p>Contributed to a production 7+ agent document-analysis system on LangGraph (swarm
+          and parallel topologies) with Azure OpenAI GPT-4o, hand-off routing and loop prevention.
+          Built the SSE streaming that pushes live agent output into a React 19 frontend.</p>
+          <div class="tags"><span class="tag">LangGraph</span><span class="tag">Azure OpenAI</span><span class="tag">FastAPI</span><span class="tag">React 19</span></div>
+        </div>
+      </div>
+      <div class="tl-row rise">
+        <div class="tl-when">Aug 2025 — Nov 2025</div>
+        <div class="tl-what">
+          <h4>Big Data Engineer — Accenture Baltics</h4>
+          <p>Built a multi-source analytics platform integrating five public data sources on a
+          dual-database design — Snowflake for analytics, MongoDB for metadata — with ARIMA
+          forecasting and cross-source validation served through FastAPI.</p>
+          <div class="tags"><span class="tag">Snowflake</span><span class="tag">MongoDB</span><span class="tag">FastAPI</span><span class="tag">Plotly</span></div>
+        </div>
+      </div>
+      <div class="tl-row rise">
+        <div class="tl-when">Feb 2025 — Jul 2025</div>
+        <div class="tl-what">
+          <h4>Technical Lead (contract) — White-label trading platform</h4>
+          <p>Led 10 engineers taking a multi-tenant derivatives platform from zero to client-ready
+          — ~10,000 concurrent users at peak with zero downtime. Designed the architecture as three
+          apps over a distributed backend, with serializable Postgres transactions and Redis-backed
+          live pricing over WebSockets, plus a multi-provider payment gateway, KYC/AML and audit logging.</p>
+          <div class="tags"><span class="tag">Next.js 16</span><span class="tag">Fastify</span><span class="tag">PostgreSQL</span><span class="tag">Redis</span><span class="tag">Stripe</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="mq" aria-hidden="true">
+    <div class="mq-row" data-dir="-1"><div class="mq-in"></div></div>
+    <div class="mq-row" data-dir="1"><div class="mq-in"></div></div>
+  </div>
+
+  <section class="sec wrap" id="work">
+    <div class="sechead">
+      <div>
+        <div class="lbl rise">01 — Shipped</div>
+        <h2 class="rise" style="--d:.08s">Production builds</h2>
+        <p class="rise" style="--d:.14s">Real products designed and engineered end to end. Three of these are live on their own domains.</p>
+      </div>
+      <div class="cnt rise" style="--d:.2s">04 Projects</div>
+    </div>
+    <div class="feat" id="feat"></div>
+  </section>
+
+  <section class="sec wrap">
+    <div class="sechead">
+      <div>
+        <div class="lbl rise">02 — Everything else</div>
+        <h2 class="rise" style="--d:.08s">The rest of the shelf</h2>
+        <p class="rise" style="--d:.14s">Most of these are cut down from real freelance and contract projects, shared with the client's permission for portfolio use only — so the full production build isn't shown. Hover any card for the detail.</p>
+      </div>
+      <div class="cnt rise" style="--d:.2s"><span id="gcount">29</span> Projects</div>
+    </div>
+    <div class="filters" id="filters"></div>
+    <div class="grid" id="grid" data-f="all"></div>
+  </section>
+ </div>
+
+  <section id="contact" class="wrap">
+    <div class="lbl rise">03 — Contact</div>
+    <h2 id="ch2">Let's build <em>something</em></h2>
+    <p class="lead rise" style="--d:.1s">Open to freelance and full-time — production GenAI, multi-agent systems, real-time platforms, and the full product around them. Riga, or remote.</p>
+    <div class="links rise" style="--d:.16s">
+      <a class="lnk" href="https://github.com/S1rt3ge" target="_blank" rel="noopener"><span>GH</span>GitHub</a>
+      <a class="lnk" href="https://www.linkedin.com/in/s1rt3ge/" target="_blank" rel="noopener"><span>IN</span>LinkedIn</a>
+      <a class="lnk" href="https://t.me/s1rt3ge" target="_blank" rel="noopener"><span>TG</span>Telegram</a>
+    </div>
+    <footer>
+      <div>Oleksii (Alex) — Full-Stack AI Engineer</div>
+      <div>Riga, Latvia · 2026</div>
+    </footer>
+  </section>
+</main>
+
+<script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
+<script>
+/* ============================ data ============================ */
+const FEATURED = [
+  {url:"https://nokarto.lv/", ext:true, img:"_gig-screens/nokarto.jpg",
+   t:"Nokārto — Latvian State Exam Trainer",
+   d:"A live SaaS product: a trainer for the Latvian state language exam, where 61% fail on the first try. A free 19-question readiness test in the real exam's formats maps weak spots per section and builds a prep plan; AI grades essays and spoken answers against the official criteria — the two parts where most points are lost. Trilingual UI (RU / UK / EN).",
+   n:"Live product · nokarto.lv", tg:["Live product","EdTech","AI grading","Exam prep"]},
+  {url:"https://holomate.org", ext:true, img:"_gig-screens/holomate.png",
+   t:"HoloMate — Real-time AI Hologram Companion",
+   d:"A real-time conversational AI \"hologram\" you can see and talk to — a live voice + vision avatar built on Next.js, FastAPI and Gemini. Shipped product, so the card opens the official site.",
+   n:"Live product · holomate.org", tg:["Real-time AI","Voice + Vision","Next.js","Live product"]},
+  {url:"https://terocode.live", img:"_gig-screens/trading-platform.png",
+   t:"Real-Time Trading Platform",
+   d:"A production trading platform built end to end: real-time market data over WebSocket, professional charting, a full order terminal with positions and live P&L across crypto, forex and metals, installable PWA — on Next.js + Fastify.",
+   n:"Not my own product — a demo left over from a client contract. I was given full rights to keep and show it in my portfolio, so this is my build, not the live client product.",
+   tg:["Next.js","Fastify","Real-time","Trading"]},
+  {url:"business-agent/", img:"_gig-screens/business-agent.png",
+   t:"Phantom Pipeline — Autonomous AI SDR",
+   d:"Autonomous B2B outbound: detect buying signals, auto-generate a personalized \"Pipeline Autopsy\" report plus an AI video, and deliver it before the prospect ever hears from sales. Cinematic scroll landing with an interactive WebGL globe over a full authenticated app.",
+   n:"Live build · runs on sample data", tg:["AI SDR","React","TanStack","WebGL"]},
+];
+
+const CATS = [
+  {k:"all",  n:"All work"},
+  {k:"ai",   n:"AI & agents"},
+  {k:"saas", n:"Products & SaaS"},
+  {k:"art",  n:"Creative"},
+  {k:"data", n:"Backend & data"},
+];
+
+const WORK = [
+  {c:"ai", u:"quorum/", i:"quorum.png", t:"Quorum — AI Advisory Board",
+   s:"Five role-specialized AI advisors deliberate a business decision in real time, then vote.",
+   d:"An orchestrator convenes five role-specialized AI advisors (CFO, CMO, COO, Strategy, Risk) who deliberate a business decision in real time — a streamed round-robin debate with differing stances, then a synthesized board recommendation with a vote and a decision scorecard.",
+   tg:["Multi-agent","Orchestration","Real-time"]},
+  {c:"ai", u:"ai-closer/", i:"ai-closer.jpg", t:"AI Sales Closer",
+   s:"An outbound voice agent that dials the lead, handles objections and books the meeting.",
+   d:"An outbound AI voice sales agent from a real client engagement: it dials the lead itself, talks with a human-indistinguishable voice — thinking pauses, backchannel fillers, office room tone, barge-in — handles objections and closes. Tap the call button to hear the actual demo call with the full transcript alongside.",
+   tg:["Voice AI","Pipecat","Twilio"]},
+  {c:"ai", u:"seb-hpc/", i:"seb-hpc.png", t:"Meridian Treasury",
+   s:"Segments each business from its transactions, routes it to the best model, forecasts 4 weeks of cash.",
+   d:"An ML treasury tool that classifies each business into a behavioral segment from its transaction patterns, routes it to that segment's best model (KNN / LSTM / GRU / Transformer), forecasts 4 weeks of cash flow, and turns it into a concrete treasury action. Includes a live RMSE model-comparison view; trained on HPC with 4× L40S GPUs.",
+   tg:["ML forecasting","PyTorch","HPC"]},
+  {c:"ai", u:"trading-bot/", i:"trading-bot.png", t:"SentryTrade",
+   s:"A multi-stage LLM funnel turns financial news into BUY/SELL signals, paper-traded live.",
+   d:"A real-time algorithmic trading cockpit: a multi-stage LLM funnel (local gate → Haiku pre-screener → Sonnet signal agent) turns financial news into BUY/SELL signals with confidence scoring, paper-traded on a $10k account. Live P&L and signal feed, positions, A/B prompt testing and a streaming bot console.",
+   tg:["Algo trading","Multi-LLM","Live feed"]},
+  {c:"ai", u:"ds-ai/", i:"ds-ai.png", t:"Research Assistant",
+   s:"Routes each query across local Ollama and cloud LLMs by complexity, grounded in a cited RAG corpus.",
+   d:"Answers research questions by routing each query across local Ollama and cloud LLMs based on complexity — toggle Balanced / Cost / Quality / Ultra-Fast and watch the chosen model change live. Runs a Planner → Retrieval → Synthesis agent crew, grounds answers in a cited RAG corpus, and tracks cost savings vs. always using GPT-4o.",
+   tg:["Multi-agent","RAG","LLM routing"]},
+  {c:"ai", u:"agentic-platform/", i:"agentic-platform.png", t:"Agentic Workflow Platform",
+   s:"Drag-and-drop agent graph builder, then watch a run stream live node by node.",
+   d:"Multi-tenant no-code platform: a drag-and-drop agent graph builder, then watch a run stream live — agents light up node-by-node while tokens and cost tick up — plus a cost and usage analytics dashboard.",
+   tg:["Multi-agent","WebSocket","SaaS"]},
+  {c:"ai", u:"code-review-agent/", i:"code-review-agent.png", t:"Code Review Agent",
+   s:"Four specialized agents review a PR, then a Review Passport gates merge-readiness.",
+   d:"Four specialized AI agents (security, performance, style, logic) review a pull request, then a \"Review Passport\" gates merge-readiness with evidence, anti-AI-slop signals and QA steps.",
+   tg:["Multi-agent","FastAPI","Merge gate"]},
+  {c:"ai", u:"05-replai-ai/", i:"05-replai-ai.jpg", t:"Replai — AI Support",
+   s:"AI drafts customer replies from your knowledge base, with cited sources and automations.",
+   d:"An AI customer support platform: replies drafted from your knowledge base with cited sources, automation rules, macros and a full analytics view of deflection and response time.",
+   tg:["RAG","LLM","React"]},
+  {c:"ai", u:"10-outboundly/", i:"10-outboundly.jpg", t:"Outboundly — AI SDR",
+   s:"Scores leads and writes personalized cold email; full sequences and analytics.",
+   d:"An AI SDR platform that scores leads on fit and intent, writes personalized cold emails with an inline composer, and runs full multi-step outreach sequences with reply tracking and analytics.",
+   tg:["AI","Next.js"]},
+  {c:"ai", u:"14-flowforge/", i:"14-flowforge.jpg", t:"Flowforge — Automation",
+   s:"Visual flow-builder canvas with branching logic, run history and a template gallery.",
+   d:"A no-code automation product: a visual flow-builder canvas with branching logic and conditions, a run history with per-step traces, and a gallery of ready-made templates.",
+   tg:["Automation"]},
+  {c:"ai", u:"11-botpilot/", i:"11-botpilot.jpg", t:"Botpilot — Telegram Bot",
+   s:"Order → pay → AI support inside Telegram, plus a full bot admin.",
+   d:"A commerce bot living inside Telegram: browse, order and pay in-chat with AI support on top, backed by a full bot admin for flows, broadcasts and payments.",
+   tg:["Bot API","Payments"]},
+
+  {c:"saas", u:"walters/", i:"walters.png", t:"Walter's — Restaurant Platform",
+   s:"A multi-role restaurant OS: diner, kitchen display, waiter floor view and manager dashboard.",
+   d:"A multi-role restaurant OS in one clickable build: diners browse a photo menu with AI picks and track orders live; plus a real-time kitchen display, a waiter floor view, and a manager dashboard with analytics, AI dynamic pricing and a live demand simulation. Pick any of the four roles.",
+   tg:["Multi-role","WebSocket","Recharts"]},
+  {c:"saas", u:"onyx/", i:"onyx.jpg", t:"Onyx — Crypto Exchange App",
+   s:"A native-feeling crypto exchange: candlesticks, order book, Earn, real light/dark theme.",
+   d:"A crypto exchange in your pocket, presented as a real native app — App-Store framing inside an iPhone on desktop, full-screen on mobile. Every action is a working flow driven by native bottom-sheets: QR deposits, withdrawals, order confirmations, Simple Earn, tap-through coin detail, searchable transaction history and a real theme toggle.",
+   tg:["Crypto","Trading","Mobile app"]},
+  {c:"saas", u:"ember/", i:"ember.jpg", t:"Ember — Fragrance Store",
+   s:"An editorial storefront with hand-rendered glass flacons and a fully working cart.",
+   d:"A production-grade fragrance storefront in a calm, editorial palette: hand-rendered glass flacons, star ratings and reviews, a featured bestseller and a fully working cart — add to bag, quantities, live subtotal, a free-shipping progress bar and a slide-out drawer.",
+   tg:["E-commerce","Cart","Lenis"]},
+  {c:"saas", u:"01-pulse-crm/", i:"01-pulse-crm.jpg", t:"Pulse — SaaS CRM",
+   s:"Deals kanban, contacts, inbox, an AI assistant, automations and reports.",
+   d:"A full sales CRM: a drag-and-drop deals kanban, contact records with timelines, a unified inbox, an AI assistant that drafts follow-ups, automation rules and a reporting suite.",
+   tg:["SaaS","React"]},
+  {c:"saas", u:"02-crema-shop/", i:"02-crema-shop.jpg", t:"Crema — E-commerce",
+   s:"Storefront plus a full merchant admin for a specialty coffee brand.",
+   d:"A specialty coffee brand end to end: a customer storefront with product detail and cart, plus the full merchant admin — orders, catalogue, customers and a sales overview.",
+   tg:["E-commerce"]},
+  {c:"saas", u:"08-caretab/", i:"08-caretab.jpg", t:"Caretab — Telehealth",
+   s:"Clinic platform: appointments, patient records, telehealth video and messaging.",
+   d:"A clinic operations platform: an appointment calendar, structured patient records with vitals and history, a telehealth video consultation screen and secure patient messaging.",
+   tg:["Healthtech"]},
+  {c:"saas", u:"09-nest/", i:"09-nest.jpg", t:"Nest — Real Estate",
+   s:"Property marketplace and agent CRM: listings, detail pages and a sales pipeline.",
+   d:"A two-sided real estate product: a buyer-facing marketplace with map search, gallery listings and property detail, plus the agent CRM behind it with a deal pipeline and lead tracking.",
+   tg:["Marketplace"]},
+  {c:"saas", u:"06-finly/", i:"06-finly.jpg", t:"Finly — Spend & Cards",
+   s:"Corporate spend: virtual cards, approvals, transactions and analytics.",
+   d:"Corporate spend management: issue and freeze virtual cards, route spend through approval chains, reconcile transactions with receipts, and read it all back through a spend analytics view.",
+   tg:["Fintech"]},
+  {c:"saas", u:"07-stride/", i:"07-stride.jpg", t:"Stride — Issue Tracker",
+   s:"Project management with a kanban board, sprints and a burndown chart.",
+   d:"An engineering issue tracker: a kanban board with drag-and-drop, an issues table with filters, sprint planning and a burndown chart, plus a team dashboard.",
+   tg:["SaaS"]},
+  {c:"saas", u:"03-lumi-booking/", i:"03-lumi-booking.jpg", t:"Lumi — Booking",
+   s:"Beauty and services booking: an interactive calendar flow plus a provider admin.",
+   d:"A booking product for beauty and services: a customer-facing flow that walks service → specialist → time slot → confirmation, and the provider admin with a schedule view and client records.",
+   tg:["Booking"]},
+  {c:"saas", u:"04-rute-ops/", i:"04-rute-ops.jpg", t:"Rute — Logistics Ops",
+   s:"Delivery operations: live map, orders, couriers and analytics.",
+   d:"A delivery operations console: a live map of couriers in the field, an order queue with status, courier management and a performance analytics view.",
+   tg:["Ops","Dashboard"]},
+
+  {c:"art", u:"aether/", i:"aether.jpg", t:"Aether — Particles in Motion",
+   s:"25,600 GPU particles morph through a sphere, torus, field and galaxy as you scroll.",
+   d:"A generative WebGL field of 25,600 GPU particles that emerge from the void and morph through a sphere, a torus, a rippling field and a spiral galaxy as you scroll — neon on black, custom GLSL shaders, masked text reveals and a custom cursor.",
+   tg:["Three.js","GPU particles","GLSL"]},
+  {c:"art", u:"laocoon/", i:"laocoon.jpg", t:"Laocoön — Bronze & Time",
+   s:"A glowing bronze horse you orbit a full 360° as you scroll, with a liquid-bronze wave shader.",
+   d:"A cinematic, scroll-driven WebGL stage: a glowing bronze horse you orbit a full 360° as you scroll, molten forge sparks, a liquid-bronze wave shader migrating bronze→sapphire, per-letter blur-up titles and a custom double-ring cursor.",
+   tg:["Three.js","WebGL","GLSL"]},
+  {c:"art", u:"lumora/", i:"lumora.jpg", t:"Lumora — Studio Site",
+   s:"A cursor-driven 'liquid' before/after hero painted on canvas, with a dark intro loader.",
+   d:"An independent studio landing site: a dark intro loader, a cursor-driven 'liquid' before/after hero painted on canvas, scroll reveals, count-up stats and a request modal.",
+   tg:["Landing","Canvas FX","Lenis"]},
+  {c:"art", u:"loopstack/", i:"loopstack.jpg", t:"Loopstack — Footer Hero",
+   s:"A looping flower video fading into a serif headline and a giant letter-by-letter wordmark.",
+   d:"A full-screen black 'footer hero' moment: a looping flower video fading into the page, a serif headline that reveals word-by-word, a giant letter-by-letter wordmark, a pulsing neon CTA and a custom lagging glass cursor.",
+   tg:["Video","Custom cursor","Vanilla JS"]},
+
+  {c:"data", u:"12-forge-api/", i:"12-forge.jpg", t:"Forge — API Platform",
+   s:"Stripe-style developer portal: API reference, keys, request logs and webhooks.",
+   d:"A developer-facing API platform in the Stripe mould: a full API reference with code samples, key management, a searchable request log, webhook configuration and an architecture overview.",
+   tg:["FastAPI","API design"]},
+  {c:"data", u:"13-harvest/", i:"13-harvest.jpg", t:"Harvest — Data Pipelines",
+   s:"Web scraping and pipelines: scrapers, datasets and a pipeline diagram.",
+   d:"A data engineering product: managed scrapers with schedules and health, browsable datasets, an automated report builder and a visual pipeline diagram of the whole flow.",
+   tg:["Data Eng"]},
+  {c:"data", u:"15-triage/", i:"15-triage.jpg", t:"Triage — Site Rescue",
+   s:"Website audit and rescue report: before→after Lighthouse gauges and security findings.",
+   d:"A website audit and rescue report: before→after Lighthouse gauges, a prioritized performance backlog, security findings and the concrete fix list — packaged as a client-ready deliverable.",
+   tg:["Performance"]},
+];
+
+/* ============================ render ============================ */
+const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;');
+
+document.getElementById('feat').innerHTML = FEATURED.map((it,n)=>`
+  <a class="fcard rise" style="--d:${n*.06}s" href="${it.url}" target="_blank" rel="noopener">
+    <div class="fshot"><img src="${it.img}" alt="${esc(it.t)}" loading="lazy" decoding="async"></div>
+    <div class="fbody">
+      <span class="livedot"><s></s>${it.ext ? 'Live product' : 'Live build'}</span>
+      <h3>${esc(it.t)}</h3>
+      <p>${esc(it.d)}</p>
+      <p class="fnote">${esc(it.n)}</p>
+      <div class="tags">${it.tg.map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div>
+      <span class="go"><i></i>${it.ext ? 'Visit live product' : 'Open live build'}</span>
+    </div>
+  </a>`).join('');
+
+document.getElementById('filters').innerHTML = CATS.map(c=>{
+  const n = c.k==='all' ? WORK.length : WORK.filter(w=>w.c===c.k).length;
+  return `<button class="chip" data-k="${c.k}" aria-pressed="${c.k==='all'}">${c.n} <span style="opacity:.55">${n}</span></button>`;
+}).join('');
+
+const grid = document.getElementById('grid');
+grid.innerHTML = WORK.map((it,n)=>`
+  <a class="card rise" data-cat="${it.c}" style="--d:${(n%6)*.05}s" href="${it.u}" target="_blank" rel="noopener">
+    <div class="shot">
+      <img src="_gig-screens/${it.i}" alt="${esc(it.t)}" loading="lazy" decoding="async">
+      <div class="over">${esc(it.d)}</div>
+    </div>
+    <div class="cbody">
+      <h3>${esc(it.t)}</h3>
+      <p>${esc(it.s)}</p>
+      <div class="tags">${it.tg.map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div>
+      <span class="go"><i></i>Open live build</span>
+    </div>
+  </a>`).join('');
+document.getElementById('gcount').textContent = WORK.length;
+
+document.getElementById('filters').addEventListener('click', e=>{
+  const b = e.target.closest('.chip'); if(!b) return;
+  const k = b.dataset.k;
+  document.querySelectorAll('.chip').forEach(c=>c.setAttribute('aria-pressed', c===b));
+  grid.dataset.f = k;
+  grid.querySelectorAll('.card').forEach(c=>{
+    const hit = k==='all' || c.dataset.cat===k;
+    c.classList.toggle('hit', hit);
+    if(hit){ c.classList.remove('on'); setTimeout(()=>c.classList.add('on'), 20); }
+  });
+});
+
+/* ============================ motion ============================ */
+/* The OS setting decides by default, but a visitor whose system reports reduced motion
+   (on Windows that is just the "Animation effects" toggle, which plenty of people switch
+   off for performance) can opt back in — otherwise this page reads as completely dead. */
+const RM = window.__RM;          // resolved in <head>, before first paint
+const TOUCH = matchMedia('(hover: none)').matches;
+const SMALL = innerWidth < 820;
+
+/* split headline into masked words */
+function split(el){
+  el.innerHTML = el.textContent.trim().split(/\s+/).map((w,i)=>{
+    const em = /Work|something/.test(w);
+    return `<span class="rw"><span class="ri" style="--d:${i*.09}s">${em?'<em>':''}${w}${em?'</em>':''}</span></span>`;
+  }).join(' ');
+}
+split(document.getElementById('h1'));
+split(document.getElementById('ch2'));
+document.querySelectorAll('.hsplit').forEach(split);
+
+/* skills ticker — two rows drifting in opposite directions */
+const SKILLS = [
+  ['LangGraph','LangChain','CrewAI','RAG','pgvector','Claude API','Azure OpenAI','Gemini','Ollama','PyTorch'],
+  ['FastAPI','Next.js 16','React 19','TypeScript','Fastify','PostgreSQL','Redis','Kafka','Docker','Kubernetes','Snowflake','Supabase'],
+];
+document.querySelectorAll('.mq-row').forEach((row,ri)=>{
+  const set = SKILLS[ri].map(s=>`<i>${s}</i>`).join('');
+  // duplicated twice so the strip can loop seamlessly
+  row.querySelector('.mq-in').innerHTML = set + set;
+});
+
+/* reveal on scroll */
+const pending = new Set();
+function reveal(el){ el.classList.add('on'); io.unobserve(el); pending.delete(el); }
+const io = new IntersectionObserver(es=>{
+  es.forEach(e=>{ if(e.isIntersecting) reveal(e.target); });
+},{rootMargin:'0px 0px -12% 0px'});
+
+// A fast scroll, an anchor jump, or a reload that restores mid-page scroll can carry an
+// element past the viewport without the observer ever firing — leaving it stuck at
+// opacity 0. Sweep up the stragglers on every scroll, and once on startup.
+function sweep(){
+  if(pending.size) for(const el of [...pending]){
+    if(el.getBoundingClientRect().top < innerHeight * .88) reveal(el);
+  }
+  if(counters.size) for(const el of [...counters]){
+    if(el.getBoundingClientRect().top < innerHeight * .88) runCount(el);
+  }
+}
+addEventListener('scroll', sweep, {passive:true});
+// hero reveals are driven by the loader sequence, not by scroll
+function watch(el){ pending.add(el); io.observe(el); }
+document.querySelectorAll('.rise').forEach(el=>{ if(!el.closest('#heroType')) watch(el); });
+document.querySelectorAll('.hsplit, .tl-row').forEach(watch);
+watch(document.getElementById('ch2'));
+
+/* count-up stats */
+const counters = new Set();
+function runCount(el){
+  counters.delete(el); nio.unobserve(el);
+  const to = +el.dataset.to, k = el.dataset.fmt === 'k';
+  const show = v => el.textContent = k ? (v/1000).toFixed(v >= 10000 ? 0 : 1).replace(/\.0$/,'') + 'k' : v;
+  if(RM){ show(to); return; }
+  const t0 = performance.now(), dur = 1400;
+  (function step(now){
+    const p = Math.min(1, (now - t0) / dur);
+    show(Math.round(to * (1 - Math.pow(1 - p, 3))));
+    if(p < 1) requestAnimationFrame(step);
+  })(performance.now());
+}
+const nio = new IntersectionObserver(es=>{
+  es.forEach(e=>{ if(e.isIntersecting) runCount(e.target); });
+},{rootMargin:'0px 0px -18% 0px'});
+document.querySelectorAll('.num b[data-to]').forEach(el=>{ counters.add(el); nio.observe(el); });
+sweep();
+
+/* ---- loader ---- */
+const lg = document.querySelector('#loader .grid-lines');
+lg.innerHTML = [12,30,50,70,88].map(p=>`<i style="left:${p}%"></i>`).join('');
+const lnum = document.getElementById('lnum'), lbar = document.getElementById('lbar');
+// The counter tracks something real: the hero shots are fetched up front (below) and the
+// loader holds until they have decoded, so the wall arrives as one finished composition
+// instead of popping in shot by shot once it is already on screen.
+let wallDecoded = 0, wallTotal = 0;
+const LOAD_MIN = RM ? 0 : 900;   // never flash past too fast
+const LOAD_MAX = 5000;           // ...and never hang on a stalled image
+const loadT0 = performance.now();
+let p = 0;
+const tick = setInterval(()=>{
+  const ms = performance.now() - loadT0;
+  let v = Math.max(wallTotal ? wallDecoded / wallTotal : 0, ms / LOAD_MAX) * 100;
+  if(ms < LOAD_MIN) v = Math.min(v, ms / LOAD_MIN * 100);
+  p = Math.max(p, Math.min(100, v));
+  lnum.textContent = String(Math.floor(p)).padStart(3,'0');
+  lbar.style.width = p + '%';
+  if(p >= 100){ clearInterval(tick); setTimeout(enter, 260); }
+}, RM ? 10 : 40);
+
+function enter(){
+  document.getElementById('loader').classList.add('off');
+  setTimeout(()=>{
+    document.getElementById('h1').classList.add('on');
+    document.querySelectorAll('#heroType .rise').forEach((el,i)=>{
+      setTimeout(()=>el.classList.add('on'), 380 + i*110);
+    });
+    buildWall();
+  }, 180);
+}
+
+/* ---- 3D wall of work ---- */
+const WALL_IMGS = ['nokarto.jpg','holomate.png','trading-platform.png','business-agent.png','quorum.png',
+  'onyx.jpg','walters.png','laocoon.jpg','ai-closer.jpg','ds-ai.png','ember.jpg','seb-hpc.png',
+  'agentic-platform.png','trading-bot.png','lumora.jpg','06-finly.jpg','code-review-agent.png','loopstack.jpg'];
+// Kick the fetches off now, while the loader counter is still running, rather than
+// waiting for buildWall() — by the time the wall is built these are already decoded.
+wallTotal = WALL_IMGS.length;
+WALL_IMGS.forEach(src=>{
+  const im = new Image();
+  const done = ()=>{ wallDecoded++; };
+  im.src = '_gig-screens/' + src;
+  (im.decode ? im.decode() : Promise.reject()).then(done, ()=>{
+    if(im.complete) done(); else { im.onload = done; im.onerror = done; }
+  });
+});
+
+let shards = [];
+const wall = document.getElementById('wall');
+const PERSPECTIVE = 1000; // keep in sync with .field { perspective }
+
+function buildWall(){
+  let seed = 1337;
+  const rnd = () => (seed = (seed * 1664525 + 1013904223) % 4294967296) / 4294967296;
+  const n = SMALL ? 10 : WALL_IMGS.length * 2; // two passes through the shot list keeps the stream dense
+  const frag = document.createDocumentFragment();
+  for(let i=0;i<n;i++){
+    const ang = (i/n)*Math.PI*2 + rnd()*.6;
+    // A tunnel, not a cylinder: the world radius scales with distance so every shard
+    // lands at roughly the same *screen* radius, leaving the headline a clear centre.
+    // PERSPECTIVE must match the .field perspective for the projection to hold.
+    const dist = 240 + i*(SMALL?200:88) + rnd()*140;
+    const screenR = (SMALL?250:300) + rnd()*(SMALL?160:280);
+    const rad = screenR * (PERSPECTIVE + dist) / PERSPECTIVE;
+    const x = Math.cos(ang)*rad*1.4, y = Math.sin(ang)*rad*.82;
+    const z = -dist;
+    const el = document.createElement('div');
+    el.className = 'shard';
+    el.style.transform = `translate3d(${x.toFixed(0)}px,${y.toFixed(0)}px,${z.toFixed(0)}px) rotate(${((rnd()-.5)*12).toFixed(1)}deg)`;
+    // no loading="lazy" here: the shards sit far outside the viewport in 3D, so a lazy
+    // image would never be fetched. The wall is only built after the loader, so it costs nothing up front.
+    el.innerHTML = `<img src="_gig-screens/${WALL_IMGS[i % WALL_IMGS.length]}" alt="" decoding="async">`;
+    shards.push({el, z});
+    frag.appendChild(el);
+  }
+  wall.appendChild(frag);
+  // hold the wall hidden until every shot is decoded, so it arrives whole instead of
+  // popping in as empty slabs — but never let a stalled decode() hide it forever
+  // the class goes on .field, not .wall — see the CSS note about 3D flattening
+  const reveal = () => wall.parentElement.classList.add('ready');
+  Promise.all([...wall.querySelectorAll('img')].map(im => im.decode().catch(()=>{}))).then(reveal);
+  setTimeout(reveal, 2500);
+}
+
+/* ---- scroll drive ---- */
+const stage = document.getElementById('stage');
+const heroType = document.getElementById('heroType');
+const rail = document.querySelector('#rail i');
+let target = 0, cur = 0;
+
+function readScroll(){
+  const spacer = document.getElementById('spacer').offsetHeight - innerHeight;
+  target = Math.max(0, Math.min(1, scrollY / Math.max(1, spacer)));
+  rail.style.width = (scrollY / Math.max(1, document.body.scrollHeight - innerHeight) * 100) + '%';
+}
+
+// true once the hero has fully faded — used to idle the per-frame work
+function stageHidden(){ return cur > .95 && target > .95; }
+
+function frame(){
+  if(stageHidden()){ requestAnimationFrame(frame); return; }
+  cur += (target - cur) * .075;
+  const z = cur * (SMALL ? 2100 : 2900);
+  wall.style.transform = `translateZ(${z.toFixed(1)}px)`;
+  for(const s of shards){
+    // fade a shard out as it approaches and passes the camera
+    const eff = s.z + z;
+    s.el.style.opacity = String(Math.max(0, Math.min(1, (-eff - 40) / 260)));
+  }
+  const t = Math.min(1, cur / .55);
+  heroType.style.transform = `translateY(${(-t*12).toFixed(2)}vh) scale(${(1 - t*.06).toFixed(4)})`;
+  heroType.style.opacity = String(Math.max(0, 1 - t*1.25));
+  heroType.style.filter = `blur(${(t*14).toFixed(1)}px)`;
+  stage.style.opacity = String(Math.max(0, 1 - Math.max(0, (cur - .68) / .26)));
+  requestAnimationFrame(frame);
+}
+
+if(!RM){
+  addEventListener('scroll', readScroll, {passive:true});
+  addEventListener('resize', readScroll);
+  readScroll();
+  requestAnimationFrame(frame);
+}else{
+  // reduced motion: stage is laid out as a static block by CSS, nothing to drive
+  document.getElementById('h1').classList.add('on');
+}
+
+/* ---- grain ---- */
+(function grain(){
+  if(RM) return;
+  const c = document.getElementById('grain'), x = c.getContext('2d');
+  function size(){ c.width = Math.ceil(innerWidth/2); c.height = Math.ceil(innerHeight/2); }
+  size(); addEventListener('resize', size);
+  let f = 0;
+  (function draw(){
+    // regenerating a full noise buffer is expensive — skip it entirely once the
+    // stage has faded out and the visitor is reading the work below
+    if(++f % 3 === 0 && !stageHidden()){
+      const d = x.createImageData(c.width, c.height), b = d.data;
+      for(let i=0;i<b.length;i+=4){ const v = (Math.random()*255)|0; b[i]=b[i+1]=b[i+2]=v; b[i+3]=255; }
+      x.putImageData(d,0,0);
+    }
+    requestAnimationFrame(draw);
+  })();
+})();
+
+/* ---- ticker + card parallax, both driven off one scroll loop ---- */
+if(!RM){
+  const rows = [...document.querySelectorAll('.mq-row')].map(r=>({
+    el: r.querySelector('.mq-in'), dir: +r.dataset.dir, x: r.dataset.dir > 0 ? 0 : -50
+  }));
+  const shots = [...document.querySelectorAll('.fshot img')];
+  let last = performance.now();
+  (function loop(now){
+    const dt = Math.min(64, now - last); last = now;
+    for(const r of rows){
+      // percentage-based so the duplicated strip wraps seamlessly at -50%
+      r.x -= r.dir * dt * .0022;
+      if(r.x <= -50) r.x += 50;
+      if(r.x >= 0) r.x -= 50;
+      r.el.style.transform = `translateX(${r.x.toFixed(3)}%)`;
+    }
+    for(const im of shots){
+      const b = im.parentElement.getBoundingClientRect();
+      if(b.bottom < 0 || b.top > innerHeight) continue;
+      // -1 .. 1 across the viewport, drives a slow vertical drift inside the frame
+      const p = ((b.top + b.height/2) / innerHeight - .5) * 2;
+      im.style.transform = `translateY(${(p*-3.2).toFixed(2)}%) scale(1.09)`;
+    }
+    requestAnimationFrame(loop);
+  })(last);
+}
+
+/* ---- lenis smooth scroll ---- */
+if(!RM && window.Lenis){
+  const lenis = new Lenis({ duration:1.15, easing:t=>Math.min(1,1.001-Math.pow(2,-10*t)), smoothWheel:true });
+  (function raf(t){ lenis.raf(t); requestAnimationFrame(raf); })();
+}
+
+/* ---- custom cursor ---- */
+if(!RM && !TOUCH){
+  const ring = document.querySelector('.cur'), dot = document.querySelector('.curdot');
+  let mx=innerWidth/2, my=innerHeight/2, dx=mx, dy=my;
+  addEventListener('mousemove', e=>{
+    mx=e.clientX; my=e.clientY;
+    ring.style.transform = `translate(${mx}px,${my}px)`;
+    document.body.classList.add('curon');
+  }, {passive:true});
+  (function lag(){
+    dx += (mx-dx)*.14; dy += (my-dy)*.14;
+    dot.style.transform = `translate(${dx.toFixed(1)}px,${dy.toFixed(1)}px)`;
+    requestAnimationFrame(lag);
+  })();
+  // only the small controls expand the ring — the work cards cover most of the page, so
+  // reacting to those left the cursor permanently inflated
+  document.addEventListener('mouseover', e=>{
+    document.body.classList.toggle('curhot', !!e.target.closest('.lnk,.chip,.btn'));
+  });
+  addEventListener('mouseleave', ()=>document.body.classList.remove('curon'));
+}
 </script>
 </body>
 </html>

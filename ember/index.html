@@ -573,7 +573,7 @@ document.addEventListener('click', e => {
   const dec = e.target.closest('[data-dec]'); if (dec){ const id=dec.dataset.dec, v=cart.get(id)-1; if(v<=0) cart.delete(id); else cart.set(id,v); renderCart(); return; }
   const rm = e.target.closest('[data-rm]'); if (rm){ cart.delete(rm.dataset.rm); renderCart(); return; }
   if (e.target.closest('#emptyShop')){ closeCart(); const el=document.getElementById('shop'); if(lenis) lenis.scrollTo(el,{offset:-70}); else el.scrollIntoView({behavior:'smooth'}); return; }
-  if (e.target.closest('#checkout')){ toast('This is a demo — checkout is disabled'); return; }
+  if (e.target.closest('#checkout')){ toast('Checkout is disabled in this build'); return; }
   const s = e.target.closest('[data-scroll]'); if (s){ e.preventDefault(); const el=document.querySelector(s.getAttribute('href')); if(el){ if(lenis) lenis.scrollTo(el,{offset:-70,duration:1.1}); else el.scrollIntoView({behavior:'smooth'}); } }
 });
 

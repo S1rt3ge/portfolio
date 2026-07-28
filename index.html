@@ -826,7 +826,19 @@ const PERSPECTIVE = 1000; // keep in sync with .field { perspective }
 function buildWall(){
   let seed = 1337;
   const rnd = () => (seed = (seed * 1664525 + 1013904223) % 4294967296) / 4294967296;
-  const n = SMALL ? 10 : WALL_IMGS.length * 2; // two passes through the shot list keeps the stream dense
+  const n = SMALL ? 16 : WALL_IMGS.length * 2; // two passes through the shot list keeps the stream dense
+  // screenR is (after the perspective-compensation above) the shard's true apparent radius
+  // in screen pixels, so the x/y multipliers below are the only thing standing between "fits
+  // the viewport" and "flies off both edges". The old flat 1.4 / .82 constants were reverse-
+  // engineered from one specific viewport (1280x769 desktop) and never revisited for anything
+  // else — on a narrow phone the x radius alone (screenR*1.4, several hundred px) is bigger
+  // than the whole half-width, so almost every shard lands off-screen and only the handful
+  // near the ellipse's top/bottom point (where x≈0) survive. That's the "empty middle,
+  // sparse cluster at the edges" bug. Derive both multipliers from the viewport's own half-
+  // dimensions instead, calibrated so they reduce to exactly 1.4 / .82 at 1280x769.
+  const midR = SMALL ? (250+410)/2 : (300+580)/2;
+  const xMul = 0.9625 * (innerWidth/2)  / midR;
+  const yMul = 0.9384 * (innerHeight/2) / midR;
   const frag = document.createDocumentFragment();
   for(let i=0;i<n;i++){
     const ang = (i/n)*Math.PI*2 + rnd()*.6;
@@ -836,7 +848,7 @@ function buildWall(){
     const dist = 240 + i*(SMALL?200:88) + rnd()*140;
     const screenR = (SMALL?250:300) + rnd()*(SMALL?160:280);
     const rad = screenR * (PERSPECTIVE + dist) / PERSPECTIVE;
-    const x = Math.cos(ang)*rad*1.4, y = Math.sin(ang)*rad*.82;
+    const x = Math.cos(ang)*rad*xMul, y = Math.sin(ang)*rad*yMul;
     const z = -dist;
     const el = document.createElement('div');
     el.className = 'shard';
